@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@404&display=swap" rel="stylesheet">
+<style>
+  /* --- 1. COLOR PALETTE & FONT --- */
+  :root {
+    --color-bg-dark: #121212; /* Very dark background */
+    --color-bg-medium: #1C1C1C; /* Slightly lighter for sections */
+    --color-bg-light: #2C2C2C; /* For active elements, inputs */
+    --color-text-main: #E0E0E0; /* Light grey for main text */
+    --color-text-faded: #888888; /* Faded grey for labels, secondary text */
+    --color-accent-blue: #007AFF; /* iOS-like blue for primary actions */
+    --color-accent-orange: #FF9F0A; /* Warm orange for play-all, warnings */
+    --color-accent-red: #FF3B30; /* Red for delete/destructive actions */
+    --color-accent-green: #34C759; /* Green for "hide paths" */
+    --color-border: #333333; /* Subtle borders */
+
+    --font-main: 'Geist Mono', monospace; /* Main font */
+    --font-size-base: 12px;
+    --font-size-small: 10px;
+  }
+
+  /* --- 2. CORE BAR STYLES --- */
+  body { 
+      font-family: var(--font-main); 
+      font-size: var(--font-size-base);
+      padding: 0; margin: 0; 
+      background: var(--color-bg-dark); 
+      color: var(--color-text-main); 
+      overflow: hidden; 
+      transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
+  }
+
+  /* --- 3. HEADER/CONTROL LAYOUT --- */
+  header { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 6px 12px; height: 28px; box-sizing: content-box; 
+      background: var(--color-bg-medium); 
+      z-index: 10; 
+      position: relative;
+      border-bottom: 1px solid var(--color-border); 
+  }
+
+  /* Shared Buttons (Minimalist, rounded, high-contrast) */
+  .btn-action { 
+      padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 8px; 
+      font-weight: 500; cursor: pointer; transition: 0.2s; font-size: var(--font-size-small);
+      height: 28px; line-height: 1; /* Center text vertically */
+      box-sizing: border-box;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-main); 
+  }
+  #btn-capture { 
+      background: var(--color-bg-light); color: var(--color-text-main); 
+  }
+  #btn-capture:hover { background: #3a3a3a; }
+
+  /* Navigation Buttons Group */
+  .nav-buttons { 
+      display: flex; gap: 4px; 
+      align-items: center;
+      margin-left: 10px;
+  }
+  .nav-buttons .btn-action {
+      background: var(--color-bg-light); 
+      color: var(--color-accent-blue);
+      width: 32px; 
+      padding: 0; 
+  }
+  .nav-buttons .btn-action:hover { background: #3a3a3a; }
+
+  #btn-play-all { 
+      background: var(--color-accent-orange); 
+      color: var(--color-bg-dark); 
+      width: auto; 
+      margin-left: 6px; 
+      border: none;
+      font-weight: 600;
+  }
+  #btn-play-all:hover { background: #e08f09; }
+  
+  /* Utility Buttons */
+  #btn-settings { 
+      background: var(--color-bg-light); 
+      color: var(--color-text-faded); 
+      width: 28px; height: 28px; padding: 0; 
+      font-size: 16px; 
+      margin-left: 10px;
+  }
+  #btn-settings:hover { background: #3a3a3a; }
+
+  #btn-hide-paths {
+      background: var(--color-accent-green); 
+      color: var(--color-bg-dark); 
+      margin-left: 10px; 
+      border: none;
+      font-weight: 600;
+  }
+  #btn-hide-paths:hover { background: #2ea84b; }
+  
+  /* --- 4. MODE-SPECIFIC STYLES --- */
+  .mode-horizontal .controls-left { display: flex; flex-direction: row; gap: 8px; align-items: center; }
+  .mode-horizontal .btn-settings { display: block; }
+  .mode-vertical header { 
+      flex-direction: column; justify-content: flex-start; height: 100%; padding: 6px 0;
+  }
+  .mode-vertical .controls-left { 
+      display: flex; flex-direction: column; gap: 6px; width: 100%;
+  }
+  .mode-vertical .btn-action { width: 85%; text-align: center; margin: 0 auto; }
+  .mode-vertical .nav-buttons { flex-direction: row; justify-content: center; width: 100%; gap: 4px; margin-left: 0; margin-bottom: 4px;}
+  .mode-vertical .nav-buttons .btn-action { width: 35%; }
+  .mode-vertical #btn-play-all { width: 85%; }
+  .mode-vertical #btn-hide-paths { display: none; } 
+  .mode-vertical .btn-settings { display: none; }
+  
+  /* --- 5. EXPANDED/SETTINGS PANEL --- */
+  #settings-panel { 
+      padding: 16px; padding-top: 10px; display: flex; flex-direction: column; gap: 16px; 
+  }
+  h3 { 
+      font-size: 14px; margin: 0 0 10px 0; color: var(--color-text-main); font-weight: 500;
+      letter-spacing: 0.05em; 
+  }
+  .setting-group { margin-bottom: 10px; padding: 12px; 
+      background: var(--color-bg-medium); 
+      border-radius: 10px; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+  }
+
+  /* Project Manager styles */
+  .project-manager { display: flex; flex-direction: column; gap: 10px;}
+  .project-manager input { 
+      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
+      padding: 8px; border-radius: 6px; font-size: var(--font-size-base); text-align: left;
+      font-family: var(--font-main);
+  }
+  .project-buttons { display: flex; gap: 8px; }
+  .project-buttons button { flex-grow: 1; padding: 8px; font-weight: 600; font-size: var(--font-size-small); border-radius: 6px; cursor: pointer; transition: 0.2s;}
+  #btn-save-project { background: var(--color-accent-blue); color: white; border: none; }
+  #btn-save-project:hover { background: #006ee6; }
+  #btn-load-project { background: var(--color-bg-light); color: var(--color-text-main); border: 1px solid var(--color-border); }
+  #btn-load-project:hover { background: #3a3a3a; }
+  #btn-clear-scenes { background: var(--color-accent-red); color: white; border: none; }
+  #btn-clear-scenes:hover { background: #cc3129; }
+
+  /* General Settings */
+  .size-controls { display: flex; gap: 15px; margin-bottom: 10px; }
+  .size-controls .control-group { flex-grow: 1; }
+
+  /* Checkbox style */
+  .checkbox-group { display: flex; align-items: center; margin-top: 5px; }
+  .checkbox-group input[type="checkbox"] { margin-right: 8px; transform: scale(1.1); }
+  
+  /* Scene List */
+  #scene-list { 
+      list-style: none; padding: 0; margin-bottom: 20px; max-height: 280px; overflow-y: auto; overflow-x: hidden;
+  }
+  .scene-item { 
+      background: var(--color-bg-light); padding: 10px 12px; margin-bottom: 10px; 
+      border-radius: 8px; 
+      display: flex; flex-direction: column; 
+      border: 1px solid transparent; 
+      transition: 0.2s; 
+  }
+  
+  /* Scene Top Row for actions and NAME INPUT */
+  .scene-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 10px; }
+  
+  /* Scene Name Input */
+  .scene-name-input { 
+      background: none; 
+      border: none; 
+      color: var(--color-text-main); 
+      font-weight: 600; 
+      font-size: var(--font-size-base); 
+      padding: 2px 0;
+      flex-grow: 1; 
+      min-width: 0; 
+      font-family: var(--font-main);
+  }
+  .scene-name-input:focus {
+      outline: none;
+      background: #4A4A4A; 
+      padding: 2px 4px;
+      border-radius: 4px;
+  }
+
+  .scene-top-row .actions button { 
+      background: none; border: none; color: var(--color-text-faded); 
+      font-size: 16px; cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
+  }
+  .scene-top-row .actions button:hover { color: var(--color-text-main); }
+  
+  .scene-top-row .actions button[data-action="update-view"] { 
+      color: var(--color-accent-blue);
+  }
+  .scene-top-row .actions button[data-action="update-view"]:hover {
+      color: #72a9ff;
+  }
+
+
+  /* Inputs */
+  .scene-edit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;}
+  .bezier-row { margin-top: 8px; display: flex; align-items: center; gap: 8px;}
+  label { 
+      font-size: var(--font-size-small); 
+      color: var(--color-text-faded); 
+      text-transform: uppercase; 
+      margin-right: 4px; 
+      letter-spacing: 0.05em; 
+  }
+  .control-group { display: flex; align-items: center; }
+  
+  .control-group input[type="number"],
+  .control-group select {
+      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
+      padding: 6px; border-radius: 6px; font-size: var(--font-size-small); 
+      text-align: right; width: 50px; appearance: none; -moz-appearance: textfield;
+      font-family: var(--font-main);
+  }
+  .control-group select {
+      width: auto;
+      text-align: left;
+  }
+  
+  #bezier-text-input {
+      flex-grow: 1; padding: 6px; 
+      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
+      border-radius: 6px; font-size: var(--font-size-small); font-family: var(--font-main); text-align: left;
+  }
+  
+  /* Visualize Path Button Row */
+  .scene-actions-bottom { 
+      display: flex; justify-content: space-between; 
+      margin-top: 12px; 
+      border-top: 1px solid var(--color-border); 
+      padding-top: 10px; 
+  }
+  .btn-visualize { 
+      background: var(--color-bg-medium); 
+      color: var(--color-accent-blue);
+      border: 1px solid var(--color-border);
+      padding: 6px 8px;
+      font-size: var(--font-size-small);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s;
+  }
+  .btn-visualize:hover {
+      background: #333;
+  }
+  
+  .btn-recalculate {
+      background: var(--color-accent-orange);
+      color: var(--color-bg-dark);
+      border: none;
+  }
+  .btn-recalculate:hover {
+      background: #e09f2d;
+  }
+</style>
+</head>
+<body class="mode-horizontal">
+
+<header>
+    <div class="controls-left">
+        <button id="btn-capture" class="btn-action">Capture Scene</button>
+        
+        <div class="nav-buttons">
+            <button id="btn-play-previous" class="btn-action" title="Animate to Previous Scene">◀</button>
+            <button id="btn-play-next" class="btn-action" title="Animate to Next Scene">▶</button>
+            <button id="btn-play-all" class="btn-action">Play All</button>
+        </div>
+        
+        <button id="btn-hide-paths" class="btn-action" title="Hide all path visualizations in Figma">Hide Paths</button>
+    </div>
+    
+    <button id="btn-settings" class="btn-action">⚙️</button>
+</header>
+
+<div id="settings-panel" style="display: none;">
+    <div class="setting-group">
+        <h3>Project Manager</h3>
+        <div class="project-manager">
+            <input type="text" id="project-name-input" value="Default Project" placeholder="Enter Project Name">
+            <div class="project-buttons">
+                <button id="btn-save-project">Save Project</button>
+                <button id="btn-load-project">Load Project</button>
+                <button id="btn-clear-scenes">Clear All Scenes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-group">
+        <h3>General Settings</h3>
+        
+        <div class="control-group" style="margin-bottom: 10px;">
+            <label for="plugin-mode-select">Plugin Mode</label>
+            <select id="plugin-mode-select">
+                <option value="horizontal">Wide/Horizontal (Screen Recording)</option>
+                <option value="vertical">Mini/Vertical (Sidebar)</option>
+            </select>
+        </div>
+
+        <div class="size-controls">
+            <div class="control-group">
+                <label>Wide Width</label>
+                <input type="number" id="default-width-input" min="300" max="1000" value="400">
+            </div>
+            <div class="control-group">
+                <label>Wide Height</label>
+                <input type="number" id="default-height-input" min="300" max="1000" value="400">
+            </div>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="arc-enabled-checkbox">
+            <label for="arc-enabled-checkbox" style="font-size: var(--font-size-base); color: var(--color-text-main);">Enable Arc Path (Curved Camera Move)</label>
+        </div>
+    </div>
+    
+    <div class="setting-group">
+        <h3>Scene List</h3>
+        <ul id="scene-list"></ul>
+    </div>
+</div>
+
+<script>
+  let scenes = [];
+  let currentSceneIndex = 0; 
+  let pluginMode = 'horizontal'; 
+  let isExpanded = false;
+  
+  let defaultWideWidth = 400;
+  let defaultWideHeight = 400;
+  let isArcEnabled = true;
+
+  // New State for View Update (Re-introduced)
+  let sceneToUpdateIndex = -1; 
+  
+  // Project Management State
+  let currentProjectName = 'motionDirectorDefaultProject';
+  const DEFAULT_PROJECT_KEY = 'motionDirectorDefaultProject';
+
+  // --- DIMENSIONS & CONSTANTS ---
+  const HORIZONTAL_MIN_HEIGHT = 40; 
+  const VERTICAL_MINI_WIDTH = 40;
+  const VERTICAL_MINI_HEIGHT = 200;
+  
+  // Bezier constants
+  const NEWTON_ITERATIONS = 4;
+  const NEWTON_MIN_TOLERANCE = 0.001;
+  const MID_ARC_FACTOR = 0.05; 
+  
+  // --- 1. CORE MATH FUNCTIONS ---
+  function A(aA1, aA2) { return 1.0 - 3.0 * aA2 + 3.0 * aA1; }
+  function B(aA1, aA2) { return 3.0 * aA2 - 6.0 * aA1; }
+  function C(aA1)      { return 3.0 * aA1; }
+  function CalcBezier(aA1, aA2, aT) { return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT; }
+  function GetSlope(aA1, aA2, aT) { return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1); }
+  function GetTForX(aX, aA1, aA2) {
+      let aGuessT = aX;
+      for (let i = 0; i < NEWTON_ITERATIONS; ++i) {
+          const currentX = CalcBezier(aA1, aA2, aGuessT) - aX;
+          if (Math.abs(currentX) < NEWTON_MIN_TOLERANCE) return aGuessT;
+          const currentSlope = GetSlope(aA1, aA2, aGuessT);
+          if (Math.abs(currentSlope) < NEWTON_MIN_TOLERANCE) return aGuessT;
+          aGuessT -= currentX / currentSlope;
+      }
+      return aGuessT;
+  }
+  function cubicBezier(t, x1, y1, x2, y2) {
+      if (t === 0 || t === 1) return t;
+      return CalcBezier(y1, y2, GetTForX(t, x1, x2));
+  }
+  
+  // Quadratic Bezier for Path Interpolation (X/Y Coordinates) - Used by the path drawing
+  function quadraticBezierPath(t, p0, p1, p2) {
+    const oneMinusT = 1 - t;
+    return (
+        oneMinusT * oneMinusT * p0 + // (1-t)^2 * P0
+        2 * oneMinusT * t * p1 +     // 2 * (1-t) * t * P1
+        t * t * p2                   // t^2 * P2
+    );
+  }
+
+  function getEasing(t, easing, bezierPoints) {
+    if (easing === 'custom' && bezierPoints && bezierPoints.length === 4) {
+        const [x1, y1, x2, y2] = bezierPoints;
+        const cx1 = Math.max(0, Math.min(1, parseFloat(x1)));
+        const cy1 = parseFloat(y1);
+        const cx2 = Math.max(0, Math.min(1, parseFloat(x2)));
+        const cy2 = parseFloat(y2);
+        return cubicBezier(t, cx1, cy1, cx2, cy2);
+    }
+    switch (easing) {
+      case 'snap': return 1 - Math.pow(1 - t, 4); 
+      case 'smooth': return (1 - Math.cos(Math.PI * t)) / 2; 
+      case 'linear': return t;
+      default: return t;
+    }
+  }
+
+  function calculateArcControlPoint(start, end) {
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 100) return { xc: (start.x + end.x) / 2, yc: (start.y + end.y) / 2 };
+
+      const mx = (start.x + end.x) / 2;
+      const my = (start.y + end.y) / 2;
+      const nx = -dy;
+      const ny = dx;
+      const scale = (distance * MID_ARC_FACTOR) / distance;
+      const xc = mx + nx * scale;
+      const yc = my + ny * scale;
+
+      return { xc, yc };
+  }
+
+
+  // --- 2. PERSISTENCE & PROJECT MANAGEMENT ---
+
+  function saveProject() {
+      const dataToSave = {
+          scenes: scenes,
+          pluginMode: pluginMode,
+          defaultWideWidth: defaultWideWidth,
+          defaultWideHeight: defaultWideHeight,
+          isArcEnabled: isArcEnabled
+      };
+      parent.postMessage({ pluginMessage: { type: 'set-project', name: currentProjectName, data: dataToSave } }, '*');
+  }
+
+  function loadProject(projectName) {
+      currentProjectName = (projectName.trim() || DEFAULT_PROJECT_KEY).replace(/[^a-zA-Z0-9]/g, '_');
+      document.getElementById('project-name-input').value = currentProjectName;
+      parent.postMessage({ pluginMessage: { type: 'get-project', name: currentProjectName } }, '*');
+  }
+
+  function initializeData(data, projectName) {
+      currentProjectName = projectName;
+      document.getElementById('project-name-input').value = projectName === DEFAULT_PROJECT_KEY ? "Default Project" : projectName;
+
+      if (data) {
+          if (data.scenes && Array.isArray(data.scenes)) {
+              scenes = data.scenes;
+              scenes.forEach((s, i) => {
+                  if (!s.name || s.name.startsWith("Scene ")) {
+                      s.name = `Scene ${i + 1}`;
+                  }
+                  if (!s.customControlPoint) {
+                    s.customControlPoint = null;
+                  }
+              });
+          }
+          defaultWideWidth = data.defaultWideWidth || 400;
+          defaultWideHeight = data.defaultWideHeight || 400;
+          isArcEnabled = data.isArcEnabled !== undefined ? data.isArcEnabled : true;
+          
+          const modeToLoad = data.pluginMode || 'horizontal'; 
+          setMode(modeToLoad, false);
+          
+          document.getElementById('default-width-input').value = defaultWideWidth;
+          document.getElementById('default-height-input').value = defaultWideHeight;
+          document.getElementById('arc-enabled-checkbox').checked = isArcEnabled;
+
+          renderList();
+      } else {
+          scenes = [];
+          defaultWideWidth = 400;
+          defaultWideHeight = 400;
+          isArcEnabled = true;
+          setMode('horizontal', false); 
+          renderList();
+      }
+  }
+
+  document.getElementById('project-name-input').onchange = (e) => {
+    currentProjectName = (e.target.value.trim() || "Default Project").replace(/[^a-zA-Z0-9]/g, '_');
+    e.target.value = currentProjectName;
+  };
+
+  document.getElementById('btn-save-project').onclick = () => {
+    saveProject();
+    alert(`Project "${currentProjectName}" saved!`);
+  };
+
+  document.getElementById('btn-load-project').onclick = () => {
+    const name = document.getElementById('project-name-input').value;
+    loadProject(name);
+  };
+  
+  document.getElementById('btn-clear-scenes').onclick = () => {
+    if (confirm("Are you sure you want to clear ALL scenes in the current session? This cannot be undone.")) {
+      scenes = [];
+      currentSceneIndex = 0; 
+      renderList();
+      saveProject();
+    }
+  };
+
+
+  // --- General Settings Handlers ---
+  
+  document.getElementById('default-width-input').onchange = (e) => {
+      const newWidth = parseInt(e.target.value) || 400;
+      defaultWideWidth = Math.max(300, Math.min(1000, newWidth));
+      e.target.value = defaultWideWidth;
+      saveProject(); 
+      if (isExpanded) {
+          setPluginSize(defaultWideWidth, defaultWideHeight);
+      }
+  };
+
+  document.getElementById('default-height-input').onchange = (e) => {
+      const newHeight = parseInt(e.target.value) || 400;
+      defaultWideHeight = Math.max(300, Math.min(1000, newHeight));
+      e.target.value = defaultWideHeight;
+      saveProject(); 
+      if (isExpanded) {
+          setPluginSize(defaultWideWidth, defaultWideHeight);
+      }
+  };
+
+  document.getElementById('arc-enabled-checkbox').onchange = (e) => {
+      isArcEnabled = e.target.checked;
+      saveProject(); 
+  };
+  
+  document.getElementById('btn-hide-paths').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'hide-paths' } }, '*');
+  };
+
+
+  // --- 3. SCENE MANAGEMENT ---
+  
+  function parseBezierString(bezierString) {
+      if (!bezierString) return [];
+      return bezierString.split(',').map(s => s.trim()).filter(s => s.length > 0).map(parseFloat);
+  }
+  
+  function handleUpdateScene(index, prop, value) {
+      scenes[index][prop] = value;
+      saveProject(); 
+  }
+  
+  // **FIXED:** The per-scene play button now animates between stored scenes (S_i to S_i+1)
+  function handlePlayScene(index) {
+    if (scenes.length < 2 || index === scenes.length - 1) {
+        alert("Cannot play. Need at least two scenes, and the transition starts from the current scene's index.");
+        return;
+    }
+    
+    // Animate the path segment from startScene to endScene
+    const startScene = scenes[index];
+    const endScene = scenes[index + 1];
+    
+    // The custom control point is stored on the START scene of the transition
+    const controlPoint = startScene.customControlPoint;
+
+    animate(
+        startScene.view, 
+        endScene.view, 
+        endScene.duration, 
+        endScene.easing, 
+        endScene.delay, 
+        endScene.bezier, 
+        controlPoint
+    );
+    currentSceneIndex = index + 1; // Mark the end of the transition as the current scene
+  }
+  
+  function handleDeleteScene(index) {
+      scenes.splice(index, 1);
+      currentSceneIndex = 0; 
+      renderList();
+      saveProject(); 
+  }
+  
+  function handleUpdateView(index) {
+      sceneToUpdateIndex = index;
+      parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
+  }
+
+
+  // --- 4. UI AND MODE CONTROL ---
+  let targetView = null; // No longer used for single plays, only for Capture Scene logic
+
+  function setPluginSize(width, height) {
+      document.body.style.width = `${width}px`;
+      document.body.style.height = `${height}px`;
+      parent.postMessage({ pluginMessage: { type: 'resize', width, height } }, '*');
+  }
+
+  function setMode(mode, shouldSave = true) { 
+      pluginMode = mode;
+      document.body.className = `mode-${mode}`;
+      
+      if (mode === 'horizontal') {
+          isExpanded = false;
+          document.getElementById('settings-panel').style.display = 'none';
+          setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT); 
+      } else if (mode === 'vertical') {
+          isExpanded = false;
+          document.getElementById('settings-panel').style.display = 'none';
+          setPluginSize(VERTICAL_MINI_WIDTH, VERTICAL_MINI_HEIGHT);
+      }
+      document.getElementById('plugin-mode-select').value = mode;
+
+      if (shouldSave) {
+          saveProject(); 
+      }
+  }
+
+  document.getElementById('btn-settings').onclick = () => {
+    isExpanded = !isExpanded;
+    const settingsPanel = document.getElementById('settings-panel');
+    settingsPanel.style.display = isExpanded ? 'flex' : 'none';
+
+    if (pluginMode === 'horizontal') {
+        const width = defaultWideWidth;
+        const height = isExpanded ? defaultWideHeight : HORIZONTAL_MIN_HEIGHT; 
+        setPluginSize(width, height);
+    } 
+  };
+
+  document.getElementById('plugin-mode-select').onchange = (e) => {
+      setMode(e.target.value);
+  };
+
+  window.onload = () => {
+      loadProject("Default Project");
+  }
+
+
+  // --- Path Visualization and Editing ---
+
+  function getPathData(sceneIndex) {
+    if (sceneIndex === scenes.length - 1 || scenes.length < 2) {
+        return null;
+    }
+
+    const startScene = scenes[sceneIndex];
+    const endScene = scenes[sceneIndex + 1];
+
+    if (!startScene || !endScene) return null;
+
+    const start = startScene.view;
+    const end = endScene.view;
+    
+    let controlPoint = startScene.customControlPoint;
+
+    if (!controlPoint) {
+        const defaultControl = calculateArcControlPoint(start, end);
+        controlPoint = { x: defaultControl.xc, y: defaultControl.yc };
+    }
+
+    return {
+        start: { x: start.x, y: start.y },
+        end: { x: end.x, y: end.y },
+        control: controlPoint,
+        isArcEnabled: isArcEnabled,
+        isCustom: !!startScene.customControlPoint
+    };
+  }
+
+  function handleVisualizePath(sceneIndex) {
+    const data = getPathData(sceneIndex);
+    if (!data) {
+        alert(scenes.length < 2 ? "Need at least two scenes." : "Cannot visualize path from the last scene.");
+        return;
+    }
+
+    parent.postMessage({ pluginMessage: { type: 'draw-path', pathData: data } }, '*');
+  }
+
+  function handleRecalculatePath(sceneIndex) {
+    if (sceneIndex === scenes.length - 1 || scenes.length < 2) return;
+    
+    parent.postMessage({ pluginMessage: { type: 'get-control-point', sceneIndex: sceneIndex } }, '*');
+  }
+
+  // --- 5. RENDER LIST ---
+
+  function renderList() {
+    const list = document.getElementById('scene-list');
+    list.innerHTML = '';
+    
+    scenes.forEach((scene, index) => {
+      
+      const li = document.createElement('div');
+      li.className = 'scene-item';
+      
+      const hasCustomPath = !!scene.customControlPoint; 
+      const visualizeBtnClass = hasCustomPath ? 'btn-visualize btn-recalculate' : 'btn-visualize';
+      const visualizeBtnText = hasCustomPath ? 'Redraw (Custom Path)' : 'Visualize Path';
+      
+      li.innerHTML = `
+        <div class="scene-top-row">
+            <input type="text" class="scene-name-input" data-prop="name" id="name-${index}" value="${scene.name}">
+            <div class="actions">
+                <button title="Update scene view to current Figma viewport" data-action="update-view" data-index="${index}">🔄</button>
+                <button title="Play this scene" data-action="play" data-index="${index}">▶</button>
+                <button title="Delete scene" data-action="delete" data-index="${index}">✕</button>
+            </div>
+        </div>
+        
+        <div class="scene-edit-row">
+            <div class="control-group"><label>Dur</label><input type="number" class="duration-input" data-prop="duration" id="dur-${index}" value="${scene.duration}" min="100"></div>
+            <div class="control-group"><label>Delay</label><input type="number" class="delay-input" data-prop="delay" id="delay-${index}" value="${scene.delay}" min="0"></div>
+            
+            <div class="control-group">
+                <label>Easing</label>
+                <select id="easing-${index}" data-prop="easing">
+                    <option value="custom">Custom Bezier</option>
+                    <option value="snap">Snap (Quart)</option>
+                    <option value="smooth">Smooth (Cubic)</option>
+                    <option value="linear">Linear</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="bezier-row" id="bezier-row-${index}">
+            <label>Bezier (x1, y1, x2, y2)</label>
+            <input type="text" data-prop="bezier" id="bezier-text-input-${index}" value="${scene.bezier}" placeholder="0.24, 0.61, 0.48, 1.0">
+        </div>
+
+        <div class="scene-actions-bottom" id="path-visualizer-${index}">
+            <button class="${visualizeBtnClass}" data-action="visualize" data-index="${index}">${visualizeBtnText}</button>
+            <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Recalculate path based on the moved Control Point marker.">
+                Update Control Point
+            </button>
+        </div>
+      `;
+      
+      list.appendChild(li);
+
+      document.getElementById(`easing-${index}`).value = scene.easing;
+      const bezierRow = document.getElementById(`bezier-row-${index}`);
+      bezierRow.style.display = scene.easing === 'custom' ? 'flex' : 'none';
+      
+      // Hide the path actions for the very last scene (since it doesn't transition to anything)
+      if (index === scenes.length - 1) {
+        li.querySelector('.scene-actions-bottom').style.display = 'none';
+      }
+
+      // Attach event listeners for all buttons
+      li.querySelectorAll('.actions button').forEach(button => {
+          const index = parseInt(button.dataset.index);
+          if (button.dataset.action === 'play') {
+              button.onclick = () => handlePlayScene(index);
+          } else if (button.dataset.action === 'delete') {
+              button.onclick = () => handleDeleteScene(index);
+          } else if (button.dataset.action === 'update-view') {
+              button.onclick = () => handleUpdateView(index); 
+          }
+      });
+      
+      li.querySelectorAll('.scene-actions-bottom button').forEach(button => {
+          const index = parseInt(button.dataset.index);
+          if (button.dataset.action === 'visualize') {
+              button.onclick = () => handleVisualizePath(index);
+          } else if (button.dataset.action === 'recalculate') {
+              button.onclick = () => handleRecalculatePath(index); 
+          }
+      });
+
+
+      li.querySelectorAll('input[type="number"], input[type="text"], select').forEach(input => {
+          const index = scenes.indexOf(scene);
+          const prop = input.dataset.prop;
+          
+          input.onchange = (e) => {
+              let value = e.target.value;
+              
+              if (input.type === 'number') {
+                  value = parseInt(e.target.value) || 0;
+              } else if (prop === 'name') {
+                  value = value.trim() || `Scene ${index + 1}`;
+                  e.target.value = value;
+              }
+
+              handleUpdateScene(index, prop, value);
+
+              if (prop === 'easing') {
+                  bezierRow.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+              }
+          };
+      });
+    });
+  }
+
+
+  // --- 6. GLOBAL BUTTONS & ANIMATION ENGINE ---
+  
+  document.getElementById('btn-capture').onclick = () => {
+    sceneToUpdateIndex = -1; // New scene capture
+    parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
+  };
+  
+  // **FIXED:** Navigation buttons now animate between stored scenes (S_i to S_i+1 or S_i-1 to S_i)
+  function handlePlayNavigation(direction) {
+    if (scenes.length < 2) {
+        alert("Need at least two scenes for playback.");
+        return;
+    }
+
+    let nextIndex = currentSceneIndex + direction;
+    let startIndex = currentSceneIndex;
+
+    // Handle boundary conditions (No looping for single play)
+    if (nextIndex < 0 || nextIndex >= scenes.length) {
+        alert("End of scene list reached.");
+        return;
+    }
+
+    // Determine the start/end scenes for the transition
+    const startScene = scenes[Math.min(startIndex, nextIndex)];
+    const endScene = scenes[Math.max(startIndex, nextIndex)];
+    
+    // The custom control point is stored on the scene that STARTS the transition.
+    const controlPoint = startScene.customControlPoint;
+
+    // Use the *end scene's* animation parameters (duration, easing, delay)
+    animate(
+        startScene.view, 
+        endScene.view, 
+        endScene.duration, 
+        endScene.easing, 
+        endScene.delay, 
+        endScene.bezier, 
+        controlPoint
+    );
+    
+    currentSceneIndex = nextIndex;
+  }
+  
+  document.getElementById('btn-play-previous').onclick = () => {
+    handlePlayNavigation(-1); 
+  };
+  
+  document.getElementById('btn-play-next').onclick = () => {
+    handlePlayNavigation(1);
+  };
+
+  // **FIXED:** Play All logic animates directly between stored scenes (S_i to S_i+1)
+  document.getElementById('btn-play-all').onclick = async () => {
+      if (scenes.length < 2) return;
+      document.getElementById('btn-play-all').disabled = true;
+      document.getElementById('btn-play-all').textContent = 'Playing...';
+
+      // Step 0: Animate from current view to Scene 0
+      const currentView = await new Promise(resolve => {
+          window.onmessage = (event) => {
+              const msg = event.data.pluginMessage;
+              if (msg && msg.type === 'scene-captured') {
+                  resolve(msg.view);
+                  window.onmessage = messageHandler; 
+              }
+          };
+          parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
+      });
+      
+      // Animate from Current View (V_current) to Scene 0 (S0), using default arc
+      const S0 = scenes[0];
+      await animate(currentView, S0.view, S0.duration, S0.easing, S0.delay, S0.bezier, null);
+      currentSceneIndex = 0; 
+
+      // Step 1 to N: Animate between stored scenes (S_i to S_i+1)
+      for (let i = 0; i < scenes.length - 1; i++) {
+          const startScene = scenes[i];
+          const endScene = scenes[i + 1];
+          
+          // Pass the custom control point stored on the START scene of the transition
+          const controlPoint = startScene.customControlPoint;
+
+          await animate(
+              startScene.view, 
+              endScene.view,   
+              endScene.duration, 
+              endScene.easing, 
+              endScene.delay, 
+              endScene.bezier, 
+              controlPoint
+          );
+          currentSceneIndex = i + 1;
+      }
+
+      document.getElementById('btn-play-all').disabled = false;
+      document.getElementById('btn-play-all').textContent = 'Play All';
+  };
+  
+  // **MODIFIED:** Removed single-play logic from message handler as it's now handled by direct animate calls.
+  const messageHandler = (event) => {
+    const msg = event.data.pluginMessage;
+    
+    if (msg.type === 'scene-captured') {
+        if (sceneToUpdateIndex !== -1) {
+            // Case 1: Updating an existing scene view
+            const I = sceneToUpdateIndex;
+            scenes[I].view = msg.view;
+
+            scenes[I].customControlPoint = null; 
+            if (I > 0) {
+                scenes[I - 1].customControlPoint = null; 
+            }
+            
+            alert(`Scene ${I + 1} view updated! Path segments are being recalculated.`); 
+            
+            sceneToUpdateIndex = -1; 
+            
+            if (isArcEnabled) {
+                if (I < scenes.length - 1) {
+                    handleVisualizePath(I);
+                }
+                if (I > 0) {
+                    handleVisualizePath(I - 1);
+                }
+            }
+            
+            renderList();
+            saveProject();
+
+        } else if (targetView) {
+            // Case 2: Playing an animation (This case is now only for 'Play All' initial step)
+            // It should no longer be hit by single plays (Play, Next, Previous).
+            const startView = msg.view;
+            
+            // NOTE: The 'Play All' initial step sets targetView and expects to animate V_current -> S0. 
+            // We pass null for control point to force default arc or linear.
+            animate(startView, targetView.view, targetView.duration, targetView.easing, targetView.delay, targetView.bezier, null);
+            targetView = null;
+            
+        } else {
+            // Case 3: Capturing a brand new scene
+            const newScene = {
+              id: Date.now(),
+              name: `Scene ${scenes.length + 1}`,
+              view: msg.view,
+              duration: 2000, 
+              easing: 'smooth',  
+              delay: 500,
+              bezier: "0.24, 0.61, 0.48, 1.0",
+              customControlPoint: null 
+            };
+            scenes.push(newScene);
+            renderList();
+            currentSceneIndex = scenes.length - 1; 
+            saveProject(); 
+        }
+    } else if (msg.type === 'load-data') {
+        initializeData(msg.data, msg.projectName);
+    } else if (msg.type === 'control-point-updated') {
+        if (msg.point) {
+            const index = msg.sceneIndex;
+            scenes[index].customControlPoint = msg.point;
+            
+            handleVisualizePath(index);
+            
+            saveProject();
+            renderList(); 
+        } else {
+            alert("Control Point marker not found. Please click 'Visualize Path' first to place the marker on the canvas.");
+        }
+    }
+  };
+  window.onmessage = messageHandler;
+
+  function animate(start, end, duration, easing, delay, bezierString, customControlPoint) {
+    return new Promise(resolve => {
+      const startTime = Date.now();
+      
+      if (duration === 0) duration = 1; 
+      
+      const bezierPoints = parseBezierString(bezierString);
+      
+      let control = null;
+      if (isArcEnabled) {
+          // If a custom control point is provided, use it. Otherwise, calculate the default arc.
+          if (customControlPoint) {
+              control = { xc: customControlPoint.x, yc: customControlPoint.y };
+          } else {
+              control = calculateArcControlPoint(start, end); 
+          }
+      }
+
+      function loop() {
+        const now = Date.now();
+        const rawProgress = Math.min((now - startTime) / duration, 1);
+        
+        const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
+
+        const currentZoom = start.zoom + (end.zoom - start.zoom) * easedProgress;
+        
+        let currentX, currentY;
+
+        if (isArcEnabled && control) { 
+            const t = easedProgress;
+            
+            // Quadratic Bezier Interpolation (using one control point)
+            const oneMinusT = 1 - t;
+            currentX = quadraticBezierPath(t, start.x, control.xc, end.x);
+            currentY = quadraticBezierPath(t, start.y, control.yc, end.y);
+            
+        } else {
+            currentX = start.x + (end.x - start.x) * easedProgress;
+            currentY = start.y + (end.y - start.y) * easedProgress;
+        }
+
+        parent.postMessage({ pluginMessage: { type: 'update-viewport', x: currentX, y: currentY, zoom: currentZoom } }, '*');
+
+        if (rawProgress < 1) {
+          requestAnimationFrame(loop);
+        } else {
+          setTimeout(resolve, delay);
+        }
+      }
+      loop();
+    });
+  }
+</script>
+</html>
