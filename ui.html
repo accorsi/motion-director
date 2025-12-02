@@ -3,24 +3,29 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@404&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
-    --color-bg-dark: #121212; /* Very dark background */
-    --color-bg-medium: #1C1C1C; /* Slightly lighter for sections */
-    --color-bg-light: #2C2C2C; /* For active elements, inputs */
-    --color-text-main: #E0E0E0; /* Light grey for main text */
-    --color-text-faded: #888888; /* Faded grey for labels, secondary text */
-    --color-accent-blue: #007AFF; /* iOS-like blue for primary actions */
-    --color-accent-orange: #FF9F0A; /* Warm orange for play-all, warnings */
-    --color-accent-red: #FF3B30; /* Red for delete/destructive actions */
-    --color-accent-green: #34C759; /* Green for "hide paths" */
-    --color-border: #333333; /* Subtle borders */
+    --color-bg-dark: #121212; 
+    --color-bg-medium: #1C1C1C; 
+    --color-bg-light: #2C2C2C; 
+    --color-text-main: #E0E0E0; 
+    --color-text-faded: #888888; 
+    --color-accent-blue: #007AFF; 
+    --color-accent-orange: #FF9F0A; 
+    --color-accent-red: #FF3B30; 
+    --color-accent-green: #34C759; 
+    --color-border: #00000000; 
 
-    --font-main: 'Geist Mono', monospace; /* Main font */
-    --font-size-base: 12px;
-    --font-size-small: 10px;
+    --font-main: 'Geist Mono', monospace; 
+    --font-size-base: 10px; 
+    --font-size-small: 9px;
+
+    --shadow-inner-light: inset 0 .75px 0px rgba(255, 255, 255, 0.1);
+    --shadow-inner-lighter: inset 0 .75px 0px rgba(255, 255, 255, 0.35);
+    --shadow-outer-white: 0 -.75px rgba(255,255,255,.6);
+    --shadow-drop: 0 .75px 0px rgba(0, 0, 0, 0.5); 
   }
 
   /* --- 2. CORE BAR STYLES --- */
@@ -32,150 +37,270 @@
       color: var(--color-text-main); 
       overflow: hidden; 
       transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
+      font-weight: 400; /* Lighter weight applied */
   }
 
   /* --- 3. HEADER/CONTROL LAYOUT --- */
   header { 
-      display: flex; justify-content: space-between; align-items: center; 
-      padding: 6px 12px; height: 28px; box-sizing: content-box; 
-      background: var(--color-bg-medium); 
+      display: flex; justify-content: space-between; align-items: left; 
+      padding: 4px; 
+      height: 32px; box-sizing: content-box; 
+      background: var(--color-bg-dark); 
       z-index: 10; 
       position: relative;
-      border-bottom: 1px solid var(--color-border); 
+      gap: 4px;
   }
 
-  /* Shared Buttons (Minimalist, rounded, high-contrast) */
+  .controls-left { 
+      display: flex; 
+      flex-direction: row; 
+      gap: 4px; 
+      width: 100%;
+      padding-top: 0px;
+      align-items: center;
+  }
+  
+  
+  /* Shared Buttons */
   .btn-action { 
-      padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 8px; 
-      font-weight: 500; cursor: pointer; transition: 0.2s; font-size: var(--font-size-small);
-      height: 28px; line-height: 1; /* Center text vertically */
+      border: none; border-radius: 8px; 
+      font-weight: 400; 
+      cursor: pointer; transition: 0.15s; 
+      height: 32px; line-height: 1; 
       box-sizing: border-box;
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-main); 
+      white-space: nowrap; 
+      flex-shrink: 0; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: var(--shadow-inner-light), var(--shadow-drop); 
+      font-size: var(--font-size-small); 
   }
+
+  /* 3.1. CAPTURE / Dark Button */
   #btn-capture { 
-      background: var(--color-bg-light); color: var(--color-text-main); 
+      background: var(--color-bg-medium); 
+      color: var(--color-text-main); 
+      padding: 0 12px; 
   }
-  #btn-capture:hover { background: #3a3a3a; }
+  #btn-capture:hover { background: #2f2f2f; }
 
-  /* Navigation Buttons Group */
-  .nav-buttons { 
-      display: flex; gap: 4px; 
-      align-items: center;
-      margin-left: 10px;
+  /* 3.2. NAVIGATION Arrows / Dark Buttons */
+  .nav-arrows-group { 
+      display: flex; 
   }
-  .nav-buttons .btn-action {
-      background: var(--color-bg-light); 
-      color: var(--color-accent-blue);
-      width: 32px; 
-      padding: 0; 
+  .nav-arrows-group button {
+      background: var(--color-bg-medium); 
+      color: var(--color-text-main);
+      padding: 0;
+      width: 32px;
   }
-  .nav-buttons .btn-action:hover { background: #3a3a3a; }
-
-  #btn-play-all { 
-      background: var(--color-accent-orange); 
-      color: var(--color-bg-dark); 
-      width: auto; 
-      margin-left: 6px; 
-      border: none;
-      font-weight: 600;
+  #btn-play-previous {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
   }
-  #btn-play-all:hover { background: #e08f09; }
+  #btn-play-next {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+  }
+  .nav-arrows-group button:hover { background: #2f2f2f; }
   
-  /* Utility Buttons */
-  #btn-settings { 
-      background: var(--color-bg-light); 
-      color: var(--color-text-faded); 
-      width: 28px; height: 28px; padding: 0; 
-      font-size: 16px; 
-      margin-left: 10px;
-  }
-  #btn-settings:hover { background: #3a3a3a; }
-
-  #btn-hide-paths {
+  /* 3.3. PLAY ALL (Green Button) */
+  #btn-play-all { 
       background: var(--color-accent-green); 
       color: var(--color-bg-dark); 
-      margin-left: 10px; 
-      border: none;
-      font-weight: 600;
+      padding: 0 12px;
+      font-size: var(--font-size-small); 
+      box-shadow: var(--shadow-inner-lighter);
+      text-shadow: var(--shadow-outer-white);
   }
-  #btn-hide-paths:hover { background: #2ea84b; }
+  #btn-play-all:hover { background: #30b050; }
+  
+  /* NEW STOP BUTTON STYLE */
+    .btn-stop {
+        background: var(--color-accent-red) !important;
+        color: var(--color-text-main) !important;
+    }
+    .btn-stop:hover {
+        background: #c9342c !important; 
+    }
+
+  /* 3.4. HIDE PATHS (Orange Button) */
+  #btn-hide-paths {
+      background: var(--color-accent-orange); 
+      color: var(--color-bg-dark); 
+      padding: 0 12px;
+      text-shadow: var(--shadow-outer-white);
+      box-shadow: var(--shadow-inner-lighter);
+  }
+  #btn-hide-paths:hover { background: #e08f09; }
+  
+  /* 3.5. UTILITY Buttons (Toggle/Settings) */
+  .utility-buttons-group {
+      display: flex;
+      gap: 4px;
+  }
+
+  .utility-buttons-group button {
+      background: var(--color-bg-medium); 
+      color: var(--color-text-main); /* Ensure white/light text color */
+      width: 32px; height: 32px; 
+      padding: 0;
+      font-size: 16px;
+      border-radius: 8px; /* Ensure border radius */
+  }
+  .utility-buttons-group button:hover { background: #2f2f2f; color: var(--color-text-main); }
+  
+  /* Specific overrides to ensure they stay dark */
+  #btn-toggle-mode, #btn-settings {
+      background-color: var(--color-bg-medium);
+      color: var(--color-text-main);
+      width: 32px;
+      height: 32px;
+  }
+
+  .mode-vertical #btn-toggle-mode {
+      width: 100%;
+  }
+  
+  #btn-toggle-mode svg, #btn-settings svg {
+      stroke: currentColor; /* Ensure SVGs use the text color */
+  }
   
   /* --- 4. MODE-SPECIFIC STYLES --- */
-  .mode-horizontal .controls-left { display: flex; flex-direction: row; gap: 8px; align-items: center; }
-  .mode-horizontal .btn-settings { display: block; }
+  
+  /* VERTICAL (Mini/Sidebar) Mode */
   .mode-vertical header { 
-      flex-direction: column; justify-content: flex-start; height: 100%; padding: 6px 0;
+      flex-direction: column; 
+      justify-content: flex-start;
+      gap: 2px;
+      height: 100%; 
+      padding: 4px;
   }
   .mode-vertical .controls-left { 
-      display: flex; flex-direction: column; gap: 6px; width: 100%;
+      display: flex; 
+      flex-direction: column; 
+      gap: 2px; 
+      width: 100%; 
+      order: 1;
+      align-items: center;
+      transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
   }
-  .mode-vertical .btn-action { width: 85%; text-align: center; margin: 0 auto; }
-  .mode-vertical .nav-buttons { flex-direction: row; justify-content: center; width: 100%; gap: 4px; margin-left: 0; margin-bottom: 4px;}
-  .mode-vertical .nav-buttons .btn-action { width: 35%; }
-  .mode-vertical #btn-play-all { width: 85%; }
-  .mode-vertical #btn-hide-paths { display: none; } 
-  .mode-vertical .btn-settings { display: none; }
+  
+  /* Compact Button Styling for 72px width */
+  .mode-vertical .btn-action { 
+      width: 100%; 
+      font-size: var(--font-size-small);
+      padding: 0 4px;
+      height: 32px; 
+      border-radius: 8px;
+  }
+  
+  /* Navigation Arrows in Vertical Mode */
+  .mode-vertical .nav-arrows-group { 
+      flex-direction: row; 
+      justify-content: center; 
+      width: 100%; 
+      gap: 2px; 
+      margin: 0; 
+      margin-bottom: 4px; 
+  }
+  .mode-vertical .nav-arrows-group button { 
+      width: 50%; 
+      height: 32px;
+      border-radius: 8px !important;
+      font-size: 14px;
+      margin: 0;
+      border-right: none !important;
+  }
+  
+  .mode-vertical #btn-capture { order: -1; } 
+  .mode-vertical #btn-play-all { margin-right: 0; } 
+  .mode-vertical #btn-hide-paths { display: block; padding: 0 2px; width: 100%; } 
+  
+  /* Utility Group in Vertical Mode */
+  .mode-vertical .utility-buttons-group { 
+      order: 1; 
+      display: flex; 
+      justify-content: center; 
+      width: 100%;
+  }
+  .mode-vertical .utility-buttons-group button { 
+      width: 100%; 
+      height: 32px;
+      border-radius: 8px; 
+      font-size: 12px;
+  }
   
   /* --- 5. EXPANDED/SETTINGS PANEL --- */
-  #settings-panel { 
-      padding: 16px; padding-top: 10px; display: flex; flex-direction: column; gap: 16px; 
+  #expanded-panel { 
+      padding: 4px; padding-top: 2px; 
+      background: var(--color-bg-dark); 
+      overflow-y: auto; 
+      max-height: calc(100vh - 40px);
   }
+
+  /* SCENE LIST View */
+  #scene-list-view {
+      display: flex; 
+      flex-direction: column;
+      height: 100%;
+  }
+
+  .scene-item-active { 
+    border: .75px solid var(--color-accent-green) !important;
+  }
+
+  /* CONFIG View */
+  #config-view {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+  }
+
   h3 { 
-      font-size: 14px; margin: 0 0 10px 0; color: var(--color-text-main); font-weight: 500;
+      font-size: var(--font-size-base); 
+      margin: 0 0 10px 0; 
+      color: var(--color-text-faded); 
+      font-weight: 400; 
       letter-spacing: 0.05em; 
+      text-transform: uppercase;
   }
   .setting-group { margin-bottom: 10px; padding: 12px; 
       background: var(--color-bg-medium); 
-      border-radius: 10px; 
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+      border-radius: 8px; 
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
   }
-
-  /* Project Manager styles */
-  .project-manager { display: flex; flex-direction: column; gap: 10px;}
-  .project-manager input { 
-      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
-      padding: 8px; border-radius: 6px; font-size: var(--font-size-base); text-align: left;
-      font-family: var(--font-main);
-  }
-  .project-buttons { display: flex; gap: 8px; }
-  .project-buttons button { flex-grow: 1; padding: 8px; font-weight: 600; font-size: var(--font-size-small); border-radius: 6px; cursor: pointer; transition: 0.2s;}
-  #btn-save-project { background: var(--color-accent-blue); color: white; border: none; }
-  #btn-save-project:hover { background: #006ee6; }
-  #btn-load-project { background: var(--color-bg-light); color: var(--color-text-main); border: 1px solid var(--color-border); }
-  #btn-load-project:hover { background: #3a3a3a; }
-  #btn-clear-scenes { background: var(--color-accent-red); color: white; border: none; }
-  #btn-clear-scenes:hover { background: #cc3129; }
-
-  /* General Settings */
-  .size-controls { display: flex; gap: 15px; margin-bottom: 10px; }
-  .size-controls .control-group { flex-grow: 1; }
-
-  /* Checkbox style */
-  .checkbox-group { display: flex; align-items: center; margin-top: 5px; }
-  .checkbox-group input[type="checkbox"] { margin-right: 8px; transform: scale(1.1); }
   
-  /* Scene List */
+  /* --- Scene List Styling --- */
   #scene-list { 
-      list-style: none; padding: 0; margin-bottom: 20px; max-height: 280px; overflow-y: auto; overflow-x: hidden;
+      list-style: none; padding: 0; margin-bottom: 0; 
+      overflow-y: auto; 
+      overflow-x: hidden;
+      display: flex;
+      flex-flow: column;
+      gap: 2px;
   }
   .scene-item { 
-      background: var(--color-bg-light); padding: 10px 12px; margin-bottom: 10px; 
+      background: var(--color-bg-light); 
+      padding: 8px; 
       border-radius: 8px; 
-      display: flex; flex-direction: column; 
-      border: 1px solid transparent; 
-      transition: 0.2s; 
+      display: flex;
+      flex-direction: column;
+      transition: 0.6s;
+      border: solid .75px var(--color-bg-light);
+      box-shadow: var(--shadow-inner-light), var(--shadow-drop); 
   }
-  
-  /* Scene Top Row for actions and NAME INPUT */
-  .scene-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 10px; }
-  
+
+  .scene-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; }
+
   /* Scene Name Input */
   .scene-name-input { 
       background: none; 
       border: none; 
       color: var(--color-text-main); 
-      font-weight: 600; 
+      font-weight: 400; 
       font-size: var(--font-size-base); 
       padding: 2px 0;
       flex-grow: 1; 
@@ -188,171 +313,341 @@
       padding: 2px 4px;
       border-radius: 4px;
   }
-
+  
+  /* Scene Action Buttons */
   .scene-top-row .actions button { 
       background: none; border: none; color: var(--color-text-faded); 
-      font-size: 16px; cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
+      font-size: 14px; 
+      cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
   }
   .scene-top-row .actions button:hover { color: var(--color-text-main); }
-  
-  .scene-top-row .actions button[data-action="update-view"] { 
-      color: var(--color-accent-blue);
-  }
-  .scene-top-row .actions button[data-action="update-view"]:hover {
-      color: #72a9ff;
-  }
 
 
-  /* Inputs */
-  .scene-edit-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;}
+  /* Control Inputs (Duration, Delay, Easing) */
+  .scene-edit-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px;}
   .bezier-row { margin-top: 8px; display: flex; align-items: center; gap: 8px;}
+  
   label { 
       font-size: var(--font-size-small); 
       color: var(--color-text-faded); 
       text-transform: uppercase; 
-      margin-right: 4px; 
+      margin-right: 2px; 
       letter-spacing: 0.05em; 
+      font-weight: 400;
   }
   .control-group { display: flex; align-items: center; }
   
+  /* Input/Select Consistency */
   .control-group input[type="number"],
   .control-group select {
       background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
-      padding: 6px; border-radius: 6px; font-size: var(--font-size-small); 
-      text-align: right; width: 50px; appearance: none; -moz-appearance: textfield;
+      padding: 5px; 
+      height: 24px; /* Consistent height */
+      box-sizing: border-box;
+      border-radius: 6px; font-size: var(--font-size-small); 
+      text-align: right; width: 45px; appearance: none; -moz-appearance: textfield;
       font-family: var(--font-main);
+      font-weight: 400;
   }
   .control-group select {
       width: auto;
       text-align: left;
   }
   
-  #bezier-text-input {
-      flex-grow: 1; padding: 6px; 
+  .bezier-row input[type="text"] {
+      flex-grow: 1; padding: 5px; 
       background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
       border-radius: 6px; font-size: var(--font-size-small); font-family: var(--font-main); text-align: left;
+      height: 24px;
+      box-sizing: border-box;
+      font-weight: 400;
   }
   
   /* Visualize Path Button Row */
   .scene-actions-bottom { 
       display: flex; justify-content: space-between; 
-      margin-top: 12px; 
+      margin-top: 10px; 
       border-top: 1px solid var(--color-border); 
-      padding-top: 10px; 
+      padding-top: 8px; 
   }
   .btn-visualize { 
-      background: var(--color-bg-medium); 
-      color: var(--color-accent-blue);
+      background: var(--color-bg-light); 
+      color: var(--color-text-faded);
       border: 1px solid var(--color-border);
-      padding: 6px 8px;
+      padding: 4px 6px;
       font-size: var(--font-size-small);
-      font-weight: 600;
+      font-weight: 400;
       cursor: pointer;
-      border-radius: 6px;
-      transition: background 0.2s;
+      border-radius: 3px;
+      transition: background 0.3s;
   }
   .btn-visualize:hover {
       background: #333;
   }
   
   .btn-recalculate {
-      background: var(--color-accent-orange);
-      color: var(--color-bg-dark);
-      border: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-medium);
+      color: var(--color-text-main);
   }
   .btn-recalculate:hover {
       background: #e09f2d;
   }
+
+  /* Project Manager styles */
+  .project-manager input,
+  .project-buttons button {
+      font-size: var(--font-size-small); 
+      font-weight: 400;
+  }
+  .project-manager input {
+      padding: 6px;
+      height: 30px;
+      box-sizing: border-box;
+      background: var(--color-bg-light);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-main);
+      border-radius: 6px;
+      width: 100%;
+      margin-bottom: 8px;
+      font-family: var(--font-main);
+  }
+  .project-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+  }
+  .project-buttons button {
+      background: var(--color-bg-dark);
+      color: var(--color-text-main);
+      border: 1px solid var(--color-border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-grow: 1;
+      font-family: var(--font-main);
+  }
+  .project-buttons button:hover {
+      background: #282828;
+  }
+
+  /* General Settings */
+  .size-controls {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+  }
+  .control-group input[type="number"] {
+      width: 60px;
+      text-align: left;
+      padding: 5px 8px;
+  }
+  #plugin-mode-select {
+      width: 100%;
+      text-align: left;
+      padding: 5px 8px;
+      height: 30px;
+  }
+
+  #arc-enabled-checkbox + label {
+      font-size: var(--font-size-base); 
+      color: var(--color-text-main); 
+      text-transform: none;
+      margin: 0;
+  }
+
 </style>
 </head>
 <body class="mode-horizontal">
 
 <header>
     <div class="controls-left">
-        <button id="btn-capture" class="btn-action">Capture Scene</button>
+        <button id="btn-capture" class="btn-action">Capture</button>
         
-        <div class="nav-buttons">
-            <button id="btn-play-previous" class="btn-action" title="Animate to Previous Scene">◀</button>
-            <button id="btn-play-next" class="btn-action" title="Animate to Next Scene">▶</button>
-            <button id="btn-play-all" class="btn-action">Play All</button>
+        <div class="nav-arrows-group">
+            <button id="btn-play-previous" class="btn-action" title="Animate to Previous Scene">
+                <svg width="5" height="9" viewBox="0 0 5 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g filter="url(#filter0_d_2264_5655)">
+                    <path d="M3.875 7.375L0.375 3.875L3.875 0.375" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                    </g>
+                    <defs>
+                    <filter id="filter0_d_2264_5655" x="0" y="0" width="4.25" height="8.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="0.5"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5655"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5655" result="shape"/>
+                    </filter>
+                    </defs>
+                    </svg>
+            </button>
+            <button id="btn-play-next" class="btn-action" title="Animate to Next Scene">
+                <svg width="5" height="9" viewBox="0 0 5 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g filter="url(#filter0_d_2264_5658)">
+                    <path d="M0.375 7.375L3.875 3.875L0.375 0.375" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                    </g>
+                    <defs>
+                    <filter id="filter0_d_2264_5658" x="0" y="0" width="4.25" height="8.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="0.5"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5658"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5658" result="shape"/>
+                    </filter>
+                    </defs>
+                    </svg>
+            </button>
         </div>
+        
+        <button id="btn-play-all" class="btn-action">Play</button>
         
         <button id="btn-hide-paths" class="btn-action" title="Hide all path visualizations in Figma">Hide Paths</button>
     </div>
     
-    <button id="btn-settings" class="btn-action">⚙️</button>
+        <button id="btn-toggle-mode" class="btn-action" title="Toggle Plugin Mode">
+            <span id="mode-icon-span"></span>
+        </button>
+        <button id="btn-settings" class="btn-action" title="Settings/Scene List">
+            <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#filter0_d_2264_5571_static)">
+                <path d="M6.675 6.164L3.875 1.313M6.675 8.586L3.875 13.437M7.375 14.375V12.975M7.375 12.975C10.4678 12.975 12.975 10.4678 12.975 7.375C12.975 4.28221 10.4678 1.775 7.375 1.775M7.375 12.975C4.28221 12.975 1.775 10.4678 1.775 7.375M7.375 0.375V1.775M7.375 1.775C4.28221 1.775 1.775 4.28221 1.775 7.375M8.775 7.375H14.375M8.775 7.375C8.775 8.1482 8.1482 8.775 7.375 8.775C6.6018 8.775 5.975 8.1482 5.975 7.375C5.975 6.6018 6.6018 5.975 7.375 5.975C8.1482 5.975 8.775 6.6018 8.775 7.375ZM10.875 13.437L10.175 12.226M10.875 1.313L10.175 2.524M0.375 7.375H1.775M13.437 10.875L12.226 10.175M13.437 3.875L12.226 4.575M1.313 10.875L2.524 10.175M1.313 3.875L2.524 4.575" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <defs>
+                <filter id="filter0_d_2264_5571_static" x="0" y="0" width="14.75" height="15.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                <feOffset dy="0.5"/>
+                <feComposite in2="hardAlpha" operator="out"/>
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5571"/>
+                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5571" result="shape"/>
+                </filter>
+                </defs>
+            </svg>
+        </button>
+    </div>
 </header>
 
-<div id="settings-panel" style="display: none;">
-    <div class="setting-group">
-        <h3>Project Manager</h3>
-        <div class="project-manager">
-            <input type="text" id="project-name-input" value="Default Project" placeholder="Enter Project Name">
-            <div class="project-buttons">
-                <button id="btn-save-project">Save Project</button>
-                <button id="btn-load-project">Load Project</button>
-                <button id="btn-clear-scenes">Clear All Scenes</button>
-            </div>
-        </div>
-    </div>
+<div style="display: none;">
+    <!-- Icon for Minify (Collapse) - Used in Horizontal Mode -->
+    <svg id="icon-minify" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#filter0_d_2264_5581_min)">
+        <path d="M6.79167 4.45833L10.875 0.375M6.79167 4.45833H10.2917M6.79167 4.45833V0.958333M0.375 10.875L4.45833 6.79167M4.45833 6.79167H0.958333M4.45833 6.79167V10.2917" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+        </g>
+        <defs>
+        <filter id="filter0_d_2264_5581_min" x="0" y="0" width="11.25" height="11.75" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="0.5"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5581_min"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5581_min" result="shape"/>
+        </filter>
+        </defs>
+    </svg>
+    
+    <!-- Icon for Expand - Used in Vertical Mode -->
+    <svg id="icon-expand" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.75 8.75L12.25 12.25M12.25 12.25V9.33333M12.25 12.25H9.33333M8.75 5.25L12.25 1.75M12.25 1.75V4.66667M12.25 1.75H9.33333M1.75 9.33333V12.25M1.75 12.25H4.66667M1.75 12.25L5.25 8.75M1.75 4.66667V1.75M1.75 1.75H4.66667M1.75 1.75L5.25 5.25" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
 
-    <div class="setting-group">
-        <h3>General Settings</h3>
-        
-        <div class="control-group" style="margin-bottom: 10px;">
-            <label for="plugin-mode-select">Plugin Mode</label>
-            <select id="plugin-mode-select">
-                <option value="horizontal">Wide/Horizontal (Screen Recording)</option>
-                <option value="vertical">Mini/Vertical (Sidebar)</option>
-            </select>
-        </div>
-
-        <div class="size-controls">
-            <div class="control-group">
-                <label>Wide Width</label>
-                <input type="number" id="default-width-input" min="300" max="1000" value="400">
-            </div>
-            <div class="control-group">
-                <label>Wide Height</label>
-                <input type="number" id="default-height-input" min="300" max="1000" value="400">
-            </div>
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="arc-enabled-checkbox">
-            <label for="arc-enabled-checkbox" style="font-size: var(--font-size-base); color: var(--color-text-main);">Enable Arc Path (Curved Camera Move)</label>
+    
+    <svg id="icon-settings" width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#filter0_d_2264_5571_clone)">
+        <path d="M6.675 6.164L3.875 1.313M6.675 8.586L3.875 13.437M7.375 14.375V12.975M7.375 12.975C10.4678 12.975 12.975 10.4678 12.975 7.375C12.975 4.28221 10.4678 1.775 7.375 1.775M7.375 12.975C4.28221 12.975 1.775 10.4678 1.775 7.375M7.375 0.375V1.775M7.375 1.775C4.28221 1.775 1.775 4.28221 1.775 7.375M8.775 7.375H14.375M8.775 7.375C8.775 8.1482 8.1482 8.775 7.375 8.775C6.6018 8.775 5.975 8.1482 5.975 7.375C5.975 6.6018 6.6018 5.975 7.375 5.975C8.1482 5.975 8.775 6.6018 8.775 7.375ZM10.875 13.437L10.175 12.226M10.875 1.313L10.175 2.524M0.375 7.375H1.775M13.437 10.875L12.226 10.175M13.437 3.875L12.226 4.575M1.313 10.875L2.524 10.175M1.313 3.875L2.524 4.575" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+        </g>
+        <defs>
+        <filter id="filter0_d_2264_5571_clone" x="0" y="0" width="14.75" height="15.25" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+        <feOffset dy="0.5"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5571"/>
+        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5571" result="shape"/>
+        </filter>
+        </defs>
+    </svg>
+</div>
+<div id="expanded-panel" style="display: none;">
+    
+    <div id="scene-list-view">
+        <div class="setting-group" style="margin-bottom: 0; padding: 12px 12px 2px 12px;">
+             <h3>Scene List</h3>
+            <div id="scene-list"></div>
         </div>
     </div>
     
-    <div class="setting-group">
-        <h3>Scene List</h3>
-        <ul id="scene-list"></ul>
+    <div id="config-view">
+        <div class="setting-group">
+            <h3>Project Manager</h3>
+            <div class="project-manager">
+                <input type="text" id="project-name-input" value="Default Project" placeholder="Enter Project Name">
+                <div class="project-buttons">
+                    <button id="btn-save-project">Save Project</button>
+                    <button id="btn-load-project">Load Project</button>
+                    <button id="btn-clear-scenes">Clear All Scenes</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="setting-group">
+            <h3>General Settings</h3>
+            
+            <div class="control-group" style="margin-bottom: 10px;">
+                <label for="plugin-mode-select" style="margin-right: 12px;">Plugin Mode</label>
+                <select id="plugin-mode-select">
+                    <option value="horizontal">Wide/Horizontal (Screen Recording)</option>
+                    <option value="vertical">Mini/Vertical (Sidebar)</option>
+                </select>
+            </div>
+
+            <div class="size-controls">
+                <div class="control-group">
+                    <label>Wide Width</label>
+                    <input type="number" id="default-width-input" min="335" max="1000" value="335">
+                </div>
+                <div class="control-group">
+                    <label>Wide Height</label>
+                    <input type="number" id="default-height-input" min="300" max="1000" value="400">
+                </div>
+            </div>
+
+            <div class="checkbox-group" style="margin-top: 10px;">
+                <input type="checkbox" id="arc-enabled-checkbox">
+                <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
+            </div>
+        </div>
     </div>
+
 </div>
 
 <script>
   let scenes = [];
   let currentSceneIndex = 0; 
   let pluginMode = 'horizontal'; 
-  let isExpanded = false;
+  let currentView = 'collapsed'; // Initial state should be 'collapsed'
+  let is_playing = false; // Flag to track if the "Play All" sequence is running
+  let animation_frame_id = null; // Holds the requestAnimationFrame ID for cancellation
+// ----------------------------------
   
-  let defaultWideWidth = 400;
-  let defaultWideHeight = 400;
+  let defaultWideWidth = 335;
+  let defaultWideHeight = 400; 
   let isArcEnabled = true;
 
-  // New State for View Update (Re-introduced)
-  let sceneToUpdateIndex = -1; 
-  
-  // Project Management State
   let currentProjectName = 'motionDirectorDefaultProject';
   const DEFAULT_PROJECT_KEY = 'motionDirectorDefaultProject';
 
-  // --- DIMENSIONS & CONSTANTS ---
   const HORIZONTAL_MIN_HEIGHT = 40; 
-  const VERTICAL_MINI_WIDTH = 40;
-  const VERTICAL_MINI_HEIGHT = 200;
+  const VERTICAL_MINI_WIDTH = 72; 
+  const VERTICAL_MINI_HEIGHT = 182; 
   
-  // Bezier constants
   const NEWTON_ITERATIONS = 4;
   const NEWTON_MIN_TOLERANCE = 0.001;
   const MID_ARC_FACTOR = 0.05; 
@@ -378,17 +673,6 @@
       if (t === 0 || t === 1) return t;
       return CalcBezier(y1, y2, GetTForX(t, x1, x2));
   }
-  
-  // Quadratic Bezier for Path Interpolation (X/Y Coordinates) - Used by the path drawing
-  function quadraticBezierPath(t, p0, p1, p2) {
-    const oneMinusT = 1 - t;
-    return (
-        oneMinusT * oneMinusT * p0 + // (1-t)^2 * P0
-        2 * oneMinusT * t * p1 +     // 2 * (1-t) * t * P1
-        t * t * p2                   // t^2 * P2
-    );
-  }
-
   function getEasing(t, easing, bezierPoints) {
     if (easing === 'custom' && bezierPoints && bezierPoints.length === 4) {
         const [x1, y1, x2, y2] = bezierPoints;
@@ -406,6 +690,13 @@
     }
   }
 
+  function quadraticBezier(t, p0, p1, p2) {
+      const oneMinusT = 1 - t;
+      return oneMinusT * oneMinusT * p0 + 2 * oneMinusT * t * p1 + t * t * p2;
+  }
+
+  const MAX_ARC_OFFSET = 2000;
+
   function calculateArcControlPoint(start, end) {
       const dx = end.x - start.x;
       const dy = end.y - start.y;
@@ -416,7 +707,12 @@
       const my = (start.y + end.y) / 2;
       const nx = -dy;
       const ny = dx;
-      const scale = (distance * MID_ARC_FACTOR) / distance;
+      const normLength = Math.sqrt(nx * nx + ny * ny);
+      
+      const calculatedOffset = distance * MID_ARC_FACTOR;
+      const clampedOffset = Math.min(calculatedOffset, MAX_ARC_OFFSET);
+      const scale = clampedOffset / normLength;
+
       const xc = mx + nx * scale;
       const yc = my + ny * scale;
 
@@ -432,7 +728,8 @@
           pluginMode: pluginMode,
           defaultWideWidth: defaultWideWidth,
           defaultWideHeight: defaultWideHeight,
-          isArcEnabled: isArcEnabled
+          isArcEnabled: isArcEnabled,
+          currentView: currentView // Save the current logical view state
       };
       parent.postMessage({ pluginMessage: { type: 'set-project', name: currentProjectName, data: dataToSave } }, '*');
   }
@@ -459,24 +756,40 @@
                   }
               });
           }
-          defaultWideWidth = data.defaultWideWidth || 400;
+          defaultWideWidth = data.defaultWideWidth || 335;
           defaultWideHeight = data.defaultWideHeight || 400;
           isArcEnabled = data.isArcEnabled !== undefined ? data.isArcEnabled : true;
           
           const modeToLoad = data.pluginMode || 'horizontal'; 
-          setMode(modeToLoad, false);
           
           document.getElementById('default-width-input').value = defaultWideWidth;
           document.getElementById('default-height-input').value = defaultWideHeight;
           document.getElementById('arc-enabled-checkbox').checked = isArcEnabled;
-
+          document.getElementById('plugin-mode-select').value = modeToLoad; 
+          
+          // Set the mode which handles the initial sizing
+          setMode(modeToLoad, false); 
+          
+          // NEW: Auto-expand logic (Targeted requirement)
+          if (modeToLoad === 'horizontal') {
+              if (scenes.length > 0) {
+                  // If scenes exist, open to the scene list view
+                  setPluginView('scenes', false); 
+              } else {
+                  // If no scenes, ensure it starts collapsed
+                  setPluginView('collapsed', false); 
+              }
+          }
+          // Note: Vertical mode is always handled as 'scenes' via setMode
+          
           renderList();
       } else {
           scenes = [];
-          defaultWideWidth = 400;
+          defaultWideWidth = 335;
           defaultWideHeight = 400;
           isArcEnabled = true;
           setMode('horizontal', false); 
+          setPluginView('collapsed', false); // Start collapsed if no data
           renderList();
       }
   }
@@ -502,6 +815,7 @@
       currentSceneIndex = 0; 
       renderList();
       saveProject();
+      setPluginView('collapsed', true); // Collapse after clearing scenes
     }
   };
 
@@ -509,12 +823,13 @@
   // --- General Settings Handlers ---
   
   document.getElementById('default-width-input').onchange = (e) => {
-      const newWidth = parseInt(e.target.value) || 400;
-      defaultWideWidth = Math.max(300, Math.min(1000, newWidth));
+      const newWidth = parseInt(e.target.value) || 335;
+      defaultWideWidth = Math.max(335, Math.min(1000, newWidth));
       e.target.value = defaultWideWidth;
       saveProject(); 
-      if (isExpanded) {
-          setPluginSize(defaultWideWidth, defaultWideHeight);
+      if (pluginMode === 'horizontal') {
+           const height = (currentView === 'collapsed') ? HORIZONTAL_MIN_HEIGHT : defaultWideHeight;
+           setPluginSize(defaultWideWidth, height);
       }
   };
 
@@ -523,7 +838,7 @@
       defaultWideHeight = Math.max(300, Math.min(1000, newHeight));
       e.target.value = defaultWideHeight;
       saveProject(); 
-      if (isExpanded) {
+      if (pluginMode === 'horizontal' && currentView !== 'collapsed') {
           setPluginSize(defaultWideWidth, defaultWideHeight);
       }
   };
@@ -549,48 +864,43 @@
       scenes[index][prop] = value;
       saveProject(); 
   }
-  
-  // **FIXED:** The per-scene play button now animates between stored scenes (S_i to S_i+1)
-  function handlePlayScene(index) {
-    if (scenes.length < 2 || index === scenes.length - 1) {
-        alert("Cannot play. Need at least two scenes, and the transition starts from the current scene's index.");
-        return;
-    }
-    
-    // Animate the path segment from startScene to endScene
-    const startScene = scenes[index];
-    const endScene = scenes[index + 1];
-    
-    // The custom control point is stored on the START scene of the transition
-    const controlPoint = startScene.customControlPoint;
 
-    animate(
-        startScene.view, 
-        endScene.view, 
-        endScene.duration, 
-        endScene.easing, 
-        endScene.delay, 
-        endScene.bezier, 
-        controlPoint
-    );
-    currentSceneIndex = index + 1; // Mark the end of the transition as the current scene
+  function handleUpdateSceneView(index) {
+      // Send a request to capture the current view, but tag it with the index we want to update
+      parent.postMessage({ pluginMessage: { type: 'capture-scene', updateIndex: index } }, '*');
   }
+  
+  function handlePlayScene(index) {
+    if (is_playing) return; 
+    
+    if (scenes.length < 2) return;
+    
+    // Target scene is the one being played TO
+    const targetScene = scenes[index]; 
+    
+    // Path settings are defined on the scene BEFORE the target scene in the sequence.
+    const pathSettingsIndex = (index === 0) ? scenes.length - 1 : index - 1; 
+    
+    parent.postMessage({ pluginMessage: { type: 'capture-scene', targetScene: targetScene, pathSettingsIndex: pathSettingsIndex } }, '*');
+    
+    currentSceneIndex = index; // Set current index to the scene we just animated TO
+    renderList(); // Refresh the list to apply the active class
+}
   
   function handleDeleteScene(index) {
-      scenes.splice(index, 1);
-      currentSceneIndex = 0; 
-      renderList();
-      saveProject(); 
-  }
-  
-  function handleUpdateView(index) {
-      sceneToUpdateIndex = index;
-      parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
+      if (confirm(`Are you sure you want to delete scene "${scenes[index].name}"?`)) {
+          scenes.splice(index, 1);
+          currentSceneIndex = Math.max(0, scenes.length - 1);
+          renderList();
+          saveProject(); 
+          if (scenes.length === 0 && pluginMode === 'horizontal') {
+              setPluginView('collapsed', true);
+          }
+      }
   }
 
-
-  // --- 4. UI AND MODE CONTROL ---
-  let targetView = null; // No longer used for single plays, only for Capture Scene logic
+  // --- 4. UI AND MODE CONTROL (FIXED/UPDATED) ---
+  let targetViewPayload = null; 
 
   function setPluginSize(width, height) {
       document.body.style.width = `${width}px`;
@@ -598,19 +908,39 @@
       parent.postMessage({ pluginMessage: { type: 'resize', width, height } }, '*');
   }
 
+  /**
+   * Toggles between Horizontal (Wide) and Vertical (Mini) Mode.
+   */
   function setMode(mode, shouldSave = true) { 
       pluginMode = mode;
       document.body.className = `mode-${mode}`;
       
+      const settingsButton = document.getElementById('btn-settings');
+      const modeIconSpan = document.getElementById('mode-icon-span');
+      
       if (mode === 'horizontal') {
-          isExpanded = false;
-          document.getElementById('settings-panel').style.display = 'none';
-          setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT); 
+          settingsButton.style.display = 'flex';
+          // Horizontal Mode -> Show "Minimize" icon (to allow switching to Vertical)
+          modeIconSpan.innerHTML = document.getElementById('icon-minify').outerHTML;
+
+          // Explicitly set size based on the logical view state
+          if (currentView === 'collapsed') {
+             setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT);
+             document.getElementById('expanded-panel').style.display = 'none';
+          } else {
+             setPluginSize(defaultWideWidth, defaultWideHeight);
+             document.getElementById('expanded-panel').style.display = 'flex';
+          }
       } else if (mode === 'vertical') {
-          isExpanded = false;
-          document.getElementById('settings-panel').style.display = 'none';
+          document.getElementById('expanded-panel').style.display = 'none'; // Vertical mode does not use the expanded panel
+          settingsButton.style.display = 'none'; 
+          currentView = 'scenes'; // Vertical mode is logically always focused on scenes
           setPluginSize(VERTICAL_MINI_WIDTH, VERTICAL_MINI_HEIGHT);
+          
+          // Vertical Mode -> Show "Expand" icon (to allow switching to Horizontal)
+          modeIconSpan.innerHTML = document.getElementById('icon-expand').outerHTML;
       }
+      
       document.getElementById('plugin-mode-select').value = mode;
 
       if (shouldSave) {
@@ -618,23 +948,85 @@
       }
   }
 
-  document.getElementById('btn-settings').onclick = () => {
-    isExpanded = !isExpanded;
-    const settingsPanel = document.getElementById('settings-panel');
-    settingsPanel.style.display = isExpanded ? 'flex' : 'none';
+  /**
+   * Toggles between the Scene List View, Configuration View, or Collapsed state
+   * and updates the plugin size and button icon. (UPDATED for icon change)
+   */
+  function setPluginView(viewName, shouldSave = true) {
+      currentView = viewName;
+      const expandedPanel = document.getElementById('expanded-panel');
+      const sceneView = document.getElementById('scene-list-view');
+      const configView = document.getElementById('config-view');
+      const settingsButton = document.getElementById('btn-settings');
+      const settingsIconSpan = document.getElementById('settings-icon');
 
-    if (pluginMode === 'horizontal') {
-        const width = defaultWideWidth;
-        const height = isExpanded ? defaultWideHeight : HORIZONTAL_MIN_HEIGHT; 
-        setPluginSize(width, height);
-    } 
+      // 1. Logic for Collapsed State
+      if (viewName === 'collapsed') {
+          expandedPanel.style.display = 'none';
+          settingsButton.style.color = 'var(--color-text-faded)'; 
+
+          if (pluginMode === 'horizontal') {
+              setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT); // Reset to collapsed size
+          }
+          
+      } else {
+          // 2. Logic for Expanded States ('scenes' or 'config')
+          expandedPanel.style.display = 'flex'; 
+          
+          if (viewName === 'config') {
+              sceneView.style.display = 'none';
+              configView.style.display = 'flex';
+              settingsButton.style.color = 'var(--color-accent-blue)'; 
+              
+          } else { // 'scenes' view
+              sceneView.style.display = 'flex';
+              configView.style.display = 'none';
+              settingsButton.style.color = 'var(--color-text-faded)'; 
+          }
+          
+          if (pluginMode === 'horizontal') {
+              setPluginSize(defaultWideWidth, defaultWideHeight); // Ensure expanded size
+          }
+      }
+
+      if (shouldSave) {
+          saveProject();
+      }
+  }
+
+  
+  /**
+   * Toggles the Expanded/Collapsed state (Horizontal Mode) or the View (Scene/Config).
+   */
+  document.getElementById('btn-settings').onclick = () => {
+    if (pluginMode === 'vertical') return; // Settings button is hidden in vertical mode
+
+    if (currentView === 'collapsed') {
+        setPluginView('scenes'); // Collapsed -> Scenes
+    } else if (currentView === 'scenes') {
+        setPluginView('config'); // Scenes -> Config
+    } else { // currentView === 'config'
+        setPluginView('collapsed'); // Config -> Collapsed
+    }
   };
+  
+  /**
+   * Toggles between Horizontal (Wide) and Vertical (Mini) Mode.
+   */
+  document.getElementById('btn-toggle-mode').onclick = () => {
+    const newMode = pluginMode === 'horizontal' ? 'vertical' : 'horizontal';
+    setMode(newMode);
+  };
+
 
   document.getElementById('plugin-mode-select').onchange = (e) => {
       setMode(e.target.value);
   };
 
   window.onload = () => {
+      // Need to set the initial icon state before fetching data 
+      // as fetching data is async and will call setPluginView
+      // document.getElementById('settings-icon').innerHTML = document.getElementById('icon-expand').outerHTML; // REMOVED
       loadProject("Default Project");
   }
 
@@ -677,7 +1069,25 @@
         return;
     }
 
+    // Include sceneIndex in pathData for unique naming
+    data.sceneIndex = sceneIndex;
     parent.postMessage({ pluginMessage: { type: 'draw-path', pathData: data } }, '*');
+  }
+
+  function handleHidePath(sceneIndex) {
+    parent.postMessage({ pluginMessage: { type: 'hide-path', sceneIndex: sceneIndex } }, '*');
+  }
+
+  function handleResetPath(sceneIndex) {
+    if (sceneIndex === scenes.length - 1 || scenes.length < 2) return;
+    
+    // Clear the custom control point, forcing recalculation to default
+    scenes[sceneIndex].customControlPoint = null;
+    saveProject();
+    
+    // Redraw the path with default control point
+    handleVisualizePath(sceneIndex);
+    renderList();
   }
 
   function handleRecalculatePath(sceneIndex) {
@@ -688,26 +1098,42 @@
 
   // --- 5. RENDER LIST ---
 
-  function renderList() {
+function renderList() {
     const list = document.getElementById('scene-list');
     list.innerHTML = '';
     
+    const fragment = document.createDocumentFragment(); 
+    
+    // Icons provided by user (converted to use currentColor)
+    const iconRefresh = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.375 5.625C0.375 4.23261 0.928123 2.89726 1.91269 1.91269C2.89726 0.928123 4.23261 0.375 5.625 0.375C7.09269 0.380521 8.50144 0.953214 9.55667 1.97333L10.875 3.29167M10.875 3.29167V0.375M10.875 3.29167H7.95833M10.875 5.625C10.875 7.01739 10.3219 8.35274 9.33731 9.33731C8.35274 10.3219 7.01739 10.875 5.625 10.875C4.15731 10.8695 2.74857 10.2968 1.69333 9.27667L0.375 7.95833M0.375 7.95833H3.29167M0.375 7.95833V10.875" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    
+    const iconPlay = `<svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.375 1.54201C0.374939 1.33673 0.429043 1.13507 0.531849 0.95739C0.634655 0.779709 0.782522 0.632298 0.960521 0.530044C1.13852 0.427789 1.34035 0.37431 1.54563 0.375007C1.75091 0.375704 1.95237 0.430552 2.12967 0.534013L9.12792 4.61618C9.30453 4.71866 9.45115 4.8657 9.55313 5.0426C9.65511 5.2195 9.70888 5.42007 9.70905 5.62426C9.70923 5.82845 9.65581 6.02911 9.55414 6.20619C9.45247 6.38327 9.3061 6.53056 9.12967 6.63335L2.12967 10.7167C1.95237 10.8201 1.75091 10.875 1.54563 10.8757C1.34035 10.8764 1.13852 10.8229 0.960521 10.7206C0.782522 10.6184 0.634655 10.471 0.531849 10.2933C0.429043 10.1156 0.374939 9.91396 0.375 9.70868V1.54201Z" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    
+    const iconTrash = `<svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.70833 2.70833V10.875C9.70833 11.1844 9.58542 11.4812 9.36662 11.7C9.14783 11.9188 8.85109 12.0417 8.54167 12.0417H2.70833C2.39891 12.0417 2.10217 11.9188 1.88338 11.7C1.66458 11.4812 1.54167 11.1844 1.54167 10.875V2.70833M0.375 2.70833H10.875M3.29167 2.70833V1.54167C3.29167 1.23225 3.41458 0.935501 3.63338 0.716709C3.85217 0.497916 4.14891 0.375 4.45833 0.375H6.79167C7.10109 0.375 7.39783 0.497916 7.61662 0.716709C7.83542 0.935501 7.95833 1.23225 7.95833 1.54167V2.70833" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
     scenes.forEach((scene, index) => {
       
       const li = document.createElement('div');
-      li.className = 'scene-item';
       
-      const hasCustomPath = !!scene.customControlPoint; 
+      const isActive = index === currentSceneIndex ? ' scene-item-active' : '';
+      li.className = 'scene-item' + isActive;
+      
+      // Path settings are on the scene BEFORE the target. For the last scene, 
+      // the path is from the last scene back to the first, so we use the LAST scene's settings.
+      const pathSettingsIndex = index;
+      const isLastScene = index === scenes.length - 1;
+
+      const hasCustomPath = isLastScene || !!scenes[pathSettingsIndex].customControlPoint; 
       const visualizeBtnClass = hasCustomPath ? 'btn-visualize btn-recalculate' : 'btn-visualize';
-      const visualizeBtnText = hasCustomPath ? 'Redraw (Custom Path)' : 'Visualize Path';
+      const visualizeBtnText = hasCustomPath ? 'Redraw Path' : 'Visualize Path';
       
       li.innerHTML = `
         <div class="scene-top-row">
             <input type="text" class="scene-name-input" data-prop="name" id="name-${index}" value="${scene.name}">
             <div class="actions">
-                <button title="Update scene view to current Figma viewport" data-action="update-view" data-index="${index}">🔄</button>
-                <button title="Play this scene" data-action="play" data-index="${index}">▶</button>
-                <button title="Delete scene" data-action="delete" data-index="${index}">✕</button>
+                <button title="Update scene with current view" data-action="update" data-index="${index}">${iconRefresh}</button>
+                <button title="Play this scene" data-action="play" data-index="${index}">${iconPlay}</button>
+                <button title="Delete scene" data-action="delete" data-index="${index}">${iconTrash}</button>
             </div>
         </div>
         
@@ -734,40 +1160,58 @@
         <div class="scene-actions-bottom" id="path-visualizer-${index}">
             <button class="${visualizeBtnClass}" data-action="visualize" data-index="${index}">${visualizeBtnText}</button>
             <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Recalculate path based on the moved Control Point marker.">
-                Update Control Point
+                Update Path
+            </button>
+            <button class="btn-visualize" data-action="reset-path" data-index="${index}" title="Reset path to default curve.">
+                Reset Path
+            </button>
+            <button class="btn-visualize" data-action="hide-path" data-index="${index}" title="Hide this path visualization.">
+                Hide Path
             </button>
         </div>
       `;
       
-      list.appendChild(li);
-
-      document.getElementById(`easing-${index}`).value = scene.easing;
-      const bezierRow = document.getElementById(`bezier-row-${index}`);
-      bezierRow.style.display = scene.easing === 'custom' ? 'flex' : 'none';
+      // Use li.querySelector instead of document.getElementById for detached element
+      const easingSelect = li.querySelector(`#easing-${index}`);
+      if (easingSelect) {
+          easingSelect.value = scene.easing;
+      }
       
-      // Hide the path actions for the very last scene (since it doesn't transition to anything)
-      if (index === scenes.length - 1) {
+      const bezierRow = li.querySelector(`#bezier-row-${index}`);
+      if (bezierRow) {
+          bezierRow.style.display = scene.easing === 'custom' ? 'flex' : 'none';
+      }
+      
+      // The last scene doesn't have a transition *from* it, so hide its path controls
+      if (isLastScene) {
         li.querySelector('.scene-actions-bottom').style.display = 'none';
       }
 
-      // Attach event listeners for all buttons
+      // Attach event listeners to the detached element (li)
       li.querySelectorAll('.actions button').forEach(button => {
           const index = parseInt(button.dataset.index);
           if (button.dataset.action === 'play') {
               button.onclick = () => handlePlayScene(index);
           } else if (button.dataset.action === 'delete') {
               button.onclick = () => handleDeleteScene(index);
-          } else if (button.dataset.action === 'update-view') {
-              button.onclick = () => handleUpdateView(index); 
+          } else if (button.dataset.action === 'update') {
+              button.onclick = () => handleUpdateSceneView(index);
           }
       });
       
+      // Note: The path to scene N is determined by the settings in scene N-1 (or scene N-last for the loop).
+      // The path settings are stored on the scene *before* the transition.
+      // So, visualize/recalculate should use its own index to find the path data from this scene to the next.
       li.querySelectorAll('.scene-actions-bottom button').forEach(button => {
-          const index = parseInt(button.dataset.index);
+          const pathIndex = parseInt(button.dataset.index); // Index of the scene whose path settings we're viewing
           if (button.dataset.action === 'visualize') {
-              button.onclick = () => handleVisualizePath(index);
+              button.onclick = () => handleVisualizePath(pathIndex);
           } else if (button.dataset.action === 'recalculate') {
-              button.onclick = () => handleRecalculatePath(index); 
+              button.onclick = () => handleRecalculatePath(pathIndex); 
+          } else if (button.dataset.action === 'reset-path') {
+              button.onclick = () => handleResetPath(pathIndex);
+          } else if (button.dataset.action === 'hide-path') {
+              button.onclick = () => handleHidePath(pathIndex);
           }
       });
 
@@ -789,57 +1233,69 @@
               handleUpdateScene(index, prop, value);
 
               if (prop === 'easing') {
-                  bezierRow.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+                  // Ensure the correct bezierRow is targeted
+                  const currentBezierRow = li.querySelector(`#bezier-row-${index}`);
+                  if (currentBezierRow) {
+                      currentBezierRow.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+                  }
               }
           };
       });
+      
+      // Append the item to the fragment
+      fragment.appendChild(li); 
     });
+    
+    // Append the fragment to the live DOM in one go
+    list.appendChild(fragment);
   }
 
 
-  // --- 6. GLOBAL BUTTONS & ANIMATION ENGINE ---
+  // --- 6. GLOBAL BUTTONS & ANIMATION ENGINE (FIXED LOGIC) ---
   
   document.getElementById('btn-capture').onclick = () => {
-    sceneToUpdateIndex = -1; // New scene capture
     parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
   };
   
-  // **FIXED:** Navigation buttons now animate between stored scenes (S_i to S_i+1 or S_i-1 to S_i)
   function handlePlayNavigation(direction) {
+    if (is_playing) return; 
+
     if (scenes.length < 2) {
         alert("Need at least two scenes for playback.");
         return;
     }
 
+    // 1. Determine the target index (the scene we animate TO)
     let nextIndex = currentSceneIndex + direction;
-    let startIndex = currentSceneIndex;
 
-    // Handle boundary conditions (No looping for single play)
-    if (nextIndex < 0 || nextIndex >= scenes.length) {
-        alert("End of scene list reached.");
-        return;
+    if (nextIndex < 0) {
+        nextIndex = scenes.length - 1; 
+    } else if (nextIndex >= scenes.length) {
+        nextIndex = 0;
     }
-
-    // Determine the start/end scenes for the transition
-    const startScene = scenes[Math.min(startIndex, nextIndex)];
-    const endScene = scenes[Math.max(startIndex, nextIndex)];
     
-    // The custom control point is stored on the scene that STARTS the transition.
-    const controlPoint = startScene.customControlPoint;
-
-    // Use the *end scene's* animation parameters (duration, easing, delay)
-    animate(
-        startScene.view, 
-        endScene.view, 
-        endScene.duration, 
-        endScene.easing, 
-        endScene.delay, 
-        endScene.bezier, 
-        controlPoint
-    );
+    // 2. Determine the path settings index (the scene we animate FROM)
+    let pathSettingsIndex;
+    // Check for wrap-around case first
+    if ((currentSceneIndex === 0 && nextIndex === scenes.length - 1) || 
+        (currentSceneIndex === scenes.length - 1 && nextIndex === 0)) {
+        pathSettingsIndex = scenes.length - 1;
+    } else {
+        pathSettingsIndex = Math.min(currentSceneIndex, nextIndex);
+    } 
     
+    // 3. Set the payload and send message to capture current view (start point)
+    targetViewPayload = {
+        targetScene: scenes[nextIndex],
+        pathSettingsIndex: pathSettingsIndex
+    };
+    
+    parent.postMessage({ pluginMessage: { type: 'capture-scene', ...targetViewPayload } }, '*');
+    
+    // 4. Update the tracker for the next click AND refresh the list
     currentSceneIndex = nextIndex;
-  }
+    renderList(); // Refresh the list to apply the active class
+}
   
   document.getElementById('btn-play-previous').onclick = () => {
     handlePlayNavigation(-1); 
@@ -849,111 +1305,169 @@
     handlePlayNavigation(1);
   };
 
-  // **FIXED:** Play All logic animates directly between stored scenes (S_i to S_i+1)
-  document.getElementById('btn-play-all').onclick = async () => {
-      if (scenes.length < 2) return;
-      document.getElementById('btn-play-all').disabled = true;
-      document.getElementById('btn-play-all').textContent = 'Playing...';
 
-      // Step 0: Animate from current view to Scene 0
-      const currentView = await new Promise(resolve => {
-          window.onmessage = (event) => {
-              const msg = event.data.pluginMessage;
-              if (msg && msg.type === 'scene-captured') {
-                  resolve(msg.view);
-                  window.onmessage = messageHandler; 
-              }
-          };
-          parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*');
-      });
-      
-      // Animate from Current View (V_current) to Scene 0 (S0), using default arc
-      const S0 = scenes[0];
-      await animate(currentView, S0.view, S0.duration, S0.easing, S0.delay, S0.bezier, null);
-      currentSceneIndex = 0; 
+// Helper function to reset the button and state
+function resetPlayButton() {
+    is_playing = false;
+    const playButton = document.getElementById('btn-play-all');
+    playButton.textContent = 'Play';
+    playButton.classList.remove('btn-stop');
+    
+    // Cancel any pending animation frame
+    if (animation_frame_id) {
+        cancelAnimationFrame(animation_frame_id);
+    }
+}
 
-      // Step 1 to N: Animate between stored scenes (S_i to S_i+1)
-      for (let i = 0; i < scenes.length - 1; i++) {
-          const startScene = scenes[i];
-          const endScene = scenes[i + 1];
-          
-          // Pass the custom control point stored on the START scene of the transition
-          const controlPoint = startScene.customControlPoint;
+// Function to handle the Stop action
+function stopPlayback() {
+    resetPlayButton();
+}
 
-          await animate(
-              startScene.view, 
-              endScene.view,   
-              endScene.duration, 
-              endScene.easing, 
-              endScene.delay, 
-              endScene.bezier, 
-              controlPoint
-          );
-          currentSceneIndex = i + 1;
-      }
+async function startPlayback() {
+    if (scenes.length < 2) {
+        alert("Need at least two scenes for playback.");
+        return;
+    }
+    
+    // 1. Set Playing State and UI
+    is_playing = true;
+    const playButton = document.getElementById('btn-play-all');
+    playButton.textContent = 'Stop';
+    playButton.classList.add('btn-stop');
+    
+    for (let i = 0; i < scenes.length; i++) {
+        // Stop check inside the loop, handles early exit between scene transitions
+        if (!is_playing) break; 
+        
+        const target = scenes[i];
+        // The path settings are taken from the scene we just animated FROM. 
+        // When going to scene i, the path settings used are from the previous scene (i-1).
+        // For the first scene (i=0), the path settings should be from the last scene in the list (loop).
+        const pathSettingsIndex = (i === 0) ? scenes.length - 1 : i - 1; 
+        const pathScene = scenes[pathSettingsIndex];
+        
+        // STEP 1: Capture the starting point
+        const currentView = await new Promise(resolve => {
+            // Temporarily replace the global handler to capture the immediate response
+            const tempHandler = (event) => {
+                const msg = event.data.pluginMessage;
+                if (msg && msg.type === 'scene-captured' && !msg.targetScene) {
+                    window.onmessage = messageHandler; // Restore the global handler
+                    resolve(msg.view);
+                }
+            };
+            window.onmessage = tempHandler; 
+            parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*'); 
+        });
+        
+        if (currentView) {
+            const customControlPoint = pathScene ? pathScene.customControlPoint : null;
+            const duration = pathScene.duration;
+            const easing = pathScene.easing;
+            const delay = pathScene.delay;
+            const bezier = pathScene.bezier;
 
-      document.getElementById('btn-play-all').disabled = false;
-      document.getElementById('btn-play-all').textContent = 'Play All';
-  };
+            // Wait for animation + delay to complete
+            await animate(currentView, target.view, duration, easing, delay, bezier, customControlPoint, true);
+        }
+        
+        // Stop check after animation/delay promise resolves
+        if (!is_playing) break; 
+        
+        currentSceneIndex = i; 
+        renderList(); // Update active state during playback
+    }
+    
+    // 3. Final Reset (only if the loop finished or was broken)
+    if (is_playing) {
+        currentSceneIndex = 0; 
+        renderList(); // Final list render to highlight Scene 1
+    }
+
+    resetPlayButton(); // Reset button appearance and state
+}
+
+// The new combined button handler
+document.getElementById('btn-play-all').onclick = () => {
+    if (is_playing) {
+        stopPlayback();
+    } else {
+        startPlayback();
+    }
+};
   
-  // **MODIFIED:** Removed single-play logic from message handler as it's now handled by direct animate calls.
   const messageHandler = (event) => {
     const msg = event.data.pluginMessage;
     
     if (msg.type === 'scene-captured') {
-        if (sceneToUpdateIndex !== -1) {
-            // Case 1: Updating an existing scene view
-            const I = sceneToUpdateIndex;
-            scenes[I].view = msg.view;
+      if (msg.targetScene) {
+        // This is a Play/Navigation event, msg contains the start view and the target details
+        const startView = msg.view;
+        const targetView = msg.targetScene;
+        const pathSettingsIndex = msg.pathSettingsIndex;
+        
+        const pathScene = scenes[pathSettingsIndex];
+        
+        const customControlPoint = pathScene ? pathScene.customControlPoint : null;
+        const duration = pathScene.duration;
+        const easing = pathScene.easing;
+        const delay = pathScene.delay;
+        const bezier = pathScene.bezier;
+        
+        let activeControlPoint = customControlPoint;
 
-            scenes[I].customControlPoint = null; 
-            if (I > 0) {
-                scenes[I - 1].customControlPoint = null; 
-            }
-            
-            alert(`Scene ${I + 1} view updated! Path segments are being recalculated.`); 
-            
-            sceneToUpdateIndex = -1; 
-            
-            if (isArcEnabled) {
-                if (I < scenes.length - 1) {
-                    handleVisualizePath(I);
-                }
-                if (I > 0) {
-                    handleVisualizePath(I - 1);
-                }
-            }
-            
-            renderList();
-            saveProject();
-
-        } else if (targetView) {
-            // Case 2: Playing an animation (This case is now only for 'Play All' initial step)
-            // It should no longer be hit by single plays (Play, Next, Previous).
-            const startView = msg.view;
-            
-            // NOTE: The 'Play All' initial step sets targetView and expects to animate V_current -> S0. 
-            // We pass null for control point to force default arc or linear.
-            animate(startView, targetView.view, targetView.duration, targetView.easing, targetView.delay, targetView.bezier, null);
-            targetView = null;
-            
-        } else {
-            // Case 3: Capturing a brand new scene
-            const newScene = {
-              id: Date.now(),
-              name: `Scene ${scenes.length + 1}`,
-              view: msg.view,
-              duration: 2000, 
-              easing: 'smooth',  
-              delay: 500,
-              bezier: "0.24, 0.61, 0.48, 1.0",
-              customControlPoint: null 
-            };
-            scenes.push(newScene);
-            renderList();
-            currentSceneIndex = scenes.length - 1; 
-            saveProject(); 
+        // Ensure default control point respects segment direction
+        if (!activeControlPoint && isArcEnabled && pathScene) {
+             const segmentStartIndex = pathSettingsIndex;
+             const segmentEndIndex = (pathSettingsIndex + 1) % scenes.length;
+             
+             // We need to find the scenes corresponding to these indices to get their views
+             const segStart = scenes[segmentStartIndex].view;
+             const segEnd = scenes[segmentEndIndex].view;
+             
+             const defaultControl = calculateArcControlPoint(segStart, segEnd);
+             activeControlPoint = { x: defaultControl.xc, y: defaultControl.yc };
         }
+        
+        animate(startView, targetView.view, duration, easing, delay, bezier, activeControlPoint);
+        targetViewPayload = null;
+        
+      } else if (msg.updateIndex !== undefined) {
+          // This is an Update Scene event
+          const index = msg.updateIndex;
+          if (scenes[index]) {
+              scenes[index].view = msg.view;
+              saveProject();
+              // Optional: Visual feedback?
+              // renderList(); // Not strictly necessary if we just updated data, but good to ensure consistency
+              // Maybe flash the item?
+              const item = document.getElementById(`name-${index}`).closest('.scene-item');
+              if (item) {
+                  item.style.backgroundColor = '#30b050'; // Flash green
+                  setTimeout(() => {
+                      item.style.backgroundColor = ''; // Revert to CSS default (or remove inline style)
+                  }, 300);
+              }
+          }
+      } else {
+        // This is a Capture Scene event (no targetScene in the message)
+        const newScene = {
+          id: Date.now(),
+          name: `Scene ${scenes.length + 1}`,
+          view: msg.view,
+          duration: 2000, 
+          easing: 'smooth',  
+          delay: 500,
+          bezier: "0.24, 0.61, 0.48, 1.0",
+          customControlPoint: null 
+        };
+        scenes.push(newScene);
+        renderList();
+        currentSceneIndex = scenes.length - 1; 
+        saveProject(); 
+        setPluginView('scenes', true); // Ensure expanded view after adding the first scene
+      }
     } else if (msg.type === 'load-data') {
         initializeData(msg.data, msg.projectName);
     } else if (msg.type === 'control-point-updated') {
@@ -972,7 +1486,7 @@
   };
   window.onmessage = messageHandler;
 
-  function animate(start, end, duration, easing, delay, bezierString, customControlPoint) {
+function animate(start, end, duration, easing, delay, bezierString, customControlPoint, checkStop = false) {
     return new Promise(resolve => {
       const startTime = Date.now();
       
@@ -982,7 +1496,6 @@
       
       let control = null;
       if (isArcEnabled) {
-          // If a custom control point is provided, use it. Otherwise, calculate the default arc.
           if (customControlPoint) {
               control = { xc: customControlPoint.x, yc: customControlPoint.y };
           } else {
@@ -991,6 +1504,11 @@
       }
 
       function loop() {
+        if (checkStop && !is_playing && animation_frame_id) {
+            cancelAnimationFrame(animation_frame_id);
+            return resolve(true);
+        }
+
         const now = Date.now();
         const rawProgress = Math.min((now - startTime) / duration, 1);
         
@@ -1002,13 +1520,14 @@
 
         if (isArcEnabled && control) { 
             const t = easedProgress;
-            
-            // Quadratic Bezier Interpolation (using one control point)
             const oneMinusT = 1 - t;
-            currentX = quadraticBezierPath(t, start.x, control.xc, end.x);
-            currentY = quadraticBezierPath(t, start.y, control.yc, end.y);
             
+            // Quadratic Bezier Interpolation using EASED progress
+            currentX = oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.xc + t * t * end.x;
+            currentY = oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.yc + t * t * end.y;
+
         } else {
+            // Linear interpolation using easedProgress
             currentX = start.x + (end.x - start.x) * easedProgress;
             currentY = start.y + (end.y - start.y) * easedProgress;
         }
@@ -1016,13 +1535,16 @@
         parent.postMessage({ pluginMessage: { type: 'update-viewport', x: currentX, y: currentY, zoom: currentZoom } }, '*');
 
         if (rawProgress < 1) {
-          requestAnimationFrame(loop);
+          animation_frame_id = requestAnimationFrame(loop); // Store ID
         } else {
+          // Animation finished, use setTimeout to handle the delay
           setTimeout(resolve, delay);
         }
       }
-      loop();
+      
+      // Start the loop and store the initial frame ID
+      animation_frame_id = requestAnimationFrame(loop); 
     });
-  }
+}
 </script>
 </html>

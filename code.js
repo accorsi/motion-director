@@ -6,30 +6,6 @@ const CONTROL_POINT_COLOR = { r: 1, g: 0.6, b: 0 }; // Orange
 const CONTROL_POINT_SIZE = 12;
 const CONTROL_POINT_NAME = "MotionDirector_CP_Marker";
 const PATH_LINE_NAME = "MotionDirector_Path_Line";
-const INITIAL_WIDTH = 400; 
-const HEADER_HEIGHT = 40; 
-
-// --- CORE MATH FUNCTIONS (Same as UI) ---
-
-function calculateArcControlPoint(start, end) {
-    const MID_ARC_FACTOR = 0.05; 
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    if (distance < 100) return { xc: (start.x + end.x) / 2, yc: (start.y + end.y) / 2 };
-
-    const mx = (start.x + end.x) / 2;
-    const my = (start.y + end.y) / 2;
-    const nx = -dy; 
-    const ny = dx;  
-    
-    const scale = (distance * MID_ARC_FACTOR) / distance;
-    const xc = mx + nx * scale;
-    const yc = my + ny * scale;
-
-    return { xc, yc };
-}
 
 // --- PERSISTENCE HELPERS ---
 
@@ -44,19 +20,35 @@ function setStoredData(key, data) {
 
 // --- PATH VISUALIZATION LOGIC ---
 
-function clearExistingPaths() {
-    const paths = figma.currentPage.findAll(node => 
-        (node.name === PATH_LINE_NAME || node.name === CONTROL_POINT_NAME) && node.type === 'VECTOR'
-    );
-    for (const path of paths) {
-        path.remove();
+function clearExistingPaths(sceneIndex = null) {
+    if (sceneIndex !== null) {
+        // Clear specific path
+        const pathLineName = `${PATH_LINE_NAME}_${sceneIndex}`;
+        const cpMarkerName = `${CONTROL_POINT_NAME}_${sceneIndex}`;
+        const paths = figma.currentPage.findAll(node => 
+            (node.name === pathLineName || node.name === cpMarkerName) && node.type === 'VECTOR'
+        );
+        for (const path of paths) {
+            path.remove();
+        }
+    } else {
+        // Clear all paths
+        const paths = figma.currentPage.findAll(node => 
+            (node.name.startsWith(PATH_LINE_NAME) || node.name.startsWith(CONTROL_POINT_NAME)) && node.type === 'VECTOR'
+        );
+        for (const path of paths) {
+            path.remove();
+        }
     }
 }
 
 function drawPath(pathData) {
-    clearExistingPaths();
-
-    const { start, end, control, isArcEnabled } = pathData;
+    const { start, end, control, isArcEnabled, isCustom, sceneIndex } = pathData;
+    
+    // Clear only this scene's path if sceneIndex provided
+    if (sceneIndex !== undefined) {
+        clearExistingPaths(sceneIndex);
+    }
 
     // 1. Determine the path definition (SVG Path D)
     let pathD = "";
@@ -74,7 +66,7 @@ function drawPath(pathData) {
         windingRule: "EVENODD",
         data: pathD
     }];
-    pathLine.name = PATH_LINE_NAME;
+    pathLine.name = sceneIndex !== undefined ? `${PATH_LINE_NAME}_${sceneIndex}` : PATH_LINE_NAME;
     pathLine.locked = true;
     pathLine.fills = [];
     pathLine.strokes = [{ 
@@ -83,21 +75,15 @@ function drawPath(pathData) {
     }];
     pathLine.strokeWeight = PATH_STROKE_WEIGHT;
     pathLine.opacity = PATH_OPACITY;
-    pathLine.visible = true; // Ensure visibility
     pathLine.setRelaunchData({ edit: 'Move the Control Point to adjust the camera path curvature.' });
-    
-    // *** FIX: Must append the node to the page to make it visible ***
-    figma.currentPage.appendChild(pathLine);
-
-
-    let cpMarker = null;
 
     // 3. Create the Control Point Marker (only if arc is enabled)
     if (isArcEnabled) {
-        cpMarker = figma.createVector();
+        const cpMarker = figma.createVector();
         
+        // **FIXED MARKER CREATION:** Create a small cross centered at (0,0) in its local space, 
+        // then move the whole vector node to the desired control point (control.x, control.y).
         const HALF_SIZE = CONTROL_POINT_SIZE / 2;
-        // Simple cross shape path
         const markerPathD = `M ${-HALF_SIZE} 0 L ${HALF_SIZE} 0 M 0 ${-HALF_SIZE} L 0 ${HALF_SIZE}`;
         
         cpMarker.vectorPaths = [{
@@ -105,7 +91,8 @@ function drawPath(pathData) {
             data: markerPathD
         }];
         
-        cpMarker.name = CONTROL_POINT_NAME;
+        cpMarker.name = sceneIndex !== undefined ? `${CONTROL_POINT_NAME}_${sceneIndex}` : CONTROL_POINT_NAME;
+        // CRITICAL: Set X and Y to the control point coordinates
         cpMarker.x = control.x; 
         cpMarker.y = control.y;
         
@@ -117,28 +104,26 @@ function drawPath(pathData) {
         cpMarker.strokeWeight = 3;
         cpMarker.opacity = 1.0;
         cpMarker.locked = false; 
-        cpMarker.visible = true; // Ensure visibility
         cpMarker.setRelaunchData({ edit: 'Move this marker to customize the arc path.' });
-        
-        // *** FIX: Must append the node to the page to make it visible ***
-        figma.currentPage.appendChild(cpMarker);
     }
 
     const nodesToSelect = [pathLine];
-    if (cpMarker) nodesToSelect.push(cpMarker);
+    const marker = figma.currentPage.findOne(node => node.name === CONTROL_POINT_NAME);
+    if (marker) nodesToSelect.push(marker);
     
     if (nodesToSelect.length > 0) {
         figma.currentPage.selection = nodesToSelect;
-        // Optional Fix: Zoom and scroll to the path to ensure the user can see it immediately.
-        figma.viewport.scrollAndZoomIntoView(nodesToSelect);
     }
 }
 
 /** Retrieves the current position of the manually moved Control Point marker. */
-function getCustomControlPoint() {
-    const cpMarker = figma.currentPage.findOne(node => node.name === CONTROL_POINT_NAME && node.type === 'VECTOR');
+function getCustomControlPoint(sceneIndex = null) {
+    const cpName = sceneIndex !== null ? `${CONTROL_POINT_NAME}_${sceneIndex}` : CONTROL_POINT_NAME;
+    const cpMarker = figma.currentPage.findOne(node => node.name === cpName && node.type === 'VECTOR');
     
     if (cpMarker) {
+        // Since we set cpMarker.x/y to the control point in drawPath, 
+        // the new custom control point is simply the marker's new x/y location after being dragged.
         return {
             x: cpMarker.x,
             y: cpMarker.y,
@@ -155,15 +140,20 @@ figma.ui.onmessage = async (msg) => {
     
     if (msg.type === 'capture-scene') {
         const view = figma.viewport.center;
-        figma.ui.postMessage({ type: 'scene-captured', view: { x: view.x, y: view.y, zoom: figma.viewport.zoom } });
+        
+        // Include targetScene and pathSettingsIndex in the response if they were sent in the request
+        figma.ui.postMessage({ 
+            type: 'scene-captured', 
+            view: { x: view.x, y: view.y, zoom: figma.viewport.zoom },
+            targetScene: msg.targetScene,
+            pathSettingsIndex: msg.pathSettingsIndex,
+            updateIndex: msg.updateIndex
+        });
     }
 
     if (msg.type === 'update-viewport') {
-        const safeZoom = Math.min(Math.max(msg.zoom, 0.1), 100); 
-
-        // Using direct assignment for performance in the animation loop
         figma.viewport.center = { x: msg.x, y: msg.y };
-        figma.viewport.zoom = safeZoom;
+        figma.viewport.zoom = msg.zoom;
     }
     
     // --- PLUGIN UI MANAGEMENT ---
@@ -197,8 +187,12 @@ figma.ui.onmessage = async (msg) => {
         clearExistingPaths();
     }
     
+    if (msg.type === 'hide-path') {
+        clearExistingPaths(msg.sceneIndex);
+    }
+    
     if (msg.type === 'get-control-point') {
-        const customPoint = getCustomControlPoint();
+        const customPoint = getCustomControlPoint(msg.sceneIndex);
         
         // Send the found point back to the UI for storage
         figma.ui.postMessage({ 
@@ -211,4 +205,4 @@ figma.ui.onmessage = async (msg) => {
 
 
 // Initialize plugin size and load default project on launch
-figma.showUI(__html__, { width: INITIAL_WIDTH, height: HEADER_HEIGHT });
+figma.showUI(__html__, { width: 354, height: 40 });
