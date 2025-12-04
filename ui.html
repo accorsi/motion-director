@@ -1279,6 +1279,10 @@
       // Need to set the initial icon state before fetching data 
       // as fetching data is async and will call setPluginView
       // document.getElementById('settings-icon').innerHTML = document.getElementById('icon-expand').outerHTML; // REMOVED
+      
+      // Start with expanded panel showing scene list
+      setPluginView('scenes');
+      
       loadProject("Default Project");
   }
 
@@ -1664,15 +1668,14 @@ function renderList() {
   }
 
   // Toggle path visualization and controls
+  // Toggle path visualization and controls
   function handleTogglePath(index) {
-      const pathControls = document.getElementById(`path-controls-${index}`);
       const scene = scenes[index];
       const isVisible = scene.pathControlsVisible || false;
       
       if (isVisible) {
           // Hide path and controls
           handleHidePath(index);
-          pathControls.style.display = 'none';
           scene.pathControlsVisible = false;
       } else {
           // Check if we have at least 2 scenes before showing path
@@ -1682,11 +1685,10 @@ function renderList() {
           }
           // Show path and controls
           handleVisualizePath(index);
-          pathControls.style.display = 'flex';
           scene.pathControlsVisible = true;
       }
       saveProject();
-      renderList(); // Re-render to update the icon
+      renderList(); // Re-render to update the buttons and icon
   }
 
 
