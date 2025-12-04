@@ -7,25 +7,48 @@
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
-    --color-bg-dark: #121212; 
-    --color-bg-medium: #1C1C1C; 
-    --color-bg-light: #2C2C2C; 
-    --color-text-main: #E0E0E0; 
-    --color-text-faded: #888888; 
+    --color-bg-darker: hsl(160, 6%, 5%);
+    --color-bg-dark: hsl(160, 6%, 9%);
+    --color-bg-medium: hsl(160, 4%, 14%);
+    --color-bg-regular: hsl(160, 4%, 18%);
+    --color-bg-light: hsl(160, 4%, 22%); 
+    --color-text-main: hsl(160, 6%, 91%); 
+    --color-text-faded: hsla(168, 5%, 81%, 0.617); 
     --color-accent-blue: #007AFF; 
-    --color-accent-orange: #FF9F0A; 
+    --color-accent-orange: hsl(42, 100%, 52%);
+    --color-accent-orange-hover: hsl(42, 100%, 62%); 
     --color-accent-red: #FF3B30; 
-    --color-accent-green: #34C759; 
-    --color-border: #00000000; 
+    --color-accent-green: #12d067;
+    --color-accent-green-hover: #0aef71;
+    --color-accent-green-faded: #0aef7170;
+    --color-border: #00000000;
 
     --font-main: 'Geist Mono', monospace; 
     --font-size-base: 10px; 
     --font-size-small: 9px;
+    --font-size-tiny: 8px;
 
     --shadow-inner-light: inset 0 .75px 0px rgba(255, 255, 255, 0.1);
     --shadow-inner-lighter: inset 0 .75px 0px rgba(255, 255, 255, 0.35);
     --shadow-outer-white: 0 -.75px rgba(255,255,255,.6);
     --shadow-drop: 0 .75px 0px rgba(0, 0, 0, 0.5); 
+    --shadow-inner-dark: inset 0 .75px 0px rgba(0, 0, 0, 0.5);
+    --shadow-drop-big: 0 1px 0px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.125), 0 8px 16px rgba(0, 0, 0, 0.0625);
+    --shadow-inner-active: inset 0 0 0px .75px var(--color-accent-green-hover);
+
+    --radius-small: 2px;
+    --radius-medium: 4px;
+    --radius-large: 8px;
+
+    --spacing-xxs: 2px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-base: 16px;
+    --spacing-md: 24px;
+    --spacing-lg: 32px;
+    --spacing-xl: 48px;
+    --spacing-xxl: 64px;
+
   }
 
   /* --- 2. CORE BAR STYLES --- */
@@ -33,10 +56,12 @@
       font-family: var(--font-main); 
       font-size: var(--font-size-base);
       padding: 0; margin: 0; 
-      background: var(--color-bg-dark); 
+      background-color: var(--color-bg-dark); 
+      background-image: url('pattern-bg.png');
+      background-repeat: repeat;
       color: var(--color-text-main); 
       overflow: hidden; 
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
+      transition: width 0.5s ease-out, height 0.5s ease-out; 
       font-weight: 400; /* Lighter weight applied */
   }
 
@@ -49,6 +74,7 @@
       z-index: 10; 
       position: relative;
       gap: 4px;
+      transition: width 0.5s ease-out, height 0.5s ease-out; 
   }
 
   .controls-left { 
@@ -58,12 +84,13 @@
       width: 100%;
       padding-top: 0px;
       align-items: center;
+      transition: position 0.25s ease-out, width 0.25s ease-out; 
   }
   
   
   /* Shared Buttons */
   .btn-action { 
-      border: none; border-radius: 8px; 
+      border: none; border-radius: var(--radius-large); 
       font-weight: 400; 
       cursor: pointer; transition: 0.15s; 
       height: 32px; line-height: 1; 
@@ -76,6 +103,11 @@
       letter-spacing: 0.05em;
       box-shadow: var(--shadow-inner-light), var(--shadow-drop); 
       font-size: var(--font-size-small); 
+  }
+  
+  /* Global Button Font Fix */
+  button {
+      font-family: var(--font-main);
   }
 
   /* 3.1. CAPTURE / Dark Button */
@@ -114,8 +146,9 @@
       font-size: var(--font-size-small); 
       box-shadow: var(--shadow-inner-lighter);
       text-shadow: var(--shadow-outer-white);
+      transition: 0.15s;
   }
-  #btn-play-all:hover { background: #30b050; }
+  #btn-play-all:hover { background: var(--color-accent-green-hover); }
   
   /* NEW STOP BUTTON STYLE */
     .btn-stop {
@@ -128,13 +161,13 @@
 
   /* 3.4. HIDE PATHS (Orange Button) */
   #btn-hide-paths {
-      background: var(--color-accent-orange); 
-      color: var(--color-bg-dark); 
+      background: var(--color-bg-medium); 
+      color: var(--color-text-main); 
       padding: 0 12px;
       text-shadow: var(--shadow-outer-white);
-      box-shadow: var(--shadow-inner-lighter);
+      box-shadow: var(--shadow-inner-light);
   }
-  #btn-hide-paths:hover { background: #e08f09; }
+  #btn-hide-paths:hover { background: var(--color-accent-orange-hover); }
   
   /* 3.5. UTILITY Buttons (Toggle/Settings) */
   .utility-buttons-group {
@@ -148,7 +181,7 @@
       width: 32px; height: 32px; 
       padding: 0;
       font-size: 16px;
-      border-radius: 8px; /* Ensure border radius */
+      border-radius: var(--radius-large); /* Ensure border radius */
   }
   .utility-buttons-group button:hover { background: #2f2f2f; color: var(--color-text-main); }
   
@@ -158,6 +191,7 @@
       color: var(--color-text-main);
       width: 32px;
       height: 32px;
+      &:hover { background: #2f2f2f; color: var(--color-text-main); }
   }
 
   .mode-vertical #btn-toggle-mode {
@@ -167,6 +201,15 @@
   #btn-toggle-mode svg, #btn-settings svg {
       stroke: currentColor; /* Ensure SVGs use the text color */
   }
+
+  #btn-clear-scenes {
+      background: var(--color-accent-red); 
+      color: var(--color-text-main); 
+      padding: 0 12px;
+      text-shadow: var(--shadow-outer-white);
+      box-shadow: var(--shadow-inner-lighter);
+  }
+  #btn-clear-scenes:hover { background: var(--color-accent-red-hover); }
   
   /* --- 4. MODE-SPECIFIC STYLES --- */
   
@@ -183,7 +226,6 @@
       flex-direction: column; 
       gap: 2px; 
       width: 100%; 
-      order: 1;
       align-items: center;
       transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
   }
@@ -209,7 +251,7 @@
   .mode-vertical .nav-arrows-group button { 
       width: 50%; 
       height: 32px;
-      border-radius: 8px !important;
+      border-radius: var(--radius-large) !important;
       font-size: 14px;
       margin: 0;
       border-right: none !important;
@@ -229,16 +271,19 @@
   .mode-vertical .utility-buttons-group button { 
       width: 100%; 
       height: 32px;
-      border-radius: 8px; 
-      font-size: 12px;
+      border-radius: var(--radius-large); 
+      font-size: 8px;
   }
   
   /* --- 5. EXPANDED/SETTINGS PANEL --- */
   #expanded-panel { 
-      padding: 4px; padding-top: 2px; 
+      padding: 0 4px 4px 4px; 
       background: var(--color-bg-dark); 
-      overflow-y: auto; 
-      max-height: calc(100vh - 40px);
+      overflow-y: hidden; 
+      height: calc(100% - 40px);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
   }
 
   /* SCENE LIST View */
@@ -246,10 +291,18 @@
       display: flex; 
       flex-direction: column;
       height: 100%;
+      flex: 1;
+      overflow: hidden;
   }
 
-  .scene-item-active { 
-    border: .75px solid var(--color-accent-green) !important;
+  #scene-list-view .setting-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0;
+      overflow: hidden;
+      padding: 0 !important; /* Override inline style */
+      background: var(--color-bg-dark);
   }
 
   /* CONFIG View */
@@ -269,31 +322,44 @@
   }
   .setting-group { margin-bottom: 10px; padding: 12px; 
       background: var(--color-bg-medium); 
-      border-radius: 8px; 
+      border-radius: var(--radius-large); 
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
   }
   
   /* --- Scene List Styling --- */
   #scene-list { 
-      list-style: none; padding: 0; margin-bottom: 0; 
+      list-style: none;
       overflow-y: auto; 
       overflow-x: hidden;
       display: flex;
       flex-flow: column;
-      gap: 2px;
+      gap: 1px;
+      flex: 1;
   }
   .scene-item { 
-      background: var(--color-bg-light); 
+      background: var(--color-bg-medium); 
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_35_807)'%3E%3Crect x='60' y='2' width='1' height='60' transform='rotate(90 60 2)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='5' width='1' height='60' transform='rotate(90 60 5)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='8' width='1' height='60' transform='rotate(90 60 8)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='11' width='1' height='60' transform='rotate(90 60 11)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='14' width='1' height='60' transform='rotate(90 60 14)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='17' width='1' height='60' transform='rotate(90 60 17)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='20' width='1' height='60' transform='rotate(90 60 20)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='23' width='1' height='60' transform='rotate(90 60 23)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='26' width='1' height='60' transform='rotate(90 60 26)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='29' width='1' height='60' transform='rotate(90 60 29)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='32' width='1' height='60' transform='rotate(90 60 32)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='35' width='1' height='60' transform='rotate(90 60 35)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='38' width='1' height='60' transform='rotate(90 60 38)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='41' width='1' height='60' transform='rotate(90 60 41)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='44' width='1' height='60' transform='rotate(90 60 44)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='47' width='1' height='60' transform='rotate(90 60 47)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='50' width='1' height='60' transform='rotate(90 60 50)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='53' width='1' height='60' transform='rotate(90 60 53)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='56' width='1' height='60' transform='rotate(90 60 56)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='59' width='1' height='60' transform='rotate(90 60 59)' fill='white' fill-opacity='0.02'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_35_807'%3E%3Crect width='60' height='60' fill='white' transform='matrix(4.37114e-08 1 1 -4.37114e-08 0 2.62268e-06)'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+      background-size: 60px 60px;
+      background-repeat: repeat;
       padding: 8px; 
-      border-radius: 8px; 
+      border-radius: var(--radius-large); 
       display: flex;
       flex-direction: column;
       transition: 0.6s;
-      border: solid .75px var(--color-bg-light);
+      border: solid .75px var(--color-bg-dark);
       box-shadow: var(--shadow-inner-light), var(--shadow-drop); 
   }
 
-  .scene-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 8px; }
+  .scene-item-active {
+    background: var(--color-bg-darker); 
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_35_807)'%3E%3Crect x='60' y='2' width='1' height='60' transform='rotate(90 60 2)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='5' width='1' height='60' transform='rotate(90 60 5)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='8' width='1' height='60' transform='rotate(90 60 8)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='11' width='1' height='60' transform='rotate(90 60 11)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='14' width='1' height='60' transform='rotate(90 60 14)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='17' width='1' height='60' transform='rotate(90 60 17)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='20' width='1' height='60' transform='rotate(90 60 20)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='23' width='1' height='60' transform='rotate(90 60 23)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='26' width='1' height='60' transform='rotate(90 60 26)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='29' width='1' height='60' transform='rotate(90 60 29)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='32' width='1' height='60' transform='rotate(90 60 32)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='35' width='1' height='60' transform='rotate(90 60 35)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='38' width='1' height='60' transform='rotate(90 60 38)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='41' width='1' height='60' transform='rotate(90 60 41)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='44' width='1' height='60' transform='rotate(90 60 44)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='47' width='1' height='60' transform='rotate(90 60 47)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='50' width='1' height='60' transform='rotate(90 60 50)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='53' width='1' height='60' transform='rotate(90 60 53)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='56' width='1' height='60' transform='rotate(90 60 56)' fill='white' fill-opacity='0.02'/%3E%3Crect x='60' y='59' width='1' height='60' transform='rotate(90 60 59)' fill='white' fill-opacity='0.02'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_35_807'%3E%3Crect width='60' height='60' fill='white' transform='matrix(4.37114e-08 1 1 -4.37114e-08 0 2.62268e-06)'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+    background-size: 60px 60px;
+    background-repeat: repeat;
+    box-shadow: inset 0 -.5px 0 .5px #00000080, inset 0 .25px 0 .75px #ffffff40, var(--shadow-drop-big), var(--shadow-inner-dark), var(--shadow-inner-active);
+    z-index: 10;
+  }
+
+  .scene-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 2px; }
 
   /* Scene Name Input */
   .scene-name-input { 
@@ -309,31 +375,58 @@
   }
   .scene-name-input:focus {
       outline: none;
-      background: #4A4A4A; 
+      background: var(--color-bg-dark); 
       padding: 2px 4px;
-      border-radius: 4px;
+      border-radius: var(--radius-small);
   }
   
   /* Scene Action Buttons */
   .scene-top-row .actions button { 
       background: none; border: none; color: var(--color-text-faded); 
-      font-size: 14px; 
+      font-size: var(--font-size-tiny); 
       cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
   }
   .scene-top-row .actions button:hover { color: var(--color-text-main); }
 
+  /* Path Toggle Wrapper with Popup */
+  .path-toggle-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+  }
+  
+  .path-controls-popup {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 4px;
+    margin-left: 0;
+    z-index: 10;
+  }
+  
+  .path-controls-popup .btn-visualize {
+      font-size: var(--font-size-tiny);
+      padding: 2px 4px;
+      margin: 0;
+      text-transform: uppercase;
+      white-space: nowrap;
+  }
+
 
   /* Control Inputs (Duration, Delay, Easing) */
-  .scene-edit-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px;}
-  .bezier-row { margin-top: 8px; display: flex; align-items: center; gap: 8px;}
+  .scene-edit-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; justify-content: space-between;}
+  .bezier-row { margin-top: var(--spacing-sm); display: flex; align-items: center; justify-content: space-between;}
   
   label { 
-      font-size: var(--font-size-small); 
+      font-size: var(--font-size-tiny); 
       color: var(--color-text-faded); 
       text-transform: uppercase; 
-      margin-right: 2px; 
-      letter-spacing: 0.05em; 
+      margin-right: 6px; 
+      letter-spacing: -0.01em; 
       font-weight: 400;
+      text-shadow: var(--shadow-inner-dark);
   }
   .control-group { display: flex; align-items: center; }
   
@@ -341,23 +434,53 @@
   .control-group input[type="number"],
   .control-group select {
       background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
-      padding: 5px; 
-      height: 24px; /* Consistent height */
+      padding: 4px;
+      height: 24px;
       box-sizing: border-box;
-      border-radius: 6px; font-size: var(--font-size-small); 
-      text-align: right; width: 45px; appearance: none; -moz-appearance: textfield;
+      border-radius: var(--radius-small); font-size: var(--font-size-tiny); 
+      text-align: right; appearance: none; -moz-appearance: textfield;
       font-family: var(--font-main);
       font-weight: 400;
   }
   .control-group select {
       width: auto;
       text-align: left;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='8' height='4' viewBox='0 0 8 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0.5L4 3.5L7.5 0.5' stroke='%23888888' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 16px;
+      height: 24px;
+  }
+  
+  /* Hide Number Spinners */
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+  }
+
+  /* Drag Handle */
+  .drag-handle {
+      cursor: grab;
+      color: var(--color-text-faded);
+      display: flex;
+      align-items: center;
+      margin-right: 8px;
+  }
+  .drag-handle:active {
+      cursor: grabbing;
+  }
+  .scene-item.dragging {
+      opacity: 0.5;
+      border: .75px dashed var(--color-text-faded);
   }
   
   .bezier-row input[type="text"] {
-      flex-grow: 1; padding: 5px; 
+      flex-grow: 1; padding: 6px; 
       background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
-      border-radius: 6px; font-size: var(--font-size-small); font-family: var(--font-main); text-align: left;
+      border-radius: var(--radius-medium); font-size: var(--font-size-small); font-family: var(--font-main); text-align: left;
       height: 24px;
       box-sizing: border-box;
       font-weight: 400;
@@ -371,15 +494,15 @@
       padding-top: 8px; 
   }
   .btn-visualize { 
-      background: var(--color-bg-light); 
+      background: var(--color-bg-medium);
       color: var(--color-text-faded);
-      border: 1px solid var(--color-border);
       padding: 4px 6px;
-      font-size: var(--font-size-small);
+      font-size: var(--font-size-tiny);
       font-weight: 400;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: var(--radius-small);
       transition: background 0.3s;
+      font-family: var(--font-main);
   }
   .btn-visualize:hover {
       background: #333;
@@ -388,10 +511,10 @@
   .btn-recalculate {
       border: 1px solid var(--color-border);
       background: var(--color-bg-medium);
-      color: var(--color-text-main);
+      color: var(--color-text-faded);
   }
   .btn-recalculate:hover {
-      background: #e09f2d;
+      background: #333;
   }
 
   /* Project Manager styles */
@@ -407,7 +530,7 @@
       background: var(--color-bg-light);
       border: 1px solid var(--color-border);
       color: var(--color-text-main);
-      border-radius: 6px;
+      border-radius: var(--radius-medium);
       width: 100%;
       margin-bottom: 8px;
       font-family: var(--font-main);
@@ -421,8 +544,8 @@
       background: var(--color-bg-dark);
       color: var(--color-text-main);
       border: 1px solid var(--color-border);
-      padding: 6px 10px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-large);
       cursor: pointer;
       transition: background 0.2s;
       flex-grow: 1;
@@ -441,12 +564,12 @@
   .control-group input[type="number"] {
       width: 60px;
       text-align: left;
-      padding: 5px 8px;
+      padding: 4px 8px;
   }
   #plugin-mode-select {
       width: 100%;
       text-align: left;
-      padding: 5px 8px;
+      padding: 4px 8px;
       height: 30px;
   }
 
@@ -455,6 +578,34 @@
       color: var(--color-text-main); 
       text-transform: none;
       margin: 0;
+  }
+
+  /* Hidden elements */
+  .hidden-icons {
+      display: none;
+  }
+
+  #expanded-panel.collapsed {
+      display: none;
+  }
+
+  /* Scene list container specific overrides */
+  #scene-list-view .setting-group {
+      margin-bottom: 0;
+      padding: 12px 12px 2px 12px;
+  }
+
+  /* Config view specific styles */
+  #config-view .control-group.plugin-mode {
+      margin-bottom: 10px;
+  }
+
+  #config-view .control-group.plugin-mode label {
+      margin-right: 8px;
+  }
+
+  #config-view .checkbox-group {
+      margin-top: 10px;
   }
 
 </style>
@@ -533,7 +684,7 @@
     </div>
 </header>
 
-<div style="display: none;">
+<div class="hidden-icons">
     <!-- Icon for Minify (Collapse) - Used in Horizontal Mode -->
     <svg id="icon-minify" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_2264_5581_min)">
@@ -575,11 +726,10 @@
         </defs>
     </svg>
 </div>
-<div id="expanded-panel" style="display: none;">
+<div id="expanded-panel" class="collapsed">
     
     <div id="scene-list-view">
-        <div class="setting-group" style="margin-bottom: 0; padding: 12px 12px 2px 12px;">
-             <h3>Scene List</h3>
+        <div class="setting-group">
             <div id="scene-list"></div>
         </div>
     </div>
@@ -600,8 +750,8 @@
         <div class="setting-group">
             <h3>General Settings</h3>
             
-            <div class="control-group" style="margin-bottom: 10px;">
-                <label for="plugin-mode-select" style="margin-right: 12px;">Plugin Mode</label>
+            <div class="control-group plugin-mode">
+                <label for="plugin-mode-select">Plugin Mode</label>
                 <select id="plugin-mode-select">
                     <option value="horizontal">Wide/Horizontal (Screen Recording)</option>
                     <option value="vertical">Mini/Vertical (Sidebar)</option>
@@ -619,7 +769,7 @@
                 </div>
             </div>
 
-            <div class="checkbox-group" style="margin-top: 10px;">
+            <div class="checkbox-group">
                 <input type="checkbox" id="arc-enabled-checkbox">
                 <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
             </div>
@@ -1097,6 +1247,86 @@
   }
 
   // --- 5. RENDER LIST ---
+  
+  let draggedItemIndex = null;
+
+  function handleDragStart(e, index) {
+      draggedItemIndex = index;
+      e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+  }
+
+  function handleDrop(e, index) {
+      e.preventDefault();
+      if (draggedItemIndex === null || draggedItemIndex === index) return;
+
+      // Reorder array
+      const itemToMove = scenes[draggedItemIndex];
+      scenes.splice(draggedItemIndex, 1);
+      scenes.splice(index, 0, itemToMove);
+      
+      // Update current index if needed
+      if (currentSceneIndex === draggedItemIndex) {
+          currentSceneIndex = index;
+      } else if (currentSceneIndex > draggedItemIndex && currentSceneIndex <= index) {
+          currentSceneIndex--;
+      } else if (currentSceneIndex < draggedItemIndex && currentSceneIndex >= index) {
+          currentSceneIndex++;
+      }
+
+      draggedItemIndex = null;
+      renderList();
+      saveProject();
+  }
+
+  function handleDragEnd(e) {
+      e.target.classList.remove('dragging');
+      draggedItemIndex = null;
+  }
+
+  // ========================================
+  // ICON CONSTANTS (Global Scope)
+  // ========================================
+  
+  const iconEye = `<svg width="10" height="11" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.375 8.875C3.375 9.70343 2.70343 10.375 1.875 10.375C1.04657 10.375 0.375 9.70343 0.375 8.875C0.375 8.04657 1.04657 7.375 1.875 7.375C2.70343 7.375 3.375 8.04657 3.375 8.875ZM3.375 8.875H7.625C8.08913 8.875 8.53425 8.69063 8.86244 8.36244C9.19063 8.03425 9.375 7.58913 9.375 7.125C9.375 6.66087 9.19063 6.21575 8.86244 5.88756C8.53425 5.55937 8.08913 5.375 7.625 5.375H2.125C1.66087 5.375 1.21575 5.19063 0.887563 4.86244C0.559375 4.53425 0.375 4.08913 0.375 3.625C0.375 3.16087 0.559375 2.71575 0.887563 2.38756C1.21575 2.05937 1.66087 1.875 2.125 1.875H6.375M6.375 1.875C6.375 2.70343 7.04657 3.375 7.875 3.375C8.70343 3.375 9.375 2.70343 9.375 1.875C9.375 1.04657 8.70343 0.375 7.875 0.375C7.04657 0.375 6.375 1.04657 6.375 1.875Z" stroke="white" stroke-opacity="0.5" style="stroke:white;stroke-opacity:0.5;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+  const iconEyeOff = `<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.875 8.875C3.875 9.70343 3.20343 10.375 2.375 10.375C1.54657 10.375 0.875 9.70343 0.875 8.875C0.875 8.04657 1.54657 7.375 2.375 7.375C3.20343 7.375 3.875 8.04657 3.875 8.875ZM3.875 8.875H8.125C8.325 8.875 8.575 8.825 8.775 8.775M1.975 1.975C1.59976 2.12887 1.28907 2.40927 1.09591 2.76837C0.902745 3.12747 0.839082 3.54303 0.915773 3.94419C0.992464 4.34534 1.20476 4.70724 1.51645 4.96816C1.82815 5.22908 2.21994 5.37287 2.625 5.375H5.375M0.375 0.375L10.375 10.375M9.875 7.025C9.85107 6.59518 9.66954 6.18926 9.36514 5.88486C9.06074 5.58046 8.65482 5.39893 8.225 5.375M6.875 1.875H4.725M6.875 1.875C6.875 2.70343 7.54657 3.375 8.375 3.375C9.20343 3.375 9.875 2.70343 9.875 1.875C9.875 1.04657 9.20343 0.375 8.375 0.375C7.54657 0.375 6.875 1.04657 6.875 1.875Z" stroke="white" stroke-opacity="0.5" style="stroke:white;stroke-opacity:0.5;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+  const iconRefresh = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.375 4.875C0.375 3.68153 0.849106 2.53693 1.69302 1.69302C2.53693 0.849106 3.68153 0.375 4.875 0.375C6.13302 0.379733 7.34052 0.870612 8.245 1.745L9.375 2.875M9.375 2.875V0.375M9.375 2.875H6.875M9.375 4.875C9.375 6.06847 8.90089 7.21307 8.05698 8.05698C7.21307 8.90089 6.06847 9.375 4.875 9.375C3.61698 9.37027 2.40948 8.87939 1.505 8.005L0.375 6.875M0.375 6.875H2.875M0.375 6.875V9.375" stroke="white" stroke-opacity="0.5" style="stroke:white;stroke-opacity:0.5;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+  const iconPlay = `<svg width="9" height="10" viewBox="0 0 9 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.375 1.3753C0.374948 1.19934 0.421323 1.02649 0.509442 0.874191C0.597561 0.721893 0.724305 0.595541 0.876875 0.507894C1.02945 0.420247 1.20244 0.374408 1.37839 0.375006C1.55435 0.375603 1.72703 0.422616 1.879 0.511296L7.8775 4.0103C8.02888 4.09814 8.15456 4.22417 8.24197 4.3758C8.32938 4.52743 8.37547 4.69934 8.37562 4.87437C8.37577 5.04939 8.32998 5.22138 8.24284 5.37316C8.15569 5.52494 8.03023 5.65119 7.879 5.7393L1.879 9.2393C1.72703 9.32798 1.55435 9.37499 1.37839 9.37559C1.20244 9.37618 1.02945 9.33035 0.876875 9.2427C0.724305 9.15505 0.597561 9.0287 0.509442 8.8764C0.421323 8.7241 0.374948 8.55125 0.375 8.3753V1.3753Z" stroke="white" stroke-opacity="0.5" style="stroke:white;stroke-opacity:0.5;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+  const iconTrash = `<svg width="10" height="11" viewBox="0 0 10 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.375 2.375V9.375C8.375 9.64022 8.26964 9.89457 8.08211 10.0821C7.89457 10.2696 7.64022 10.375 7.375 10.375H2.375C2.10978 10.375 1.85543 10.2696 1.66789 10.0821C1.48036 9.89457 1.375 9.64022 1.375 9.375V2.375M0.375 2.375H9.375M2.875 2.375V1.375C2.875 1.10978 2.98036 0.85543 3.16789 0.667893C3.35543 0.480357 3.60978 0.375 3.875 0.375H5.875C6.14022 0.375 6.39457 0.480357 6.58211 0.667893C6.76964 0.85543 6.875 1.10978 6.875 1.375V2.375" stroke="white" stroke-opacity="0.5" style="stroke:white;stroke-opacity:0.5;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+  const iconDrag = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.958333 5.625C1.2805 5.625 1.54167 5.36383 1.54167 5.04167C1.54167 4.7195 1.2805 4.45833 0.958333 4.45833C0.636167 4.45833 0.375 4.7195 0.375 5.04167C0.375 5.36383 0.636167 5.625 0.958333 5.625Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0.958333 1.54167C1.2805 1.54167 1.54167 1.2805 1.54167 0.958333C1.54167 0.636167 1.2805 0.375 0.958333 0.375C0.636167 0.375 0.375 0.636167 0.375 0.958333C0.375 1.2805 0.636167 1.54167 0.958333 1.54167Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0.958333 9.70833C1.2805 9.70833 1.54167 9.44717 1.54167 9.125C1.54167 8.80284 1.2805 8.54167 0.958333 8.54167C0.636167 8.54167 0.375 8.80284 0.375 9.125C0.375 9.44717 0.636167 9.70833 0.958333 9.70833Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.45833 5.625C4.7805 5.625 5.04167 5.36383 5.04167 5.04167C5.04167 4.7195 4.7805 4.45833 4.45833 4.45833C4.13617 4.45833 3.875 4.7195 3.875 5.04167C3.875 5.36383 4.13617 5.625 4.45833 5.625Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.45833 1.54167C4.7805 1.54167 5.04167 1.2805 5.04167 0.958333C5.04167 0.636167 4.7805 0.375 4.45833 0.375C4.13617 0.375 3.875 0.636167 3.875 0.958333C3.875 1.2805 4.13617 1.54167 4.45833 1.54167Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.45833 9.70833C4.7805 9.70833 5.04167 9.44717 5.04167 9.125C5.04167 8.80284 4.7805 8.54167 4.45833 8.54167C4.13617 8.54167 3.875 8.80284 3.875 9.125C3.875 9.44717 4.13617 9.70833 4.45833 9.70833Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+  // ========================================
 
 function renderList() {
     const list = document.getElementById('scene-list');
@@ -1104,19 +1334,19 @@ function renderList() {
     
     const fragment = document.createDocumentFragment(); 
     
-    // Icons provided by user (converted to use currentColor)
-    const iconRefresh = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.375 5.625C0.375 4.23261 0.928123 2.89726 1.91269 1.91269C2.89726 0.928123 4.23261 0.375 5.625 0.375C7.09269 0.380521 8.50144 0.953214 9.55667 1.97333L10.875 3.29167M10.875 3.29167V0.375M10.875 3.29167H7.95833M10.875 5.625C10.875 7.01739 10.3219 8.35274 9.33731 9.33731C8.35274 10.3219 7.01739 10.875 5.625 10.875C4.15731 10.8695 2.74857 10.2968 1.69333 9.27667L0.375 7.95833M0.375 7.95833H3.29167M0.375 7.95833V10.875" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    
-    const iconPlay = `<svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.375 1.54201C0.374939 1.33673 0.429043 1.13507 0.531849 0.95739C0.634655 0.779709 0.782522 0.632298 0.960521 0.530044C1.13852 0.427789 1.34035 0.37431 1.54563 0.375007C1.75091 0.375704 1.95237 0.430552 2.12967 0.534013L9.12792 4.61618C9.30453 4.71866 9.45115 4.8657 9.55313 5.0426C9.65511 5.2195 9.70888 5.42007 9.70905 5.62426C9.70923 5.82845 9.65581 6.02911 9.55414 6.20619C9.45247 6.38327 9.3061 6.53056 9.12967 6.63335L2.12967 10.7167C1.95237 10.8201 1.75091 10.875 1.54563 10.8757C1.34035 10.8764 1.13852 10.8229 0.960521 10.7206C0.782522 10.6184 0.634655 10.471 0.531849 10.2933C0.429043 10.1156 0.374939 9.91396 0.375 9.70868V1.54201Z" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    
-    const iconTrash = `<svg width="12" height="13" viewBox="0 0 12 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.70833 2.70833V10.875C9.70833 11.1844 9.58542 11.4812 9.36662 11.7C9.14783 11.9188 8.85109 12.0417 8.54167 12.0417H2.70833C2.39891 12.0417 2.10217 11.9188 1.88338 11.7C1.66458 11.4812 1.54167 11.1844 1.54167 10.875V2.70833M0.375 2.70833H10.875M3.29167 2.70833V1.54167C3.29167 1.23225 3.41458 0.935501 3.63338 0.716709C3.85217 0.497916 4.14891 0.375 4.45833 0.375H6.79167C7.10109 0.375 7.39783 0.497916 7.61662 0.716709C7.83542 0.935501 7.95833 1.23225 7.95833 1.54167V2.70833" stroke="currentColor" style="stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-
     scenes.forEach((scene, index) => {
       
       const li = document.createElement('div');
       
       const isActive = index === currentSceneIndex ? ' scene-item-active' : '';
       li.className = 'scene-item' + isActive;
+      
+      // Drag & Drop Attributes
+      li.setAttribute('draggable', 'true');
+      li.ondragstart = (e) => handleDragStart(e, index);
+      li.ondragover = (e) => handleDragOver(e);
+      li.ondrop = (e) => handleDrop(e, index);
+      li.ondragend = (e) => handleDragEnd(e);
       
       // Path settings are on the scene BEFORE the target. For the last scene, 
       // the path is from the last scene back to the first, so we use the LAST scene's settings.
@@ -1127,13 +1357,24 @@ function renderList() {
       const visualizeBtnClass = hasCustomPath ? 'btn-visualize btn-recalculate' : 'btn-visualize';
       const visualizeBtnText = hasCustomPath ? 'Redraw Path' : 'Visualize Path';
       
+      const pathControlsVisible = scene.pathControlsVisible || false;
+      const eyeIcon = pathControlsVisible ? iconEyeOff : iconEye;
+      
       li.innerHTML = `
         <div class="scene-top-row">
+            <div class="drag-handle" title="Drag to reorder">${iconDrag}</div>
             <input type="text" class="scene-name-input" data-prop="name" id="name-${index}" value="${scene.name}">
             <div class="actions">
+                <div class="path-toggle-wrapper">
+                    <button title="${pathControlsVisible ? 'Hide' : 'Show'} path" data-action="toggle-path" data-index="${index}">${eyeIcon}</button>
+                    <div class="path-controls-popup" id="path-controls-${index}" style="display: ${pathControlsVisible ? 'flex' : 'none'};">
+                        <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Update path">UPDATE</button>
+                        <button class="btn-visualize" data-action="reset-path" data-index="${index}" title="Reset path">REFRESH</button>
+                    </div>
+                </div>
                 <button title="Update scene with current view" data-action="update" data-index="${index}">${iconRefresh}</button>
                 <button title="Play this scene" data-action="play" data-index="${index}">${iconPlay}</button>
-                <button title="Delete scene" data-action="delete" data-index="${index}">${iconTrash}</button>
+                <button title="Delete scene" data-index="${index}" data-action="delete">${iconTrash}</button>
             </div>
         </div>
         
@@ -1142,7 +1383,7 @@ function renderList() {
             <div class="control-group"><label>Delay</label><input type="number" class="delay-input" data-prop="delay" id="delay-${index}" value="${scene.delay}" min="0"></div>
             
             <div class="control-group">
-                <label>Easing</label>
+                <label>Ease</label>
                 <select id="easing-${index}" data-prop="easing">
                     <option value="custom">Custom Bezier</option>
                     <option value="snap">Snap (Quart)</option>
@@ -1155,19 +1396,6 @@ function renderList() {
         <div class="bezier-row" id="bezier-row-${index}">
             <label>Bezier (x1, y1, x2, y2)</label>
             <input type="text" data-prop="bezier" id="bezier-text-input-${index}" value="${scene.bezier}" placeholder="0.24, 0.61, 0.48, 1.0">
-        </div>
-
-        <div class="scene-actions-bottom" id="path-visualizer-${index}">
-            <button class="${visualizeBtnClass}" data-action="visualize" data-index="${index}">${visualizeBtnText}</button>
-            <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Recalculate path based on the moved Control Point marker.">
-                Update Path
-            </button>
-            <button class="btn-visualize" data-action="reset-path" data-index="${index}" title="Reset path to default curve.">
-                Reset Path
-            </button>
-            <button class="btn-visualize" data-action="hide-path" data-index="${index}" title="Hide this path visualization.">
-                Hide Path
-            </button>
         </div>
       `;
       
@@ -1182,36 +1410,26 @@ function renderList() {
           bezierRow.style.display = scene.easing === 'custom' ? 'flex' : 'none';
       }
       
-      // The last scene doesn't have a transition *from* it, so hide its path controls
-      if (isLastScene) {
-        li.querySelector('.scene-actions-bottom').style.display = 'none';
-      }
+      // The last scene doesn't have path controls since there's no transition from it
+      // (Path controls are now inline and controlled by toggle)
 
-      // Attach event listeners to the detached element (li)
-      li.querySelectorAll('.actions button').forEach(button => {
+      // Handle top-row action buttons (update, play, delete, toggle-path)
+      li.querySelectorAll('.scene-top-row .actions button').forEach(button => {
           const index = parseInt(button.dataset.index);
-          if (button.dataset.action === 'play') {
-              button.onclick = () => handlePlayScene(index);
-          } else if (button.dataset.action === 'delete') {
-              button.onclick = () => handleDeleteScene(index);
-          } else if (button.dataset.action === 'update') {
+          const action = button.dataset.action;
+          
+          if (action === 'update') {
               button.onclick = () => handleUpdateSceneView(index);
-          }
-      });
-      
-      // Note: The path to scene N is determined by the settings in scene N-1 (or scene N-last for the loop).
-      // The path settings are stored on the scene *before* the transition.
-      // So, visualize/recalculate should use its own index to find the path data from this scene to the next.
-      li.querySelectorAll('.scene-actions-bottom button').forEach(button => {
-          const pathIndex = parseInt(button.dataset.index); // Index of the scene whose path settings we're viewing
-          if (button.dataset.action === 'visualize') {
-              button.onclick = () => handleVisualizePath(pathIndex);
-          } else if (button.dataset.action === 'recalculate') {
-              button.onclick = () => handleRecalculatePath(pathIndex); 
-          } else if (button.dataset.action === 'reset-path') {
-              button.onclick = () => handleResetPath(pathIndex);
-          } else if (button.dataset.action === 'hide-path') {
-              button.onclick = () => handleHidePath(pathIndex);
+          } else if (action === 'play') {
+              button.onclick = () => handlePlayScene(index);
+          } else if (action === 'delete') {
+              button.onclick = () => handleDeleteScene(index);
+          } else if (action === 'toggle-path') {
+              button.onclick = () => handleTogglePath(index);
+          } else if (action === 'recalculate') {
+              button.onclick = () => handleRecalculatePath(index);
+          } else if (action === 'reset-path') {
+              button.onclick = () => handleResetPath(index);
           }
       });
 
@@ -1248,6 +1466,32 @@ function renderList() {
     
     // Append the fragment to the live DOM in one go
     list.appendChild(fragment);
+  }
+
+  // Toggle path visualization and controls
+  function handleTogglePath(index) {
+      const pathControls = document.getElementById(`path-controls-${index}`);
+      const scene = scenes[index];
+      const isVisible = scene.pathControlsVisible || false;
+      
+      if (isVisible) {
+          // Hide path and controls
+          handleHidePath(index);
+          pathControls.style.display = 'none';
+          scene.pathControlsVisible = false;
+      } else {
+          // Check if we have at least 2 scenes before showing path
+          if (scenes.length < 2) {
+              alert("Need at least two scenes to visualize a path.");
+              return;
+          }
+          // Show path and controls
+          handleVisualizePath(index);
+          pathControls.style.display = 'flex';
+          scene.pathControlsVisible = true;
+      }
+      saveProject();
+      renderList(); // Re-render to update the icon
   }
 
 
