@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 const PATH_STROKE_COLOR = { r: 0.1, g: 0.7, b: 1 }; // Light Blue
-const PATH_STROKE_WEIGHT = 2;
+const PATH_STROKE_WEIGHT = 10;
 const PATH_OPACITY = 0.8;
 const CONTROL_POINT_COLOR = { r: 1, g: 0.6, b: 0 }; // Orange
 const CONTROL_POINT_SIZE = 12;
@@ -188,6 +188,11 @@ figma.ui.onmessage = async (msg) => {
     }
     
     if (msg.type === 'hide-path') {
+        clearExistingPaths(msg.sceneIndex);
+    }
+    
+    if (msg.type === 'delete-scene-path') {
+        // Delete path when scene is deleted
         clearExistingPaths(msg.sceneIndex);
     }
     

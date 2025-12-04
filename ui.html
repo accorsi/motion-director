@@ -1135,13 +1135,19 @@
 }
   
   function handleDeleteScene(index) {
-      if (confirm(`Are you sure you want to delete scene "${scenes[index].name}"?`)) {
-          scenes.splice(index, 1);
-          currentSceneIndex = Math.max(0, scenes.length - 1);
+      if (confirm("Delete this scene?")) {
+          // Delete the path associated with this scene
+          parent.postMessage({ pluginMessage: { type: 'delete-scene-path', sceneIndex: index } }, '*');
+          
+          scenes.splice(index, 1); 
+          if (currentSceneIndex >= scenes.length) {
+              currentSceneIndex = scenes.length - 1; 
+          }
           renderList();
-          saveProject(); 
-          if (scenes.length === 0 && pluginMode === 'horizontal') {
-              setPluginView('collapsed', true);
+          saveProject();
+          
+          if (scenes.length === 0) {
+              setPluginView('scenes', true); // Show empty state
           }
       }
   }
