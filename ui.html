@@ -843,6 +843,9 @@
                     <button id="btn-load-project">Load Project</button>
                     <button id="btn-clear-scenes">Clear All Scenes</button>
                 </div>
+                <div style="margin-top: 8px; display: flex; justify-content: flex-end;">
+                    <button id="btn-toggle-theme" class="btn-visualize" style="width: auto;">Toggle Theme 🌓</button>
+                </div>
             </div>
         </div>
     
@@ -1312,6 +1315,59 @@
   }
 
   // ========================================
+  // THEME SYSTEM
+  // ========================================
+
+  const themes = {
+    dark: {
+      '--color-bg-darker': 'hsl(160, 6%, 5%)',
+      '--color-bg-dark': 'hsl(160, 6%, 9%)',
+      '--color-bg-medium': 'hsl(160, 4%, 14%)',
+      '--color-bg-regular': 'hsl(160, 4%, 18%)',
+      '--color-bg-light': 'hsl(160, 4%, 22%)',
+      '--color-text-main': 'hsl(160, 6%, 91%)',
+      '--color-text-faded': 'hsla(168, 5%, 81%, 0.617)',
+      '--color-border': '#00000000',
+      '--shadow-inner-light': 'inset 0 .75px 0px rgba(255, 255, 255, 0.1)',
+      '--shadow-inner-lighter': 'inset 0 .75px 0px rgba(255, 255, 255, 0.35)',
+      '--shadow-outer-white': '0 -.75px rgba(255,255,255,.6)',
+      '--shadow-drop': '0 .75px 0px rgba(0, 0, 0, 0.5)',
+      '--shadow-inner-dark': 'inset 0 .75px 0px rgba(0, 0, 0, 0.5)',
+      '--shadow-drop-big': '0 1px 0px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.125), 0 8px 16px rgba(0, 0, 0, 0.0625)'
+    },
+    light: {
+      '--color-bg-darker': 'hsl(0, 0%, 98%)',
+      '--color-bg-dark': 'hsl(0, 0%, 95%)',
+      '--color-bg-medium': 'hsl(0, 0%, 90%)',
+      '--color-bg-regular': 'hsl(0, 0%, 85%)',
+      '--color-bg-light': 'hsl(0, 0%, 80%)',
+      '--color-text-main': 'hsl(0, 0%, 10%)',
+      '--color-text-faded': 'hsla(0, 0%, 30%, 0.6)',
+      '--color-border': 'hsl(0, 0%, 85%)',
+      '--shadow-inner-light': 'inset 0 .75px 0px rgba(255, 255, 255, 0.5)',
+      '--shadow-inner-lighter': 'inset 0 .75px 0px rgba(255, 255, 255, 0.8)',
+      '--shadow-outer-white': '0 -.75px rgba(255,255,255,0.8)',
+      '--shadow-drop': '0 .75px 0px rgba(0, 0, 0, 0.1)',
+      '--shadow-inner-dark': 'inset 0 .75px 0px rgba(0, 0, 0, 0.05)',
+      '--shadow-drop-big': '0 1px 2px rgba(0, 0, 0, 0.1)'
+    }
+  };
+
+  function applyTheme(themeName) {
+    const theme = themes[themeName] || themes.dark;
+    const root = document.documentElement;
+    
+    Object.entries(theme).forEach(([property, value]) => {
+      root.style.setProperty(property, value);
+    });
+    
+    // Save preference
+    // In a real plugin, we'd save this to clientStorage via postMessage
+    // For now, we'll just keep it in memory/DOM state
+    document.documentElement.setAttribute('data-theme', themeName);
+  }
+
+  // ========================================
   // LOADING STATE HELPERS
   // ========================================
   
@@ -1370,7 +1426,9 @@
   function handleRecalculatePath(sceneIndex) {
     if (sceneIndex === scenes.length - 1 || scenes.length < 2) return;
     
+    showLoading('Updating Path...');
     parent.postMessage({ pluginMessage: { type: 'get-control-point', sceneIndex: sceneIndex } }, '*');
+    setTimeout(() => hideLoading(), 1000);
   }
 
   // --- 5. RENDER LIST ---
@@ -1777,6 +1835,15 @@ document.getElementById('btn-play-all').onclick = () => {
         startPlayback();
     }
 };
+
+document.getElementById('btn-toggle-theme').onclick = () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+};
+
+// Initialize theme
+applyTheme('dark');
   
   const messageHandler = (event) => {
     const msg = event.data.pluginMessage;
