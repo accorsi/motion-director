@@ -163,7 +163,7 @@
   #btn-hide-paths {
       background: var(--color-bg-medium); 
       color: var(--color-text-main); 
-      padding: 0 12px;
+      padding: 0 9px;
       text-shadow: var(--shadow-outer-white);
       box-shadow: var(--shadow-inner-light);
   }
@@ -1024,13 +1024,8 @@
           
           // NEW: Auto-expand logic (Targeted requirement)
           if (modeToLoad === 'horizontal') {
-              if (scenes.length > 0) {
-                  // If scenes exist, open to the scene list view
-                  setPluginView('scenes', false); 
-              } else {
-                  // If no scenes, ensure it starts collapsed
-                  setPluginView('collapsed', false); 
-              }
+              // Always show scenes view (will show empty state if no scenes)
+              setPluginView('scenes', false); 
           }
           // Note: Vertical mode is always handled as 'scenes' via setMode
           
@@ -1041,7 +1036,7 @@
           defaultWideHeight = 400;
           isArcEnabled = true;
           setMode('horizontal', false); 
-          setPluginView('collapsed', false); // Start collapsed if no data
+          setPluginView('scenes', false); // Show empty state if no data
           renderList();
       }
   }
@@ -1668,7 +1663,6 @@ function renderList() {
   }
 
   // Toggle path visualization and controls
-  // Toggle path visualization and controls
   function handleTogglePath(index) {
       const scene = scenes[index];
       const isVisible = scene.pathControlsVisible || false;
@@ -1678,11 +1672,13 @@ function renderList() {
           handleHidePath(index);
           scene.pathControlsVisible = false;
       } else {
-          // Check if we have at least 2 scenes before showing path
-          if (scenes.length < 2) {
-              alert("Need at least two scenes to visualize a path.");
+          // Check if we can visualize a path from this scene
+          const pathData = getPathData(index);
+          if (!pathData) {
+              alert(scenes.length < 2 ? "Need at least two scenes to visualize a path." : "Cannot visualize path from the last scene.");
               return;
           }
+          
           // Show path and controls
           handleVisualizePath(index);
           scene.pathControlsVisible = true;
