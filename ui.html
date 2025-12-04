@@ -1393,21 +1393,13 @@
         return;
     }
 
-    // Show loading indicator
-    showLoading('Visualizing Path...');
-    
     // Include sceneIndex in pathData for unique naming
     data.sceneIndex = sceneIndex;
     parent.postMessage({ pluginMessage: { type: 'draw-path', pathData: data } }, '*');
-    
-    // Hide loading after a delay (path drawing is async)
-    setTimeout(() => hideLoading(), 1500);
   }
 
   function handleHidePath(sceneIndex) {
-    showLoading('Hiding Path...');
     parent.postMessage({ pluginMessage: { type: 'hide-path', sceneIndex: sceneIndex } }, '*');
-    setTimeout(() => hideLoading(), 500);
   }
 
   function handleResetPath(sceneIndex) {
@@ -1425,9 +1417,7 @@
   function handleRecalculatePath(sceneIndex) {
     if (sceneIndex === scenes.length - 1 || scenes.length < 2) return;
     
-    showLoading('Updating Path...');
     parent.postMessage({ pluginMessage: { type: 'get-control-point', sceneIndex: sceneIndex } }, '*');
-    setTimeout(() => hideLoading(), 1000);
   }
 
   // --- 5. RENDER LIST ---
