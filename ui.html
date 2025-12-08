@@ -934,13 +934,40 @@
         const cy2 = parseFloat(y2);
         return cubicBezier(t, cx1, cy1, cx2, cy2);
     }
+    
+    // Easing presets using cubic-bezier curves
     switch (easing) {
+      // Original presets
       case 'snap': return 1 - Math.pow(1 - t, 4); 
-      case 'smooth': return (1 - Math.cos(Math.PI * t)) / 2; 
+      case 'smooth': return cubicBezier(t, 0.25, 0.1, 0.25, 1); // CSS ease equivalent
       case 'linear': return t;
+      
+      // Standard CSS-like easings
+      case 'ease': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
+      case 'ease-in': return cubicBezier(t, 0.42, 0, 1, 1);
+      case 'ease-out': return cubicBezier(t, 0, 0, 0.58, 1);
+      case 'ease-in-out': return cubicBezier(t, 0.42, 0, 0.58, 1);
+      
+      // Back easings (overshoot)
+      case 'ease-in-back': return cubicBezier(t, 0.6, -0.28, 0.735, 0.045);
+      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.275);
+      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.55, 0.265, 1.55);
+      
+      // Exponential easings
+      case 'ease-in-expo': return cubicBezier(t, 0.95, 0.05, 0.795, 0.035);
+      case 'ease-out-expo': return cubicBezier(t, 0.19, 1, 0.22, 1);
+      
+      // Circular easings
+      case 'ease-in-circ': return cubicBezier(t, 0.6, 0.04, 0.98, 0.335);
+      case 'ease-out-circ': return cubicBezier(t, 0.075, 0.82, 0.165, 1);
+      
+      // Spring-like
+      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.15);
+      
       default: return t;
     }
   }
+
 
   function quadraticBezier(t, p0, p1, p2) {
       const oneMinusT = 1 - t;
@@ -1566,9 +1593,29 @@ function renderList() {
                 <label>Ease</label>
                 <select id="easing-${index}" data-prop="easing">
                     <option value="custom">Custom Bezier</option>
-                    <option value="snap">Snap (Quart)</option>
-                    <option value="smooth">Smooth (Cubic)</option>
-                    <option value="linear">Linear</option>
+                    <optgroup label="Basic">
+                        <option value="linear">Linear</option>
+                        <option value="ease">Ease</option>
+                        <option value="ease-in">Ease In</option>
+                        <option value="ease-out">Ease Out</option>
+                        <option value="ease-in-out">Ease In-Out</option>
+                    </optgroup>
+                    <optgroup label="Dramatic">
+                        <option value="snap">Snap (Quart)</option>
+                        <option value="smooth">Smooth</option>
+                        <option value="ease-in-expo">Expo In</option>
+                        <option value="ease-out-expo">Expo Out</option>
+                    </optgroup>
+                    <optgroup label="Overshoot">
+                        <option value="ease-in-back">Back In</option>
+                        <option value="ease-out-back">Back Out</option>
+                        <option value="ease-in-out-back">Back In-Out</option>
+                        <option value="spring">Spring</option>
+                    </optgroup>
+                    <optgroup label="Circular">
+                        <option value="ease-in-circ">Circ In</option>
+                        <option value="ease-out-circ">Circ Out</option>
+                    </optgroup>
                 </select>
             </div>
         </div>
@@ -1930,7 +1977,7 @@ applyTheme('dark');
 
 function animate(start, end, duration, easing, delay, bezierString, customControlPoint, checkStop = false) {
     return new Promise(resolve => {
-      const startTime = Date.now();
+      const startTime = performance.now(); // More precise timing
       
       if (duration === 0) duration = 1; 
       
@@ -1951,7 +1998,7 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
             return resolve(true);
         }
 
-        const now = Date.now();
+        const now = performance.now();
         const rawProgress = Math.min((now - startTime) / duration, 1);
         
         const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
