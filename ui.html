@@ -4,6 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
@@ -1122,6 +1123,9 @@
                   if (!s.customControlPoint) {
                     s.customControlPoint = null;
                   }
+                  if (!s.id) {
+                      s.id = Date.now() + Math.random(); // Ensure ID exists
+                  }
               });
           }
           defaultWideWidth = data.defaultWideWidth || 335;
@@ -1649,178 +1653,221 @@
 
   // ========================================
 
+// ========================================
+
+function getSceneHTML(scene, index) {
+    const pathSettingsIndex = index;
+    const isLastScene = index === scenes.length - 1;
+
+    const hasCustomPath = isLastScene || !!scenes[pathSettingsIndex].customControlPoint; 
+    
+    const pathControlsVisible = scene.pathControlsVisible || false;
+    const eyeIcon = pathControlsVisible ? iconEyeOff : iconEye;
+    
+    // Generate Options for Easing Select
+    const easingOptions = `
+        <option value="custom">Custom Bezier</option>
+        <optgroup label="Basic">
+            <option value="linear">Linear</option>
+            <option value="ease">Ease</option>
+            <option value="ease-in">Ease In</option>
+            <option value="ease-out">Ease Out</option>
+            <option value="ease-in-out">Ease In-Out</option>
+        </optgroup>
+        <optgroup label="Dramatic">
+            <option value="snap">Snap (Quart)</option>
+            <option value="smooth">Smooth</option>
+            <option value="ease-in-expo">Expo In</option>
+            <option value="ease-out-expo">Expo Out</option>
+        </optgroup>
+        <optgroup label="Overshoot">
+            <option value="ease-in-back">Back In</option>
+            <option value="ease-out-back">Back Out</option>
+            <option value="ease-in-out-back">Back In-Out</option>
+            <option value="spring">Spring</option>
+        </optgroup>
+        <optgroup label="Circular">
+            <option value="ease-in-circ">Circ In</option>
+            <option value="ease-out-circ">Circ Out</option>
+        </optgroup>
+    `;
+
+    return `
+      <div class="scene-top-row">
+          <div class="scene-name-group">
+              <div class="drag-handle" title="Drag to reorder">${iconDrag}</div>
+              <input type="text" class="scene-name-input" data-prop="name" id="name-${index}" value="${scene.name}">
+          </div>
+          <div class="actions">
+              <div class="path-toggle-wrapper">
+                  <button title="${pathControlsVisible ? 'Hide' : 'Show'} path" data-action="toggle-path" data-index="${index}">${eyeIcon}</button>
+                  <div class="path-controls-popup" id="path-controls-${index}" style="display: ${pathControlsVisible ? 'flex' : 'none'};">
+                      <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Update path">UPDATE</button>
+                      <button class="btn-visualize" data-action="reset-path" data-index="${index}" title="Reset path">RESET</button>
+                  </div>
+              </div>
+              <button title="Update scene with current view" data-action="update" data-index="${index}">${iconRefresh}</button>
+              <button title="Play this scene" data-action="play" data-index="${index}">${iconPlay}</button>
+              <button title="Delete scene" data-index="${index}" data-action="delete">${iconTrash}</button>
+          </div>
+      </div>
+      
+      <div class="scene-edit-row">
+          <div class="control-group"><label>Dur</label><input type="number" class="duration-input" data-prop="duration" id="dur-${index}" value="${scene.duration}" min="100"></div>
+          <div class="control-group"><label>Delay</label><input type="number" class="delay-input" data-prop="delay" id="delay-${index}" value="${scene.delay}" min="0"></div>
+          
+          <div class="control-group">
+              <label>Ease</label>
+              <select id="easing-${index}" data-prop="easing">
+                  ${easingOptions}
+              </select>
+          </div>
+      </div>
+      
+      <div class="bezier-row" id="bezier-row-${index}" style="display: ${scene.easing === 'custom' ? 'flex' : 'none'};">
+          <label>Bezier (x1, y1, x2, y2)</label>
+          <input type="text" data-prop="bezier" id="bezier-text-input-${index}" value="${scene.bezier}" placeholder="0.24, 0.61, 0.48, 1.0">
+      </div>
+    `;
+}
+
+function attachSceneListeners(li, index) {
+    // Drag & Drop
+    li.setAttribute('draggable', 'true');
+    li.ondragstart = (e) => handleDragStart(e, index);
+    li.ondragover = (e) => handleDragOver(e);
+    li.ondrop = (e) => handleDrop(e, index);
+    li.ondragend = (e) => handleDragEnd(e);
+
+    // Inputs
+    li.querySelectorAll('input').forEach(input => {
+        input.onchange = (e) => {
+            let value = e.target.value;
+            const prop = e.target.dataset.prop;
+            if (input.type === 'number') {
+                value = parseInt(e.target.value) || 0;
+            } else if (prop === 'name') {
+                value = value.trim() || `Scene ${index + 1}`;
+                e.target.value = value;
+            }
+            handleUpdateScene(index, prop, value);
+        };
+        // Prevent drag when interacting with inputs
+        input.onmousedown = (e) => e.stopPropagation();
+    });
+
+    // Selects
+    const easingSelect = li.querySelector(`#easing-${index}`);
+    if (easingSelect) {
+        easingSelect.value = scenes[index].easing; // Ensure value is set
+        easingSelect.onchange = (e) => {
+            handleUpdateScene(index, 'easing', e.target.value);
+            const bezierRow = li.querySelector(`#bezier-row-${index}`);
+            if (bezierRow) {
+                bezierRow.style.display = e.target.value === 'custom' ? 'flex' : 'none';
+            }
+        };
+    }
+
+    // Buttons
+    li.querySelectorAll('.actions button, .path-toggle-wrapper button').forEach(button => {
+        button.onclick = (e) => {
+            e.stopPropagation(); // Prevent drag
+            const action = button.dataset.action;
+            if (action === 'delete') handleDeleteScene(index);
+            else if (action === 'play') handlePlayScene(index);
+            else if (action === 'update') handleUpdateSceneView(index);
+            else if (action === 'toggle-path') {
+                 scenes[index].pathControlsVisible = !scenes[index].pathControlsVisible;
+                 renderList(); // Re-render to show/hide popup
+            }
+            else if (action === 'recalculate') handleRecalculatePath(index);
+            else if (action === 'reset-path') handleResetPath(index);
+        };
+    });
+}
+
 function renderList() {
     const list = document.getElementById('scene-list');
-    list.innerHTML = '';
     
-    const fragment = document.createDocumentFragment(); 
-    
+    // Map existing elements by ID
+    const existingElements = new Map();
+    Array.from(list.children).forEach(el => {
+        if (el.dataset.id) existingElements.set(el.dataset.id, el);
+    });
+
+    const currentIds = new Set(scenes.map(s => String(s.id)));
+
+    // 1. Remove deleted scenes (Animate Out)
+    existingElements.forEach((el, id) => {
+        if (!currentIds.has(id)) {
+            if (typeof Motion !== 'undefined') {
+                Motion.animate(el, { opacity: 0, height: 0, scale: 0.9, marginBottom: 0, padding: 0 }, { duration: 0.2 })
+                    .finished.then(() => el.remove());
+            } else {
+                el.remove();
+            }
+        }
+    });
+
+    // 2. Add or Update scenes
     scenes.forEach((scene, index) => {
-      
-      const li = document.createElement('div');
-      
-      const isActive = index === currentSceneIndex ? ' scene-item-active' : '';
-      li.className = 'scene-item' + isActive;
-      
-      // Drag & Drop Attributes
-      li.setAttribute('draggable', 'true');
-      li.ondragstart = (e) => handleDragStart(e, index);
-      li.ondragover = (e) => handleDragOver(e);
-      li.ondrop = (e) => handleDrop(e, index);
-      li.ondragend = (e) => handleDragEnd(e);
-      
-      // Path settings are on the scene BEFORE the target. For the last scene, 
-      // the path is from the last scene back to the first, so we use the LAST scene's settings.
-      const pathSettingsIndex = index;
-      const isLastScene = index === scenes.length - 1;
+        let li = existingElements.get(String(scene.id));
+        const isNew = !li;
 
-      const hasCustomPath = isLastScene || !!scenes[pathSettingsIndex].customControlPoint; 
-      const visualizeBtnClass = hasCustomPath ? 'btn-visualize btn-recalculate' : 'btn-visualize';
-      const visualizeBtnText = hasCustomPath ? 'Redraw Path' : 'Visualize Path';
-      
-      const pathControlsVisible = scene.pathControlsVisible || false;
-      const eyeIcon = pathControlsVisible ? iconEyeOff : iconEye;
-      
-      li.innerHTML = `
-        <div class="scene-top-row">
-            <div class="scene-name-group">
-                <div class="drag-handle" title="Drag to reorder">${iconDrag}</div>
-                <input type="text" class="scene-name-input" data-prop="name" id="name-${index}" value="${scene.name}">
-            </div>
-            <div class="actions">
-                <div class="path-toggle-wrapper">
-                    <button title="${pathControlsVisible ? 'Hide' : 'Show'} path" data-action="toggle-path" data-index="${index}">${eyeIcon}</button>
-                    <div class="path-controls-popup" id="path-controls-${index}" style="display: ${pathControlsVisible ? 'flex' : 'none'};">
-                        <button class="btn-visualize" data-action="recalculate" data-index="${index}" title="Update path">UPDATE</button>
-                        <button class="btn-visualize" data-action="reset-path" data-index="${index}" title="Reset path">RESET</button>
-                    </div>
-                </div>
-                <button title="Update scene with current view" data-action="update" data-index="${index}">${iconRefresh}</button>
-                <button title="Play this scene" data-action="play" data-index="${index}">${iconPlay}</button>
-                <button title="Delete scene" data-index="${index}" data-action="delete">${iconTrash}</button>
-            </div>
-        </div>
-        
-        <div class="scene-edit-row">
-            <div class="control-group"><label>Dur</label><input type="number" class="duration-input" data-prop="duration" id="dur-${index}" value="${scene.duration}" min="100"></div>
-            <div class="control-group"><label>Delay</label><input type="number" class="delay-input" data-prop="delay" id="delay-${index}" value="${scene.delay}" min="0"></div>
+        if (isNew) {
+            li = document.createElement('div');
+            li.dataset.id = scene.id;
+            li.className = 'scene-item';
             
-            <div class="control-group">
-                <label>Ease</label>
-                <select id="easing-${index}" data-prop="easing">
-                    <option value="custom">Custom Bezier</option>
-                    <optgroup label="Basic">
-                        <option value="linear">Linear</option>
-                        <option value="ease">Ease</option>
-                        <option value="ease-in">Ease In</option>
-                        <option value="ease-out">Ease Out</option>
-                        <option value="ease-in-out">Ease In-Out</option>
-                    </optgroup>
-                    <optgroup label="Dramatic">
-                        <option value="snap">Snap (Quart)</option>
-                        <option value="smooth">Smooth</option>
-                        <option value="ease-in-expo">Expo In</option>
-                        <option value="ease-out-expo">Expo Out</option>
-                    </optgroup>
-                    <optgroup label="Overshoot">
-                        <option value="ease-in-back">Back In</option>
-                        <option value="ease-out-back">Back Out</option>
-                        <option value="ease-in-out-back">Back In-Out</option>
-                        <option value="spring">Spring</option>
-                    </optgroup>
-                    <optgroup label="Circular">
-                        <option value="ease-in-circ">Circ In</option>
-                        <option value="ease-out-circ">Circ Out</option>
-                    </optgroup>
-                </select>
-            </div>
-        </div>
-        
-        <div class="bezier-row" id="bezier-row-${index}">
-            <label>Bezier (x1, y1, x2, y2)</label>
-            <input type="text" data-prop="bezier" id="bezier-text-input-${index}" value="${scene.bezier}" placeholder="0.24, 0.61, 0.48, 1.0">
-        </div>
-      `;
-      
-      // Use li.querySelector instead of document.getElementById for detached element
-      const easingSelect = li.querySelector(`#easing-${index}`);
-      if (easingSelect) {
-          easingSelect.value = scene.easing;
-      }
-      
-      const bezierRow = li.querySelector(`#bezier-row-${index}`);
-      if (bezierRow) {
-          bezierRow.style.display = scene.easing === 'custom' ? 'flex' : 'none';
-      }
-      
-      // The last scene doesn't have path controls since there's no transition from it
-      // (Path controls are now inline and controlled by toggle)
+            // Set content
+            li.innerHTML = getSceneHTML(scene, index);
+            attachSceneListeners(li, index);
+            
+            // Append (will be reordered if needed)
+            list.appendChild(li);
+            
+            // Animate In
+            if (typeof Motion !== 'undefined') {
+                Motion.animate(li, { opacity: [0, 1], y: [20, 0], scale: [0.95, 1] }, { duration: 0.3 });
+            }
+        } else {
+            // Existing: Move to correct position
+            list.appendChild(li);
+            
+            // Update content (re-render HTML to ensure index-based IDs/handlers are correct)
+            // This is necessary because indices change on reorder/delete
+            li.innerHTML = getSceneHTML(scene, index);
+            attachSceneListeners(li, index);
+        }
 
-      // Handle top-row action buttons (update, play, delete, toggle-path)
-      li.querySelectorAll('.scene-top-row .actions button').forEach(button => {
-          const index = parseInt(button.dataset.index);
-          const action = button.dataset.action;
-          
-          if (action === 'update') {
-              button.onclick = () => handleUpdateSceneView(index);
-          } else if (action === 'play') {
-              button.onclick = () => handlePlayScene(index);
-          } else if (action === 'delete') {
-              button.onclick = () => handleDeleteScene(index);
-          } else if (action === 'toggle-path') {
-              button.onclick = () => handleTogglePath(index);
-          } else if (action === 'recalculate') {
-              button.onclick = () => handleRecalculatePath(index);
-          } else if (action === 'reset-path') {
-              button.onclick = () => handleResetPath(index);
-          }
-      });
-
-
-      li.querySelectorAll('input[type="number"], input[type="text"], select').forEach(input => {
-          const index = scenes.indexOf(scene);
-          const prop = input.dataset.prop;
-          
-          input.onchange = (e) => {
-              let value = e.target.value;
-              
-              if (input.type === 'number') {
-                  value = parseInt(e.target.value) || 0;
-              } else if (prop === 'name') {
-                  value = value.trim() || `Scene ${index + 1}`;
-                  e.target.value = value;
-              }
-
-              handleUpdateScene(index, prop, value);
-
-              if (prop === 'easing') {
-                  // Ensure the correct bezierRow is targeted
-                  const currentBezierRow = li.querySelector(`#bezier-row-${index}`);
-                  if (currentBezierRow) {
-                      currentBezierRow.style.display = e.target.value === 'custom' ? 'flex' : 'none';
-                  }
-              }
-          };
-      });
-      
-      // Append the item to the fragment
-      fragment.appendChild(li); 
+        // Update active state
+        const isActive = index === currentSceneIndex;
+        if (isActive) li.classList.add('scene-item-active');
+        else li.classList.remove('scene-item-active');
     });
     
-    // Append the fragment to the live DOM in one go
-    list.appendChild(fragment);
-    
-    // Show/hide empty state based on scene count
+    // 3. Handle Empty State Animation
     const emptyState = document.getElementById('empty-state');
     if (scenes.length === 0) {
-        list.style.display = 'none';
-        emptyState.style.display = 'flex';
+        if (emptyState.style.display === 'none') {
+            emptyState.style.display = 'flex';
+            if (typeof Motion !== 'undefined') {
+                Motion.animate(emptyState, { opacity: [0, 1], scale: [0.95, 1] }, { duration: 0.4 });
+            }
+        }
     } else {
-        list.style.display = 'flex';
-        emptyState.style.display = 'none';
+        if (emptyState.style.display !== 'none') {
+             // Only animate out if we actually have scenes now
+             if (typeof Motion !== 'undefined') {
+                 Motion.animate(emptyState, { opacity: 0 }, { duration: 0.2 })
+                    .finished.then(() => emptyState.style.display = 'none');
+             } else {
+                 emptyState.style.display = 'none';
+             }
+        }
     }
-  }
-
+}
   // Toggle path visualization and controls
   function handleTogglePath(index) {
       const scene = scenes[index];
