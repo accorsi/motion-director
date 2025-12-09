@@ -236,7 +236,7 @@
       justify-content: flex-start;
       gap: 2px;
       height: auto; 
-      padding: 4px;
+      padding: 4px 4px 4px 4px; /* includes 4px bottom padding */
   }
   .mode-vertical .controls-left { 
       display: flex; 
@@ -941,7 +941,7 @@
 
   const HORIZONTAL_MIN_HEIGHT = 40; 
   const VERTICAL_MINI_WIDTH = 72; 
-  const VERTICAL_MINI_HEIGHT = 182; 
+  const VERTICAL_MINI_HEIGHT = 234; // Content + 4px padding bottom
   
   const NEWTON_ITERATIONS = 4;
   const NEWTON_MIN_TOLERANCE = 0.001;
