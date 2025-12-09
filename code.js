@@ -22,18 +22,19 @@ function setStoredData(key, data) {
 
 function clearExistingPaths(sceneIndex = null) {
     if (sceneIndex !== null) {
-        // Clear specific path
+        // Clear specific path - Search ROOT children only for performance
         const pathLineName = `${PATH_LINE_NAME}_${sceneIndex}`;
         const cpMarkerName = `${CONTROL_POINT_NAME}_${sceneIndex}`;
-        const paths = figma.currentPage.findAll(node => 
+        
+        const paths = figma.currentPage.children.filter(node => 
             (node.name === pathLineName || node.name === cpMarkerName) && node.type === 'VECTOR'
         );
         for (const path of paths) {
             path.remove();
         }
     } else {
-        // Clear all paths
-        const paths = figma.currentPage.findAll(node => 
+        // Clear all paths - Search ROOT children only for performance
+        const paths = figma.currentPage.children.filter(node => 
             (node.name.startsWith(PATH_LINE_NAME) || node.name.startsWith(CONTROL_POINT_NAME)) && node.type === 'VECTOR'
         );
         for (const path of paths) {
@@ -78,8 +79,9 @@ function drawPath(pathData) {
     pathLine.setRelaunchData({ edit: 'Move the Control Point to adjust the camera path curvature.' });
 
     // 3. Create the Control Point Marker (only if arc is enabled)
+    let cpMarker = null;
     if (isArcEnabled) {
-        const cpMarker = figma.createVector();
+        cpMarker = figma.createVector();
         
         // **FIXED MARKER CREATION:** Create a small cross centered at (0,0) in its local space, 
         // then move the whole vector node to the desired control point (control.x, control.y).
@@ -108,8 +110,7 @@ function drawPath(pathData) {
     }
 
     const nodesToSelect = [pathLine];
-    const marker = figma.currentPage.findOne(node => node.name === CONTROL_POINT_NAME);
-    if (marker) nodesToSelect.push(marker);
+    if (cpMarker) nodesToSelect.push(cpMarker);
     
     if (nodesToSelect.length > 0) {
         figma.currentPage.selection = nodesToSelect;
@@ -119,7 +120,7 @@ function drawPath(pathData) {
 /** Retrieves the current position of the manually moved Control Point marker. */
 function getCustomControlPoint(sceneIndex = null) {
     const cpName = sceneIndex !== null ? `${CONTROL_POINT_NAME}_${sceneIndex}` : CONTROL_POINT_NAME;
-    const cpMarker = figma.currentPage.findOne(node => node.name === cpName && node.type === 'VECTOR');
+    const cpMarker = figma.currentPage.findChild(node => node.name === cpName && node.type === 'VECTOR');
     
     if (cpMarker) {
         // Since we set cpMarker.x/y to the control point in drawPath, 
