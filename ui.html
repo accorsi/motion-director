@@ -4,7 +4,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
@@ -1801,12 +1800,13 @@ function renderList() {
     // 1. Remove deleted scenes (Animate Out)
     existingElements.forEach((el, id) => {
         if (!currentIds.has(id)) {
-            if (typeof Motion !== 'undefined') {
-                Motion.animate(el, { opacity: 0, height: 0, scale: 0.9, marginBottom: 0, padding: 0 }, { duration: 0.2 })
-                    .finished.then(() => el.remove());
-            } else {
-                el.remove();
-            }
+            // Native WAAPI Animation
+            const animation = el.animate([
+                { opacity: 1, height: el.offsetHeight + 'px', transform: 'scale(1)', marginBottom: '4px', padding: '4px' },
+                { opacity: 0, height: '0px', transform: 'scale(0.9)', marginBottom: '0px', padding: '0px' }
+            ], { duration: 200, easing: 'ease-out' });
+            
+            animation.onfinish = () => el.remove();
         }
     });
 
@@ -1827,16 +1827,17 @@ function renderList() {
             // Append (will be reordered if needed)
             list.appendChild(li);
             
-            // Animate In
-            if (typeof Motion !== 'undefined') {
-                Motion.animate(li, { opacity: [0, 1], y: [20, 0], scale: [0.95, 1] }, { duration: 0.3 });
-            }
+            // Native WAAPI Animate In
+            li.animate([
+                { opacity: 0, transform: 'translateY(20px) scale(0.95)' },
+                { opacity: 1, transform: 'translateY(0) scale(1)' }
+            ], { duration: 300, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+            
         } else {
             // Existing: Move to correct position
             list.appendChild(li);
             
-            // Update content (re-render HTML to ensure index-based IDs/handlers are correct)
-            // This is necessary because indices change on reorder/delete
+            // Update content
             li.innerHTML = getSceneHTML(scene, index);
             attachSceneListeners(li, index);
         }
@@ -1852,19 +1853,28 @@ function renderList() {
     if (scenes.length === 0) {
         if (emptyState.style.display === 'none') {
             emptyState.style.display = 'flex';
-            if (typeof Motion !== 'undefined') {
-                Motion.animate(emptyState, { opacity: [0, 1], scale: [0.95, 1] }, { duration: 0.4 });
-            }
+            
+            // Staggered Animation for Children
+            Array.from(emptyState.children).forEach((child, i) => {
+                child.animate([
+                    { opacity: 0, transform: 'translateY(10px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], {
+                    duration: 400,
+                    delay: i * 100, // Stagger delay
+                    easing: 'ease-out',
+                    fill: 'both'
+                });
+            });
         }
     } else {
         if (emptyState.style.display !== 'none') {
-             // Only animate out if we actually have scenes now
-             if (typeof Motion !== 'undefined') {
-                 Motion.animate(emptyState, { opacity: 0 }, { duration: 0.2 })
-                    .finished.then(() => emptyState.style.display = 'none');
-             } else {
-                 emptyState.style.display = 'none';
-             }
+             const animation = emptyState.animate([
+                 { opacity: 1 },
+                 { opacity: 0 }
+             ], { duration: 200, easing: 'ease-out' });
+             
+             animation.onfinish = () => emptyState.style.display = 'none';
         }
     }
 }
