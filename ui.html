@@ -138,7 +138,10 @@
       text-shadow: 0 .5px 0 rgba(255, 255, 255, 0.8);
       box-shadow: 0 0 10px -3px var(--color-accent-orange-hover);
   }
-
+  #btn-capture:focus {
+      outline: .25px solid var(--color-accent-orange);
+      box-shadow: none;
+  }
   /* 3.2. NAVIGATION Arrows - Dark Buttons */
   .nav-arrows-group { 
       display: flex; 
@@ -688,7 +691,6 @@
       /* Absolute positioning to center over list */
       position: absolute;
       inset: 0;
-      background: var(--color-bg-dark);
       z-index: 10;
   }
 
@@ -1809,12 +1811,12 @@ function renderList() {
     // 1. Remove deleted scenes (Animate Out)
     existingElements.forEach((el, id) => {
         if (!currentIds.has(id)) {
-            // Native WAAPI Animation
+            // Native WAAPI Animation - Faster and Overlapping
             const animation = el.animate([
                 { opacity: 1, height: el.offsetHeight + 'px', transform: 'scale(1)', marginBottom: '4px', padding: '4px', offset: 0 },
-                { opacity: 0, height: el.offsetHeight + 'px', transform: 'scale(0.9)', marginBottom: '4px', padding: '4px', offset: 0.4 }, // Fade out first
-                { opacity: 0, height: '0px', transform: 'scale(0.9)', marginBottom: '0px', padding: '0px', offset: 1 } // Then collapse
-            ], { duration: 500, easing: 'ease-out' });
+                { opacity: 0, height: el.offsetHeight + 'px', transform: 'scale(0.95)', marginBottom: '4px', padding: '4px', offset: 0.3 }, // Fade out start
+                { opacity: 0, height: '0px', transform: 'scale(0.9)', marginBottom: '0px', padding: '0px', offset: 1 } // Collapse finish
+            ], { duration: 300, easing: 'ease-out' }); // Reduced to 300ms
             
             animation.onfinish = () => el.remove();
         }
@@ -1864,6 +1866,10 @@ function renderList() {
         if (emptyState.style.display === 'none') {
             emptyState.style.display = 'flex';
             
+            // Cancel any hiding animations
+            emptyState.getAnimations().forEach(a => a.cancel());
+            emptyState.style.opacity = '1';
+
             // Staggered Animation for Children
             Array.from(emptyState.children).forEach((child, i) => {
                 child.animate([
@@ -1879,12 +1885,18 @@ function renderList() {
         }
     } else {
         if (emptyState.style.display !== 'none') {
+             // Cancel any existing animations to prevent conflicts
+             emptyState.getAnimations().forEach(a => a.cancel());
+             
              const animation = emptyState.animate([
                  { opacity: 1 },
                  { opacity: 0 }
              ], { duration: 200, easing: 'ease-out' });
              
-             animation.onfinish = () => emptyState.style.display = 'none';
+             animation.onfinish = () => {
+                 emptyState.style.display = 'none';
+                 emptyState.style.opacity = '1'; // Reset for next time
+             };
         }
     }
 }
