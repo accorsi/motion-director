@@ -56,13 +56,14 @@
       font-family: var(--font-main); 
       font-size: var(--font-size-base);
       padding: 0; margin: 0; 
-      background-color: var(--color-bg-dark); 
-      background-image: url('pattern-bg.png');
+      background-color: #0a0b0a; /* Very dark base */
+      background-image: url('noise-texture.png');
       background-repeat: repeat;
+      background-blend-mode: screen; /* Screen blend for grainy look */
       color: var(--color-text-main); 
       overflow: hidden; 
       transition: width 0.5s ease-out, height 0.5s ease-out; 
-      font-weight: 400; /* Lighter weight applied */
+      font-weight: 400;
   }
 
   /* --- 3. HEADER/CONTROL LAYOUT --- */
@@ -70,7 +71,7 @@
       display: flex; justify-content: space-between; align-items: left; 
       padding: 4px; 
       height: 32px; box-sizing: content-box; 
-      background: var(--color-bg-dark); 
+      background: transparent; /* Let noise texture show through */
       z-index: 10; 
       position: relative;
       gap: 4px;
