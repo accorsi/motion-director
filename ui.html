@@ -469,15 +469,24 @@
   /* Input/Select Consistency */
   .control-group input[type="number"],
   .control-group select {
-      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
+      background: var(--color-bg-dark); 
+      color: var(--color-text-main); 
+      border: 1px solid rgba(255,255,255,0.06); 
       padding: 4px;
       height: 24px;
       width: 40px;
       box-sizing: border-box;
-      border-radius: var(--radius-small); font-size: var(--font-size-tiny); 
-      text-align: right; appearance: none; -moz-appearance: textfield;
+      border-radius: var(--radius-small); 
+      font-size: var(--font-size-tiny); 
+      text-align: right; 
+      appearance: none; 
+      -moz-appearance: textfield;
       font-family: var(--font-main);
       font-weight: 400;
+      /* Crisp inset shadows */
+      box-shadow: 
+          inset 0 1px 2px rgba(0,0,0,0.4),
+          inset 0 0 0 1px rgba(0,0,0,0.2);
   }
   .control-group select {
       width: 88px;
@@ -491,11 +500,17 @@
       height: 24px;
   }
   
-  /* Green focus for inputs/selects */
+  /* Green focus for ALL inputs/selects */
   .control-group input[type="number"]:focus,
-  .control-group select:focus {
+  .control-group select:focus,
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
       outline: none;
-      box-shadow: 0 0 0 1px var(--color-accent-green);
+      border-color: var(--color-accent-green);
+      box-shadow: 
+          0 0 0 1px var(--color-accent-green),
+          inset 0 1px 2px rgba(0,0,0,0.4);
   }
   
   /* Hide Number Spinners */
@@ -793,7 +808,7 @@
         
         <button id="btn-play-all" class="btn-action">Play</button>
         
-        <button id="btn-hide-paths" class="btn-action" title="Hide all path visualizations in Figma">Hide Paths</button>
+        <button id="btn-hide-paths" class="btn-action" title="Show/Hide all path visualizations in Figma">Show Paths</button>
     </div>
     
         <button id="btn-toggle-mode" class="btn-action" title="Toggle Plugin Mode">
@@ -1129,6 +1144,9 @@
   
   document.getElementById('btn-clear-scenes').onclick = () => {
     if (confirm("Are you sure you want to clear ALL scenes in the current session? This cannot be undone.")) {
+      // Delete all paths in Figma
+      parent.postMessage({ pluginMessage: { type: 'hide-paths' } }, '*');
+      
       scenes = [];
       currentSceneIndex = 0; 
       renderList();
@@ -1166,8 +1184,30 @@
       saveProject(); 
   };
   
+  // Track visibility state of paths
+  let pathsVisible = false;
+  
   document.getElementById('btn-hide-paths').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'hide-paths' } }, '*');
+    const btn = document.getElementById('btn-hide-paths');
+    if (pathsVisible) {
+      parent.postMessage({ pluginMessage: { type: 'hide-paths' } }, '*');
+      btn.textContent = 'Show Paths';
+      pathsVisible = false;
+    } else {
+      // Show paths for all scenes that have them
+      scenes.forEach((scene, index) => {
+        if (index < scenes.length - 1) {
+          // Trigger path visualization for each scene pair
+          const data = getPathData(index);
+          if (data) {
+            data.sceneIndex = index;
+            parent.postMessage({ pluginMessage: { type: 'draw-path', pathData: data } }, '*');
+          }
+        }
+      });
+      btn.textContent = 'Hide Paths';
+      pathsVisible = true;
+    }
   };
 
 
