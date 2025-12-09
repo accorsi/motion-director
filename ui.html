@@ -119,6 +119,10 @@
       background-image: url('noise-texture.png');
       background-blend-mode: overlay;
   }
+  .btn-action:focus {
+      outline: none;
+      box-shadow: 0 0 0 1px var(--color-accent-green), inset 0 0 0 1px rgba(0,0,0,0.2);
+  }
   
   /* 3.1. CAPTURE Button - Orange/Yellow text */
   #btn-capture { 
@@ -421,8 +425,14 @@
       background: none; border: none; color: var(--color-text-faded); 
       font-size: var(--font-size-tiny); 
       cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
+      border-radius: var(--radius-small);
   }
   .scene-top-row .actions button:hover { color: var(--color-text-main); }
+  .scene-top-row .actions button:focus {
+      outline: none;
+      box-shadow: 0 0 0 1px var(--color-accent-green);
+      color: var(--color-text-main);
+  }
 
   /* Path Toggle Wrapper with Popup */
   .path-toggle-wrapper {
@@ -506,7 +516,7 @@
   input[type="text"]:focus,
   input[type="number"]:focus,
   select:focus {
-      outline: none;
+      outline: var(--color-accent-green) solid 1px;
       border-color: var(--color-accent-green);
       box-shadow: 
           0 0 0 1px var(--color-accent-green),
@@ -956,7 +966,7 @@
 
   const HORIZONTAL_MIN_HEIGHT = 40; 
   const VERTICAL_MINI_WIDTH = 72; 
-  const VERTICAL_MINI_HEIGHT = 234; // Content + 4px padding bottom
+  const VERTICAL_MINI_HEIGHT = 178; // Content + 4px padding bottom
   
   const NEWTON_ITERATIONS = 4;
   const NEWTON_MIN_TOLERANCE = 0.001;
