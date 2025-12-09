@@ -1007,10 +1007,10 @@
       case 'ease-out': return cubicBezier(t, 0, 0, 0.58, 1);
       case 'ease-in-out': return cubicBezier(t, 0.42, 0, 0.58, 1);
       
-      // Gentle back easings (minimal overshoot - safer for camera)
-      case 'ease-in-back': return cubicBezier(t, 0.6, -0.1, 0.735, 0.045);
-      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.1);
-      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.2, 0.265, 1.2);
+      // Back easings (moderate overshoot - smoothing will soften)
+      case 'ease-in-back': return cubicBezier(t, 0.6, -0.2, 0.735, 0.045);
+      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.2);
+      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.4, 0.265, 1.4);
       
       // Exponential easings - dramatic but safe
       case 'ease-in-expo': return cubicBezier(t, 0.95, 0.05, 0.795, 0.035);
@@ -1020,8 +1020,8 @@
       case 'ease-in-circ': return cubicBezier(t, 0.6, 0.04, 0.98, 0.335);
       case 'ease-out-circ': return cubicBezier(t, 0.075, 0.82, 0.165, 1);
       
-      // Spring - gentler bounce
-      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.05);
+      // Spring - visible bounce
+      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.15);
       
       default: return t;
     }
@@ -2088,9 +2088,9 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
       let smoothY = start.y;
       let smoothZoom = start.zoom;
       
-      // Smoothing factor (0.0-1.0): lower = smoother/floatier
-      // 0.15 gives very smooth, cinematic camera movement
-      const SMOOTHING = 0.15;
+      // Smoothing factor (0.0-1.0): higher = more responsive to easing
+      // 0.5 balances smooth movement with visible easing curve character
+      const SMOOTHING = 0.5;
       
       // Lower threshold for more responsive but smooth updates
       const POSITION_THRESHOLD = 0.25;
