@@ -391,14 +391,16 @@
       font-weight: 400; 
       font-size: var(--font-size-base); 
       padding: 2px 0;
-      flex-grow: 1; 
-      align-items: start;
-      
+      flex: 1 1 auto;
+      min-width: 60px;
+      max-width: 140px; /* Prevent overlap with buttons */
   }
   .scene-name-input:focus {
       outline: none;
       background: var(--color-bg-dark); 
       padding: 2px 4px;
+      border-radius: var(--radius-small);
+      box-shadow: 0 0 0 1px var(--color-accent-green); /* Green focus ring */
   }
   
   /* Scene Action Buttons */
