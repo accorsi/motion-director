@@ -669,6 +669,10 @@
   #scene-list-view .setting-group {
       margin-bottom: 0;
       padding: 12px 12px 2px 12px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
   }
 
   /* Empty State */
@@ -679,8 +683,13 @@
       justify-content: center;
       padding: var(--spacing-xl) var(--spacing-base);
       text-align: center;
-      min-height: 200px;
       user-select: none;
+      
+      /* Absolute positioning to center over list */
+      position: absolute;
+      inset: 0;
+      background: var(--color-bg-dark);
+      z-index: 10;
   }
 
   .empty-state-icon {
@@ -1802,9 +1811,10 @@ function renderList() {
         if (!currentIds.has(id)) {
             // Native WAAPI Animation
             const animation = el.animate([
-                { opacity: 1, height: el.offsetHeight + 'px', transform: 'scale(1)', marginBottom: '4px', padding: '4px' },
-                { opacity: 0, height: '0px', transform: 'scale(0.9)', marginBottom: '0px', padding: '0px' }
-            ], { duration: 200, easing: 'ease-out' });
+                { opacity: 1, height: el.offsetHeight + 'px', transform: 'scale(1)', marginBottom: '4px', padding: '4px', offset: 0 },
+                { opacity: 0, height: el.offsetHeight + 'px', transform: 'scale(0.9)', marginBottom: '4px', padding: '4px', offset: 0.4 }, // Fade out first
+                { opacity: 0, height: '0px', transform: 'scale(0.9)', marginBottom: '0px', padding: '0px', offset: 1 } // Then collapse
+            ], { duration: 500, easing: 'ease-out' });
             
             animation.onfinish = () => el.remove();
         }
@@ -1860,7 +1870,7 @@ function renderList() {
                     { opacity: 0, transform: 'translateY(10px)' },
                     { opacity: 1, transform: 'translateY(0)' }
                 ], {
-                    duration: 400,
+                    duration: 600,
                     delay: i * 100, // Stagger delay
                     easing: 'ease-out',
                     fill: 'both'
