@@ -957,33 +957,34 @@
     }
     
     // Easing presets using cubic-bezier curves
+    // Note: Avoid extreme overshoot values for camera - they cause shaking
     switch (easing) {
-      // Original presets
+      // Original presets - smooth and safe
       case 'snap': return 1 - Math.pow(1 - t, 4); 
-      case 'smooth': return cubicBezier(t, 0.25, 0.1, 0.25, 1); // CSS ease equivalent
+      case 'smooth': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
       case 'linear': return t;
       
-      // Standard CSS-like easings
+      // Standard CSS-like easings - safe for camera
       case 'ease': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
       case 'ease-in': return cubicBezier(t, 0.42, 0, 1, 1);
       case 'ease-out': return cubicBezier(t, 0, 0, 0.58, 1);
       case 'ease-in-out': return cubicBezier(t, 0.42, 0, 0.58, 1);
       
-      // Back easings (overshoot)
-      case 'ease-in-back': return cubicBezier(t, 0.6, -0.28, 0.735, 0.045);
-      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.275);
-      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.55, 0.265, 1.55);
+      // Gentle back easings (minimal overshoot - safer for camera)
+      case 'ease-in-back': return cubicBezier(t, 0.6, -0.1, 0.735, 0.045);
+      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.1);
+      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.2, 0.265, 1.2);
       
-      // Exponential easings
+      // Exponential easings - dramatic but safe
       case 'ease-in-expo': return cubicBezier(t, 0.95, 0.05, 0.795, 0.035);
       case 'ease-out-expo': return cubicBezier(t, 0.19, 1, 0.22, 1);
       
-      // Circular easings
+      // Circular easings - smooth curves
       case 'ease-in-circ': return cubicBezier(t, 0.6, 0.04, 0.98, 0.335);
       case 'ease-out-circ': return cubicBezier(t, 0.075, 0.82, 0.165, 1);
       
-      // Spring-like
-      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.15);
+      // Spring - gentler bounce
+      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.05);
       
       default: return t;
     }
@@ -2018,9 +2019,17 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
       let lastSentY = null;
       let lastSentZoom = null;
       
-      // Minimum change threshold to trigger an update (reduces micro-jitter)
-      const POSITION_THRESHOLD = 0.1;
-      const ZOOM_THRESHOLD = 0.0001;
+      // Smoothed values for dampened movement
+      let smoothX = start.x;
+      let smoothY = start.y;
+      let smoothZoom = start.zoom;
+      
+      // Smoothing factor (0.0-1.0): lower = smoother but slower
+      const SMOOTHING = 0.3;
+      
+      // Minimum change threshold to trigger an update
+      const POSITION_THRESHOLD = 0.5; // Increased from 0.1 for less jitter
+      const ZOOM_THRESHOLD = 0.0005;
 
       function loop() {
         if (checkStop && !is_playing && animation_frame_id) {
@@ -2054,16 +2063,21 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
             currentY = start.y + (end.y - start.y) * clampedProgress;
         }
 
-        // Only send update if values changed significantly (reduces message spam)
-        const xChanged = lastSentX === null || Math.abs(currentX - lastSentX) > POSITION_THRESHOLD;
-        const yChanged = lastSentY === null || Math.abs(currentY - lastSentY) > POSITION_THRESHOLD;
-        const zoomChanged = lastSentZoom === null || Math.abs(currentZoom - lastSentZoom) > ZOOM_THRESHOLD;
+        // Apply exponential smoothing to dampen sudden changes
+        smoothX += (currentX - smoothX) * SMOOTHING;
+        smoothY += (currentY - smoothY) * SMOOTHING;
+        smoothZoom += (currentZoom - smoothZoom) * SMOOTHING;
+
+        // Only send update if smoothed values changed significantly
+        const xChanged = lastSentX === null || Math.abs(smoothX - lastSentX) > POSITION_THRESHOLD;
+        const yChanged = lastSentY === null || Math.abs(smoothY - lastSentY) > POSITION_THRESHOLD;
+        const zoomChanged = lastSentZoom === null || Math.abs(smoothZoom - lastSentZoom) > ZOOM_THRESHOLD;
         
         if (xChanged || yChanged || zoomChanged) {
-            parent.postMessage({ pluginMessage: { type: 'update-viewport', x: currentX, y: currentY, zoom: currentZoom } }, '*');
-            lastSentX = currentX;
-            lastSentY = currentY;
-            lastSentZoom = currentZoom;
+            parent.postMessage({ pluginMessage: { type: 'update-viewport', x: smoothX, y: smoothY, zoom: smoothZoom } }, '*');
+            lastSentX = smoothX;
+            lastSentY = smoothY;
+            lastSentZoom = smoothZoom;
         }
 
         if (rawProgress < 1) {
