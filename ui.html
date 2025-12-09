@@ -64,6 +64,7 @@
       overflow: hidden; 
       transition: width 0.5s ease-out, height 0.5s ease-out, position 0.5s ease-out; 
       font-weight: 400;
+      height: calc(100% - 40px);
   }
 
   /* --- 3. HEADER/CONTROL LAYOUT --- */
@@ -234,7 +235,7 @@
       flex-direction: column; 
       justify-content: flex-start;
       gap: 2px;
-      height: 100%; 
+      height: auto; 
       padding: 4px;
   }
   .mode-vertical .controls-left { 
@@ -261,8 +262,7 @@
       justify-content: center; 
       width: 100%; 
       gap: 2px; 
-      margin: 0; 
-      margin-bottom: 4px; 
+      margin: 0;
   }
   .mode-vertical .nav-arrows-group button { 
       width: 50%; 
