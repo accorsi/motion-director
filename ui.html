@@ -2024,12 +2024,13 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
       let smoothY = start.y;
       let smoothZoom = start.zoom;
       
-      // Smoothing factor (0.0-1.0): lower = smoother but slower
-      const SMOOTHING = 0.3;
+      // Smoothing factor (0.0-1.0): lower = smoother/floatier
+      // 0.15 gives very smooth, cinematic camera movement
+      const SMOOTHING = 0.15;
       
-      // Minimum change threshold to trigger an update
-      const POSITION_THRESHOLD = 0.5; // Increased from 0.1 for less jitter
-      const ZOOM_THRESHOLD = 0.0005;
+      // Lower threshold for more responsive but smooth updates
+      const POSITION_THRESHOLD = 0.25;
+      const ZOOM_THRESHOLD = 0.0002;
 
       function loop() {
         if (checkStop && !is_playing && animation_frame_id) {
