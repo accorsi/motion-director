@@ -317,7 +317,6 @@
       margin-bottom: 0;
       overflow: hidden;
       padding: 0 !important; /* Override inline style */
-      background: var(--color-bg-dark);
   }
 
   /* CONFIG View */
@@ -336,7 +335,6 @@
       text-transform: uppercase;
   }
   .setting-group { margin-bottom: 10px; padding: 12px; 
-      background: var(--color-bg-medium); 
       border-radius: var(--radius-large); 
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
   }
@@ -2000,7 +1998,7 @@ applyTheme('dark');
 
 function animate(start, end, duration, easing, delay, bezierString, customControlPoint, checkStop = false) {
     return new Promise(resolve => {
-      const startTime = performance.now(); // More precise timing
+      const startTime = performance.now();
       
       if (duration === 0) duration = 1; 
       
@@ -2015,6 +2013,15 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
           }
       }
 
+      // Track last sent values to avoid redundant updates
+      let lastSentX = null;
+      let lastSentY = null;
+      let lastSentZoom = null;
+      
+      // Minimum change threshold to trigger an update (reduces micro-jitter)
+      const POSITION_THRESHOLD = 0.1;
+      const ZOOM_THRESHOLD = 0.0001;
+
       function loop() {
         if (checkStop && !is_playing && animation_frame_id) {
             cancelAnimationFrame(animation_frame_id);
@@ -2026,35 +2033,50 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
         
         const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
 
-        const currentZoom = start.zoom + (end.zoom - start.zoom) * easedProgress;
+        // Clamp eased progress to prevent overshoot artifacts
+        const clampedProgress = Math.max(0, Math.min(1, easedProgress));
+
+        const currentZoom = start.zoom + (end.zoom - start.zoom) * clampedProgress;
         
         let currentX, currentY;
 
         if (isArcEnabled && control) { 
-            const t = easedProgress;
+            const t = clampedProgress;
             const oneMinusT = 1 - t;
             
-            // Quadratic Bezier Interpolation using EASED progress
+            // Quadratic Bezier Interpolation
             currentX = oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.xc + t * t * end.x;
             currentY = oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.yc + t * t * end.y;
 
         } else {
-            // Linear interpolation using easedProgress
-            currentX = start.x + (end.x - start.x) * easedProgress;
-            currentY = start.y + (end.y - start.y) * easedProgress;
+            // Linear interpolation
+            currentX = start.x + (end.x - start.x) * clampedProgress;
+            currentY = start.y + (end.y - start.y) * clampedProgress;
         }
 
-        parent.postMessage({ pluginMessage: { type: 'update-viewport', x: currentX, y: currentY, zoom: currentZoom } }, '*');
+        // Only send update if values changed significantly (reduces message spam)
+        const xChanged = lastSentX === null || Math.abs(currentX - lastSentX) > POSITION_THRESHOLD;
+        const yChanged = lastSentY === null || Math.abs(currentY - lastSentY) > POSITION_THRESHOLD;
+        const zoomChanged = lastSentZoom === null || Math.abs(currentZoom - lastSentZoom) > ZOOM_THRESHOLD;
+        
+        if (xChanged || yChanged || zoomChanged) {
+            parent.postMessage({ pluginMessage: { type: 'update-viewport', x: currentX, y: currentY, zoom: currentZoom } }, '*');
+            lastSentX = currentX;
+            lastSentY = currentY;
+            lastSentZoom = currentZoom;
+        }
 
         if (rawProgress < 1) {
-          animation_frame_id = requestAnimationFrame(loop); // Store ID
+          animation_frame_id = requestAnimationFrame(loop);
         } else {
+          // Ensure final position is exactly the end point
+          parent.postMessage({ pluginMessage: { type: 'update-viewport', x: end.x, y: end.y, zoom: end.zoom } }, '*');
           // Animation finished, use setTimeout to handle the delay
           setTimeout(resolve, delay);
         }
       }
       
-      // Start the loop and store the initial frame ID
+      // Start the loop
       animation_frame_id = requestAnimationFrame(loop); 
     });
 }
