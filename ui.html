@@ -292,8 +292,6 @@
   
   /* --- 5. EXPANDED/SETTINGS PANEL --- */
   #expanded-panel { 
-      padding: 0 4px 4px 4px; 
-      background: var(--color-bg-dark); 
       overflow-y: hidden; 
       height: calc(100% - 40px);
       display: flex;
@@ -378,6 +376,9 @@
           inset 0 1px 0 0 rgba(255,255,255,0.08),
           inset 0 -1px 0 0 rgba(0,0,0,0.4),
           0 1px 3px rgba(0,0,0,0.3);
+          &:hover {
+              opacity: 1;
+          }
   }
 
   .scene-top-row { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
@@ -391,14 +392,13 @@
       font-size: var(--font-size-base); 
       padding: 2px 0;
       flex-grow: 1; 
-      min-width: 0; 
-      font-family: var(--font-main);
+      align-items: start;
+      
   }
   .scene-name-input:focus {
       outline: none;
       background: var(--color-bg-dark); 
       padding: 2px 4px;
-      border-radius: var(--radius-small);
   }
   
   /* Scene Action Buttons */
@@ -457,6 +457,7 @@
       background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
       padding: 4px;
       height: 24px;
+      width: 40px;
       box-sizing: border-box;
       border-radius: var(--radius-small); font-size: var(--font-size-tiny); 
       text-align: right; appearance: none; -moz-appearance: textfield;
@@ -464,7 +465,7 @@
       font-weight: 400;
   }
   .control-group select {
-      width: auto;
+      width: 88px;
       text-align: left;
       appearance: none;
       -webkit-appearance: none;
@@ -583,7 +584,6 @@
       margin-top: 10px;
   }
   .control-group input[type="number"] {
-      width: 60px;
       text-align: left;
       padding: 4px 8px;
   }
