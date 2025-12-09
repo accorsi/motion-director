@@ -2098,9 +2098,9 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
       let smoothY = start.y;
       let smoothZoom = start.zoom;
       
-      // Smoothing factor (0.0-1.0): higher = more responsive to easing
-      // 0.5 balances smooth movement with visible easing curve character
-      const SMOOTHING = 0.5;
+      // Smoothing factor (0.0-1.0): higher = more responsive/accurate
+      // 0.9 gives accurate path tracking with minimal jitter filtering
+      const SMOOTHING = 0.9;
       
       // Lower threshold for more responsive but smooth updates
       const POSITION_THRESHOLD = 0.25;
