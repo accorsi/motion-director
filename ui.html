@@ -7,12 +7,12 @@
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
-    --color-bg-darker: hsl(160, 6%, 5%);
-    --color-bg-dark: hsl(160, 6%, 9%);
-    --color-bg-medium: hsl(160, 4%, 14%);
-    --color-bg-regular: hsl(160, 4%, 18%);
-    --color-bg-light: hsl(160, 4%, 22%); 
-    --color-text-main: hsl(160, 6%, 91%); 
+    --color-bg-darker: rgb(12, 14, 13, 0.10);
+    --color-bg-dark: hsl(160, 6%, 9%, 0.10);
+    --color-bg-medium: hsl(160, 4%, 14%, 0.2);
+    --color-bg-regular: hsl(160, 4%, 18%, 0.4);
+    --color-bg-light: hsl(160, 4%, 22%, 0.6); 
+    --color-text-main: hsl(160, 6%, 91%, 0.80); 
     --color-text-faded: hsla(168, 5%, 81%, 0.617); 
     --color-accent-blue: #007AFF; 
     --color-accent-orange: hsl(42, 100%, 52%);
@@ -20,7 +20,7 @@
     --color-accent-red: #FF3B30; 
     --color-accent-green: #12d067;
     --color-accent-green-hover: #0aef71;
-    --color-accent-green-faded: #0aef7170;
+    --color-accent-green-faded: #0aef7190;
     --color-border: #00000000;
 
     --font-main: 'Geist Mono', monospace; 
@@ -38,7 +38,7 @@
 
     --radius-small: 2px;
     --radius-medium: 4px;
-    --radius-large: 4px; /* 4px for buttons per Figma */
+    --radius-large: 8px;
 
     --spacing-xxs: 2px;
     --spacing-xs: 4px;
@@ -62,7 +62,7 @@
       background-blend-mode: screen; /* Screen blend for grainy look */
       color: var(--color-text-main); 
       overflow: hidden; 
-      transition: width 0.5s ease-out, height 0.5s ease-out; 
+      transition: width 0.5s ease-out, height 0.5s ease-out, position 0.5s ease-out; 
       font-weight: 400;
   }
 
@@ -95,8 +95,9 @@
       border-radius: var(--radius-large); 
       font-weight: 400; 
       cursor: pointer; 
+      user-select: none;
       transition: 0.15s; 
-      height: 28px; 
+      height: 32px; 
       line-height: 1; 
       box-sizing: border-box;
       display: flex; 
@@ -106,7 +107,7 @@
       white-space: nowrap; 
       flex-shrink: 0; 
       text-transform: uppercase;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
       /* Inset shadows for depth */
       box-shadow: 
           inset 0 1px 0 0 rgba(255,255,255,0.08),
@@ -118,11 +119,6 @@
       background-blend-mode: overlay;
   }
   
-  /* Global Button Font Fix */
-  button {
-      font-family: var(--font-main);
-  }
-
   /* 3.1. CAPTURE Button - Orange/Yellow text */
   #btn-capture { 
       background-color: rgba(30, 32, 30, 0.9); /* Semi-transparent for texture */
@@ -130,7 +126,7 @@
       padding: 0 10px; 
   }
   #btn-capture:hover { 
-      background-color: rgba(45, 47, 45, 0.95); 
+      background-color: rgba(45, 47, 45, 0.3); 
   }
 
   /* 3.2. NAVIGATION Arrows - Dark Buttons */
@@ -152,7 +148,7 @@
       border-bottom-left-radius: 0;
   }
   .nav-arrows-group button:hover { 
-      background-color: var(--color-bg-light); 
+      background-color: rgba(45, 47, 45, 0.3);
   }
   
   /* 3.3. PLAY Button - Green text with white inner glow */
@@ -166,7 +162,7 @@
       text-shadow: 0 0 4px rgba(255,255,255,0.3);
   }
   #btn-play-all:hover { 
-      background-color: var(--color-bg-light); 
+      background-color: rgba(45, 47, 45, 0.3);
   }
   
   /* STOP BUTTON - Red when playing */
@@ -185,7 +181,7 @@
       padding: 0 9px;
   }
   #btn-hide-paths:hover { 
-      background-color: var(--color-bg-light); 
+      background-color: rgba(45, 47, 45, 0.3); 
   }
 
   
@@ -203,7 +199,7 @@
       font-size: 16px;
       border-radius: var(--radius-large); /* Ensure border radius */
   }
-  .utility-buttons-group button:hover { background: #2f2f2f; color: var(--color-text-main); }
+  .utility-buttons-group button:hover { background-color: rgba(45, 47, 45, 0.3); }
   
   /* Specific overrides to ensure they stay dark */
   #btn-toggle-mode, #btn-settings {
@@ -211,7 +207,7 @@
       color: var(--color-text-main);
       width: 32px;
       height: 32px;
-      &:hover { background: #2f2f2f; color: var(--color-text-main); }
+      &:hover { background-color: rgba(45, 47, 45, 0.3); }
   }
 
   .mode-vertical #btn-toggle-mode {
@@ -271,8 +267,7 @@
   .mode-vertical .nav-arrows-group button { 
       width: 50%; 
       height: 32px;
-      border-radius: var(--radius-large) !important;
-      font-size: 14px;
+      border-radius: var(--radius-medium) !important;
       margin: 0;
       border-right: none !important;
   }
@@ -359,16 +354,13 @@
   }
   .scene-item { 
       background-color: rgba(30, 32, 30, 0.6); /* Semi-transparent for texture */
-      background-image: url('noise-texture.png');
-      background-blend-mode: overlay;
       padding: 8px 10px; 
       border-radius: var(--radius-large); 
       display: flex;
       flex-direction: column;
       gap: 6px;
       transition: 0.2s;
-      border-left: 2px solid transparent;
-      opacity: 0.6; /* Inactive cards at 60% */
+      opacity: 0.5; /* Inactive cards at 60% */
       /* Inset shadows for depth */
       box-shadow: 
           inset 0 1px 0 0 rgba(255,255,255,0.08),
@@ -376,16 +368,15 @@
           0 1px 3px rgba(0,0,0,0.3);
   }
   .scene-item:hover {
-      opacity: 0.8;
-      background-color: rgba(40, 42, 40, 0.7);
+      opacity: 0.9;
+      background-color: rgba(45, 47, 45, 0.3);
   }
 
   .scene-item-active {
       background-color: rgba(20, 22, 20, 0.9); /* Darker, more opaque */
-      border-left: 2px solid var(--color-accent-green);
       opacity: 1; /* Full opacity when active */
       box-shadow: 
-          inset 6px 0 16px -8px var(--color-accent-green-faded),
+          inset 0 0 4px -1px var(--color-accent-green-faded),
           inset 0 1px 0 0 rgba(255,255,255,0.08),
           inset 0 -1px 0 0 rgba(0,0,0,0.4),
           0 1px 3px rgba(0,0,0,0.3);
