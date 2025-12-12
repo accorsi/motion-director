@@ -68,6 +68,7 @@
       transition: width 0.5s ease-out, height 0.5s ease-out, position 0.5s ease-out; 
       font-weight: 400;
       height: 100%;
+      overflow: visible;
   }
 
   /* --- 3. HEADER/CONTROL LAYOUT --- */
@@ -122,8 +123,12 @@
       background-image: url('noise-texture.png');
       background-blend-mode: overlay;
   }
-  .btn-action:focus {
+  .btn-action:focus-visible {
       outline: .25px solid var(--color-accent-green);
+      box-shadow: none;
+  }
+  .btn-action:focus:not(:focus-visible) {
+      outline: none;
       box-shadow: none;
   }
   
@@ -140,13 +145,14 @@
       text-shadow: 0 .5px 0 rgba(255, 255, 255, 0.8);
       box-shadow: 0 0 10px -3px var(--color-accent-orange-hover);
   }
-  #btn-capture:focus {
+  #btn-capture:focus-visible {
       outline: .25px solid var(--color-accent-orange);
       box-shadow: none;
   }
   /* 3.2. NAVIGATION Arrows - Dark Buttons */
   .nav-arrows-group { 
       display: flex; 
+      gap: 1px;
   }
   .nav-arrows-group button {
       background: var(--color-bg-medium); 
@@ -271,6 +277,7 @@
       padding: 0 4px;
       height: 32px; 
       border-radius: 8px;
+      order: 2;
   }
   
   /* Navigation Arrows in Vertical Mode */
@@ -280,17 +287,17 @@
       width: 100%; 
       gap: 2px; 
       margin: 0;
+      order: 1;
   }
   .mode-vertical .nav-arrows-group button { 
       width: 50%; 
       height: 32px;
       border-radius: var(--radius-medium) !important;
       margin: 0;
-      border-right: none !important;
   }
   
-  .mode-vertical #btn-capture { order: -1; } 
-  .mode-vertical #btn-play-all { margin-right: 0; } 
+  .mode-vertical #btn-capture { order: 1; } 
+  .mode-vertical #btn-play-all { margin-right: 0; order: 0;} 
   .mode-vertical #btn-hide-paths { display: block; padding: 0 2px; width: 100%; } 
   
   /* Utility Group in Vertical Mode */
@@ -306,11 +313,113 @@
       border-radius: var(--radius-large); 
       font-size: 8px;
   }
+
+  /* --- MINI MODE (40px -> 34px) --- */
+  body {
+    padding: 0;
+    &.mode-mini{ padding:3px 2px 2px 2px; };
+    overflow: visible;
+  }
+
+  .mode-mini header {
+      flex-direction: column; 
+      justify-content: flex-start;
+      gap: 2px;
+      height: 32px; 
+      padding: 0px; /* Reduced from 4px to fit 34px width */
+      width: 100%;
+      box-sizing: border-box;
+  }
+  .mode-mini .controls-left {
+      display: flex; 
+      flex-direction: column; 
+      gap: 2px; 
+      width: 100%; 
+      align-items: center;
+  }
+  /* Buttons in Mini Mode */
+  .mode-mini .btn-action {
+      width: 32px; /* Fixed width for icon buttons */
+      height: 32px;
+      padding: 0;
+      justify-content: center;
+      border-radius: var(--radius-medium);
+      order: 2;
+  }
+
+  /* Hide Text in Mini Mode ONLY by default */
+  .mode-mini .btn-text {
+      display: none !important;
+  }
+  
+  /* Hide Icons in Vertical Mode (Text only requested) */
+  .mode-vertical .btn-icon {
+      display: none !important;
+  }
+  
+  /* Show Icons in Mini Mode */
+  .mode-mini .btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  
+  /* Default: Icons Hidden in Horizontal */
+  .btn-icon { display: none; }
+  
+  /* Ensure SVGs use currentColor */
+  .btn-icon svg path {
+      stroke: currentColor !important;
+  }
+
+  /* Specific Mini Mode Overrides */
+  .mode-mini .nav-arrows-group {
+      flex-direction: column;
+      width: 32px;
+      gap: 2px;
+      order: 1;
+  }
+  .mode-mini .nav-arrows-group button {
+      width: 100%;
+      height: 32px; /* Standardize height to 32px */
+      border-radius: var(--radius-small);
+  }
+  .mode-mini #btn-capture { order: 1; }
+  .mode-mini #btn-play-all { order: 0; }
+  .mode-mini #btn-hide-paths { display: flex; width: 32px; }
+  
+  .mode-mini .utility-buttons-group {
+      order: 1;
+      display: flex;
+      flex-direction: column; 
+      width: 100%;
+      align-items: center;
+      gap: 2px;
+  }
+  .mode-mini .utility-buttons-group button {
+      width: 32px;
+      height: 32px;
+  }
+
+  /* Vertical 72px Mode - Ensure Text Visible, Icons Hidden */
+  .mode-vertical .btn-action {
+      justify-content: center; 
+      width: 100%;
+      padding: 0 4px; /* Restore padding for text */
+  }
+  .mode-vertical .btn-text {
+      display: inline-block !important; /* Force text display */
+  }
+  
+  /* Mini Mode - Icons Only */
+  .mode-mini .btn-action {
+     padding: 0; /* No padding for icon-only */
+  }
   
   /* --- 5. EXPANDED/SETTINGS PANEL --- */
   #expanded-panel { 
       overflow-y: hidden; 
-      height: calc(100% - 40px);
+      height: calc(100% - 80px);
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -429,8 +538,8 @@
   }
   .scene-name-input:focus {
       outline: none;
-      background: var(--color-bg-dark); 
-      padding: 2px 4px;
+      background: var(--color-bg-darker); 
+      padding: 2px 5px;
   }
   
   /* Scene Action Buttons */
@@ -498,9 +607,9 @@
   /* Input/Select Consistency */
   .control-group input[type="number"],
   .control-group select {
-      background: var(--color-bg-dark); 
+      background: var(--color-bg-medium); 
       color: var(--color-text-main); 
-      border: 1px solid rgba(255,255,255,0.06); 
+      border: 0px solid transparent; 
       padding: 4px;
       height: 24px;
       width: 40px;
@@ -512,10 +621,6 @@
       -moz-appearance: textfield;
       font-family: var(--font-main);
       font-weight: 400;
-      /* Crisp inset shadows */
-      box-shadow: 
-          inset 0 1px 2px rgba(0,0,0,0.4),
-          inset 0 0 0 1px rgba(0,0,0,0.2);
   }
   .control-group select {
       width: 88px;
@@ -526,6 +631,7 @@
       background-repeat: no-repeat;
       background-position: right 8px center;
       padding-right: 16px;
+      padding-left: 8px;
       height: 24px;
   }
   
@@ -535,11 +641,10 @@
   input[type="text"]:focus,
   input[type="number"]:focus,
   select:focus {
-      outline: var(--color-accent-green) solid 1px;
-      border-color: var(--color-accent-green);
+      outline: var(--color-accent-green) solid .25px;
       box-shadow: 
-          0 0 0 1px var(--color-accent-green),
-          inset 0 1px 2px rgba(0,0,0,0.4);
+          0 0 0 .5px var(--color-accent-green),
+          inset 0 1px 0px rgba(0,0,0,1);
   }
   
   /* Hide Number Spinners */
@@ -701,13 +806,12 @@
   }
 
   .empty-state-icon {
-      font-size: 48px;
       margin-bottom: var(--spacing-base);
-      opacity: 0.3;
+      opacity: 0.6;
   }
 
   .empty-state-title {
-      font-size: var(--font-size-large);
+      font-size: var(--font-size-medium);
       font-weight: 400;
       color: var(--color-text-main);
       margin-bottom: var(--spacing-xs);
@@ -717,10 +821,10 @@
   }
 
   .empty-state-message {
-      font-size: var(--font-size-small);
+      font-size: var(--font-size-base);
       color: var(--color-text-faded);
       margin-bottom: var(--spacing-base);
-      max-width: 260px;
+      max-width: 270px;
       letter-spacing: 0.05em;
       font-weight: 400;
       text-shadow: 0 .5px 0 rgba(0, 0, 0, 0.9);
@@ -806,13 +910,26 @@
       margin-top: 10px;
   }
 
+  /* Utility Classes */
+  .d-none {
+      display: none !important;
+  }
+
 </style>
 </head>
 <body class="mode-horizontal">
 
 <header>
     <div class="controls-left">
-        <button id="btn-capture" class="btn-action">Capture</button>
+        <button id="btn-capture" class="btn-action" title="Capture/Record Scene">
+            <span class="btn-text">Capture</span>
+             <span class="btn-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.33101 2.66602C9.57154 2.66601 9.80759 2.73107 10.0141 2.85431C10.2207 2.97754 10.3901 3.15435 10.5043 3.36602L10.8283 3.96602C10.9426 4.17768 11.112 4.35449 11.3185 4.47772C11.5251 4.60096 11.7611 4.66602 12.0017 4.66602H13.333C13.6866 4.66602 14.0258 4.80649 14.2758 5.05654C14.5259 5.30659 14.6663 5.64573 14.6663 5.99935V11.9993C14.6663 12.353 14.5259 12.6921 14.2758 12.9422C14.0258 13.1922 13.6866 13.3327 13.333 13.3327H2.66634C2.31272 13.3327 1.97358 13.1922 1.72353 12.9422C1.47348 12.6921 1.33301 12.353 1.33301 11.9993V5.99935C1.33301 5.64573 1.47348 5.30659 1.72353 5.05654C1.97358 4.80649 2.31272 4.66602 2.66634 4.66602H3.99767C4.23796 4.66603 4.47377 4.60111 4.6802 4.47813C4.88662 4.35514 5.05597 4.17866 5.17034 3.96735L5.49634 3.36468C5.61071 3.15337 5.78007 2.97689 5.98649 2.8539C6.19291 2.73092 6.42873 2.666 6.66901 2.66602H9.33101Z" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.99967 10.666C9.10424 10.666 9.99967 9.77059 9.99967 8.66602C9.99967 7.56145 9.10424 6.66602 7.99967 6.66602C6.89511 6.66602 5.99967 7.56145 5.99967 8.66602C5.99967 9.77059 6.89511 10.666 7.99967 10.666Z" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
         
         <div class="nav-arrows-group">
             <button id="btn-play-previous" class="btn-action" title="Animate to Previous Scene">
@@ -853,11 +970,45 @@
             </button>
         </div>
         
-        <button id="btn-play-all" class="btn-action">Play</button>
+        <button id="btn-play-all" class="btn-action" title="Play All Scenes">
+            <span class="btn-text">Play</span>
+            <!-- Play Icon -->
+            <span class="btn-icon icon-play-svg">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3.33398 3.33373C3.33391 3.09912 3.39575 2.86865 3.51324 2.66559C3.63073 2.46252 3.79972 2.29406 4.00315 2.17719C4.20658 2.06033 4.43724 1.99921 4.67184 2.00001C4.90645 2.0008 5.13669 2.06349 5.33932 2.18173L13.3373 6.84706C13.5392 6.96418 13.7067 7.13223 13.8233 7.3344C13.9398 7.53657 14.0013 7.76579 14.0015 7.99915C14.0017 8.23252 13.9406 8.46184 13.8244 8.66422C13.7082 8.86659 13.541 9.03493 13.3393 9.1524L5.33932 13.8191C5.13669 13.9373 4.90645 14 4.67184 14.0008C4.43724 14.0016 4.20658 13.9405 4.00315 13.8236C3.79972 13.7067 3.63073 13.5383 3.51324 13.3352C3.39575 13.1321 3.33391 12.9017 3.33398 12.6671V3.33373Z" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+             <!-- Stop Icon -->
+            <span class="btn-icon icon-stop-svg d-none">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+        </button>
         
-        <button id="btn-hide-paths" class="btn-action" title="Show/Hide all path visualizations in Figma">Show Paths</button>
-    </div>
-    
+        <button id="btn-hide-paths" class="btn-action" title="Show/Hide all path visualizations in Figma">
+            <span class="btn-text">Show Paths</span>
+            <span class="btn-icon icon-paths-show">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 12.6673C6 13.7719 5.10457 14.6673 4 14.6673C2.89543 14.6673 2 13.7719 2 12.6673C2 11.5627 2.89543 10.6673 4 10.6673C5.10457 10.6673 6 11.5627 6 12.6673ZM6 12.6673H11.6667C12.2855 12.6673 12.879 12.4215 13.3166 11.9839C13.7542 11.5463 14 10.9528 14 10.334C14 9.71515 13.7542 9.12165 13.3166 8.68407C12.879 8.24648 12.2855 8.00065 11.6667 8.00065H4.33333C3.7145 8.00065 3.121 7.75482 2.68342 7.31723C2.24583 6.87965 2 6.28616 2 5.66732C2 5.04848 2.24583 4.45499 2.68342 4.0174C3.121 3.57982 3.7145 3.33398 4.33333 3.33398H10M10 3.33398C10 4.43855 10.8954 5.33398 12 5.33398C13.1046 5.33398 14 4.43855 14 3.33398C14 2.22941 13.1046 1.33398 12 1.33398C10.8954 1.33398 10 2.22941 10 3.33398Z" stroke="black" style="stroke:black;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+            </span>
+             <!-- Paths Hidden Icon (same as show for now, but will likely be toggled with opacity) -->
+             <span class="btn-icon icon-paths-hide d-none">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_2396_20557)">
+                    <path d="M5.99967 12.6673C5.99967 13.7719 5.10424 14.6673 3.99967 14.6673C2.8951 14.6673 1.99967 13.7719 1.99967 12.6673C1.99967 11.5627 2.8951 10.6673 3.99967 10.6673C5.10424 10.6673 5.99967 11.5627 5.99967 12.6673ZM5.99967 12.6673H11.6663C11.933 12.6673 12.2663 12.6007 12.533 12.534M3.46634 3.46732C2.96602 3.67248 2.55176 4.04635 2.29422 4.52515C2.03667 5.00395 1.95178 5.55803 2.05404 6.0929C2.15629 6.62777 2.43935 7.1103 2.85495 7.4582C3.27054 7.8061 3.79292 7.99781 4.33301 8.00065H7.99967M1.33301 1.33398L14.6663 14.6673M13.9997 10.2007C13.9678 9.62755 13.7257 9.08633 13.3199 8.68046C12.914 8.27459 12.3728 8.03256 11.7997 8.00065M9.99967 3.33398H7.13301M9.99967 3.33398C9.99967 4.43855 10.8951 5.33398 11.9997 5.33398C13.1042 5.33398 13.9997 4.43855 13.9997 3.33398C13.9997 2.22941 13.1042 1.33398 11.9997 1.33398C10.8951 1.33398 9.99967 2.22941 9.99967 3.33398Z" stroke="black" style="stroke:black;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                    <defs>
+                    <clipPath id="clip0_2396_20557">
+                    <rect width="16" height="16" fill="white" style="fill:white;fill-opacity:1;"/>
+                    </clipPath>
+                    </defs>
+                </svg>
+
+            </span>
+        </button>
         <button id="btn-toggle-mode" class="btn-action" title="Toggle Plugin Mode">
             <span id="mode-icon-span"></span>
         </button>
@@ -931,8 +1082,8 @@
             <div id="scene-list"></div>
             <div id="empty-state" class="empty-state" style="display: none;">
                 <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clapperboard-icon lucide-clapperboard"><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/><path d="m6.2 5.3 3.1 3.9"/><path d="m12.4 3.4 3.1 4"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></div>
-                <div class="empty-state-title">No scenes here yet</div>
-                <div class="empty-state-message">Pan, move, and zoom to wherever you want, capture your scenes, present, record, and enjoy.</div>
+                <div class="empty-state-title">You have no scenes</div>
+                <div class="empty-state-message">Pan, move, and zoom to wherever you want. Capture, customize, play, and enjoy.</div>
                 <button class="empty-state-cta" onclick="document.getElementById('btn-capture').click()">Capture Scene</button>
             </div>
         </div>
@@ -961,7 +1112,8 @@
                 <label for="plugin-mode-select">Plugin Mode</label>
                 <select id="plugin-mode-select">
                     <option value="horizontal">Wide/Horizontal (Screen Recording)</option>
-                    <option value="vertical">Mini/Vertical (Sidebar)</option>
+                    <option value="vertical">Vertical Medium (Sidebar)</option>
+                    <option value="mini">Vertical Mini (Icon Only)</option>
                 </select>
             </div>
 
@@ -1002,8 +1154,9 @@
   const DEFAULT_PROJECT_KEY = 'motionDirectorDefaultProject';
 
   const HORIZONTAL_MIN_HEIGHT = 40; 
-  const VERTICAL_MINI_WIDTH = 72; 
-  const VERTICAL_MINI_HEIGHT = 176; // Content + 4px padding bottom
+  // Adjusted height to fit 6 buttons x 32px + gaps/padding
+  const VERTICAL_MINI_HEIGHT = 208; 
+  const VERTICAL_MEDIUM_HEIGHT = 176;
   
   const NEWTON_ITERATIONS = 4;
   const NEWTON_MIN_TOLERANCE = 0.001;
@@ -1236,12 +1389,20 @@
   
   // Track visibility state of paths
   let pathsVisible = false;
-  
-  document.getElementById('btn-hide-paths').onclick = () => {
+      document.getElementById('btn-hide-paths').onclick = () => {
     const btn = document.getElementById('btn-hide-paths');
+    const iconShow = btn.querySelector('.icon-paths-show');
+    const iconHide = btn.querySelector('.icon-paths-hide');
+    const textSpan = btn.querySelector('.btn-text');
+
     if (pathsVisible) {
       parent.postMessage({ pluginMessage: { type: 'hide-paths' } }, '*');
-      btn.textContent = 'Show Paths';
+      textSpan.textContent = 'Show Paths';
+      
+      // Update Icons
+      if (iconShow) iconShow.classList.remove('d-none');
+      if (iconHide) iconHide.classList.add('d-none');
+
       pathsVisible = false;
     } else {
       // Show paths for all scenes that have them
@@ -1255,7 +1416,12 @@
           }
         }
       });
-      btn.textContent = 'Hide Paths';
+      textSpan.textContent = 'Hide Paths';
+      
+      // Update Icons
+      if (iconShow) iconShow.classList.add('d-none');
+      if (iconHide) iconHide.classList.remove('d-none');
+
       pathsVisible = true;
     }
   };
@@ -1322,22 +1488,26 @@
       parent.postMessage({ pluginMessage: { type: 'resize', width, height } }, '*');
   }
 
-  /**
-   * Toggles between Horizontal (Wide) and Vertical (Mini) Mode.
+  /* 
+   * Toggles: Horizontal -> Vertical (72px) -> Mini (34px) -> Horizontal
    */
+  const VERTICAL_WIDTH = 72;
+  const MINI_WIDTH = 34;
+  
   function setMode(mode, shouldSave = true) { 
       pluginMode = mode;
-      document.body.className = `mode-${mode}`;
+      // Remove all mode classes then add the active one
+      document.body.classList.remove('mode-horizontal', 'mode-vertical', 'mode-mini');
+      document.body.classList.add(`mode-${mode}`);
       
       const settingsButton = document.getElementById('btn-settings');
       const modeIconSpan = document.getElementById('mode-icon-span');
       
       if (mode === 'horizontal') {
           settingsButton.style.display = 'flex';
-          // Horizontal Mode -> Show "Minimize" icon (to allow switching to Vertical)
+          // Horizontal -> Show "Minimize" icon
           modeIconSpan.innerHTML = document.getElementById('icon-minify').outerHTML;
 
-          // Explicitly set size based on the logical view state
           if (currentView === 'collapsed') {
              setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT);
              document.getElementById('expanded-panel').style.display = 'none';
@@ -1345,14 +1515,24 @@
              setPluginSize(defaultWideWidth, defaultWideHeight);
              document.getElementById('expanded-panel').style.display = 'flex';
           }
-      } else if (mode === 'vertical') {
-          document.getElementById('expanded-panel').style.display = 'none'; // Vertical mode does not use the expanded panel
+      } else if (mode === 'vertical' || mode === 'mini') {
+          document.getElementById('expanded-panel').style.display = 'none'; 
           settingsButton.style.display = 'none'; 
-          currentView = 'scenes'; // Vertical mode is logically always focused on scenes
-          setPluginSize(VERTICAL_MINI_WIDTH, VERTICAL_MINI_HEIGHT);
+          currentView = 'scenes'; 
+
+          // Set width based on mode
+          const width = (mode === 'mini') ? MINI_WIDTH : VERTICAL_WIDTH;
+          // Set height based on mode: Mini needs more transparency/space for stack (208), Medium is shorter (176)
+          // Set height based on mode: Mini needs more transparency/space for stack (208), Medium is shorter (176)
+          const height = (mode === 'mini') ? VERTICAL_MINI_HEIGHT : VERTICAL_MEDIUM_HEIGHT;
+          setPluginSize(width, height);
           
-          // Vertical Mode -> Show "Expand" icon (to allow switching to Horizontal)
-          modeIconSpan.innerHTML = document.getElementById('icon-expand').outerHTML;
+          // Icon Logic: Vertical -> Minimize, Mini -> Expand
+          if (mode === 'vertical') {
+              modeIconSpan.innerHTML = document.getElementById('icon-minify').outerHTML;
+          } else {
+              modeIconSpan.innerHTML = document.getElementById('icon-expand').outerHTML;
+          }
       }
       
       document.getElementById('plugin-mode-select').value = mode;
@@ -1425,10 +1605,17 @@
   };
   
   /**
-   * Toggles between Horizontal (Wide) and Vertical (Mini) Mode.
+   * Toggles between Horizontal (Wide) -> Vertical (Medium) -> Vertical (Mini)
    */
   document.getElementById('btn-toggle-mode').onclick = () => {
-    const newMode = pluginMode === 'horizontal' ? 'vertical' : 'horizontal';
+    let newMode = 'horizontal';
+    if (pluginMode === 'horizontal') {
+        newMode = 'vertical';
+    } else if (pluginMode === 'vertical') {
+        newMode = 'mini';
+    } else {
+        newMode = 'horizontal';
+    }
     setMode(newMode);
   };
 
@@ -1991,8 +2178,16 @@ function renderList() {
 function resetPlayButton() {
     is_playing = false;
     const playButton = document.getElementById('btn-play-all');
-    playButton.textContent = 'Play';
+    const textSpan = playButton.querySelector('.btn-text');
+    const iconPlay = playButton.querySelector('.icon-play-svg');
+    const iconStop = playButton.querySelector('.icon-stop-svg');
+    
+    textSpan.textContent = 'Play';
     playButton.classList.remove('btn-stop');
+    
+    // Update Icons
+    if (iconPlay) iconPlay.classList.remove('d-none');
+    if (iconStop) iconStop.classList.add('d-none');
     
     // Cancel any pending animation frame
     if (animation_frame_id) {
@@ -2014,8 +2209,16 @@ async function startPlayback() {
     // 1. Set Playing State and UI
     is_playing = true;
     const playButton = document.getElementById('btn-play-all');
-    playButton.textContent = 'Stop';
+    const textSpan = playButton.querySelector('.btn-text');
+    const iconPlay = playButton.querySelector('.icon-play-svg');
+    const iconStop = playButton.querySelector('.icon-stop-svg');
+
+    textSpan.textContent = 'Stop';
     playButton.classList.add('btn-stop');
+    
+    // Update Icons
+    if (iconPlay) iconPlay.classList.add('d-none');
+    if (iconStop) iconStop.classList.remove('d-none');
     
     for (let i = 0; i < scenes.length; i++) {
         // Stop check inside the loop, handles early exit between scene transitions
