@@ -7,11 +7,12 @@
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
-    --color-bg-darker: rgb(12, 14, 13, 0.10);
-    --color-bg-dark: hsl(160, 6%, 9%, 0.10);
+    --color-bg-darker: rgba(12, 14, 13, 0.844);
+    --color-bg-dark: hsl(150, 4%, 9%, 0.744);
     --color-bg-medium: hsl(160, 4%, 14%, 0.1);
     --color-bg-regular: hsl(160, 4%, 18%, 0.4);
-    --color-bg-light: hsl(160, 4%, 22%, 0.6); 
+    --color-bg-light: hsla(0, 0%, 100%, 0.07); 
+    --color-bg-lighter: hsla(0, 0%, 100%, 0.1); 
     --color-text-main: hsl(160, 6%, 91%, 0.80); 
     --color-text-faded: hsla(168, 5%, 81%, 0.5); 
     --color-accent-blue: #007AFF; 
@@ -59,13 +60,10 @@
       font-family: var(--font-main); 
       font-size: var(--font-size-base);
       padding: 0; margin: 0; 
-      background-color: #0a0b0a; /* Very dark base */
-      background-image: url('noise-texture.png');
-      background-repeat: repeat;
-      background-blend-mode: screen; /* Screen blend for grainy look */
+      background-color: var(--color-bg-darker); /* Very dark base */
       color: var(--color-text-main); 
       overflow: hidden; 
-      transition: width 0.5s ease-out, height 0.5s ease-out, position 0.5s ease-out; 
+      transition: 0.65s cubic-bezier(0.24, 0.61, 0.48, 1);
       font-weight: 400;
       height: 100%;
       overflow: visible;
@@ -80,7 +78,7 @@
       z-index: 10; 
       position: relative;
       gap: 4px;
-      transition: width 0.5s ease-out, height 0.5s ease-out; 
+      transition: 0.65s cubic-bezier(0.24, 0.61, 0.48, 1); 
   }
 
   .controls-left { 
@@ -90,7 +88,7 @@
       width: 100%;
       padding-top: 0px;
       align-items: center;
-      transition: position 0.25s ease-out, width 0.25s ease-out; 
+      transition: 0.65s cubic-bezier(0.24, 0.61, 0.48, 1);
   }
   
   
@@ -119,9 +117,6 @@
           inset 0 -1px 0 0 rgba(0,0,0,0.3),
           0 1px 2px rgba(0,0,0,0.3);
       font-size: var(--font-size-small); 
-      /* Noise texture */
-      background-image: url('noise-texture.png');
-      background-blend-mode: overlay;
   }
   .btn-action:focus-visible {
       outline: .25px solid var(--color-accent-green);
@@ -203,6 +198,10 @@
       background-color: var(--color-bg-medium); 
       color: var(--color-text-main); 
       padding: 0 10px;
+      box-shadow: 
+        inset 0 1px 0 0 rgba(255,255,255,0.08),
+        inset 0 -1px 0 0 rgba(0,0,0,0.3),
+        0 1px 2px rgba(0,0,0,0.3);
   }
   #btn-hide-paths:hover { 
       background-color: rgba(45, 47, 45, 0.3); 
@@ -267,7 +266,7 @@
       gap: 2px; 
       width: 100%; 
       align-items: center;
-      transition: width 0.3s ease-in-out, height 0.3s ease-in-out; 
+      transition: 0.3s cubic-bezier(0.24, 0.61, 0.48, 1);
   }
   
   /* Compact Button Styling for 72px width */
@@ -476,12 +475,12 @@
   }
   .scene-item { 
       background-color: rgba(30, 32, 30, 0.6); /* Semi-transparent for texture */
-      padding: 8px 10px; 
+      padding: 11px 8px; 
       border-radius: var(--radius-large); 
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: 0.2s;
+      transition: 0.3s cubic-bezier(0.24, 0.61, 0.48, 1);
       opacity: 0.5; /* Inactive cards at 60% */
       /* Inset shadows for depth */
       box-shadow: 
@@ -491,20 +490,17 @@
   }
   .scene-item:hover {
       opacity: 0.9;
-      background-color: rgba(45, 47, 45, 0.3);
+      background-color: var(--color-bg-medium);
   }
 
   .scene-item-active {
-      background-color: rgba(20, 22, 20, 0.9); /* Darker, more opaque */
+      background-color: var(--color-bg-medium); /* Darker, more opaque */
       opacity: 1; /* Full opacity when active */
       box-shadow: 
-          inset 0 0 0 .5    px var(--color-accent-green-faded),
+          inset 0 0 0 .25px var(--color-accent-green),
           inset 0 1px 0 0 rgba(255,255,255,0.08),
           inset 0 -1px 0 0 rgba(0,0,0,0.4),
           0 1px 3px rgba(0,0,0,0.3);
-          &:hover {
-              opacity: 1;
-          }
   }
 
   .scene-top-row { 
@@ -531,7 +527,7 @@
       color: var(--color-text-main); 
       font-weight: 400; 
       font-size: var(--font-size-base); 
-      padding: 2px 0;
+      padding: 3px 0;
       min-width: 50px;
       max-width: 120px;
       flex-shrink: 1;
@@ -539,14 +535,21 @@
   .scene-name-input:focus {
       outline: none;
       background: var(--color-bg-darker); 
-      padding: 2px 5px;
+      padding: 4px 5px;
   }
   
   /* Scene Action Buttons */
+
+  .actions { 
+      display: flex;
+      align-items: middle;
+      gap: 12px;
+  }
   .scene-top-row .actions button { 
       background: none; border: none; color: var(--color-text-faded); 
       font-size: var(--font-size-tiny); 
-      cursor: pointer; padding: 2px 4px; transition: color 0.2s; 
+      cursor: pointer; padding: 2px 4px; 
+      transition: 0.3s ease-in-out; 
       border-radius: var(--radius-small);
   }
   .scene-top-row .actions button:hover { color: var(--color-text-main); }
@@ -561,6 +564,8 @@
       position: relative;
       display: inline-flex;
       align-items: center;
+      width: 18px;
+      height: 16px;
   }
   
   .path-controls-popup {
@@ -607,7 +612,7 @@
   /* Input/Select Consistency */
   .control-group input[type="number"],
   .control-group select {
-      background: var(--color-bg-medium); 
+      background: var(--color-bg-light); 
       color: var(--color-text-main); 
       border: 0px solid transparent; 
       padding: 4px;
@@ -621,17 +626,23 @@
       -moz-appearance: textfield;
       font-family: var(--font-main);
       font-weight: 400;
+      box-shadow: 
+        inset 0 -.75px 0 0 rgba(255,255,255,0.08),
+        inset 0 .75px 0 0 rgba(0,0,0,0.7),
+        0 -1px 0px rgba(0,0,0,1);
+        &:hover,&:focus {
+            background-color: var(--color-bg-darker);
+        }
   }
   .control-group select {
       width: 88px;
       text-align: left;
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='8' height='4' viewBox='0 0 8 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0.5L4 3.5L7.5 0.5' stroke='%23888888' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 7 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.177734 0.177734L3.17773 3.17773L6.17773 0.177734' stroke='%23888888' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");   
       background-repeat: no-repeat;
-      background-position: right 8px center;
-      padding-right: 16px;
-      padding-left: 8px;
+      background-position: right 6px top 10px;
+      padding: 0 6px;
       height: 24px;
   }
   
@@ -671,12 +682,27 @@
   }
   
   .bezier-row input[type="text"] {
-      flex-grow: 1; padding: 6px; 
-      background: var(--color-bg-dark); color: var(--color-text-main); border: 1px solid var(--color-border); 
-      border-radius: var(--radius-medium); font-size: var(--font-size-small); font-family: var(--font-main); text-align: left;
+      background: var(--color-bg-light); 
+      color: var(--color-text-main); 
+      border: 0px solid transparent; 
+      padding: 4px 8px;
       height: 24px;
+      width: 50%;
       box-sizing: border-box;
+      border-radius: var(--radius-small); 
+      font-size: var(--font-size-tiny); 
+      text-align: right; 
+      appearance: none; 
+      -moz-appearance: textfield;
+      font-family: var(--font-main);
       font-weight: 400;
+      box-shadow: 
+        inset 0 -.75px 0 0 rgba(255,255,255,0.08),
+        inset 0 .75px 0 0 rgba(0,0,0,0.7),
+        0 -1px 0px rgba(0,0,0,1);
+        &:hover,&:focus {
+            background-color: var(--color-bg-darker);
+        }
   }
   
   /* Visualize Path Button Row */
@@ -694,7 +720,7 @@
       font-weight: 400;
       cursor: pointer;
       border-radius: var(--radius-small);
-      transition: background 0.3s;
+      transition: 0.3s ease-in-out;
       font-family: var(--font-main);
   }
   .btn-visualize:hover {
@@ -740,7 +766,7 @@
       padding: 6px 12px;
       border-radius: var(--radius-large);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: 0.3s ease-in-out;
       flex-grow: 1;
       font-family: var(--font-main);
   }
@@ -844,7 +870,7 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;
-      transition: 0.3s cubic-bezier(0.24, 0.61, 0.48, 1);
+      transition: 0.3s ease-in-out;
       text-shadow: 0 -.5px 0 rgba(0, 0, 0, 0.9);
       box-shadow: var(--shadow-inner-light), var(--shadow-drop);
       overflow: visible;
@@ -1115,6 +1141,32 @@
                 <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
             </div>
         </div>
+        
+        <div class="setting-group">
+            <h3>Global Animation Settings</h3>
+            <p style="font-size: var(--font-size-tiny); color: var(--color-text-faded); margin: 0 0 12px 0; line-height: 1.4;">
+                Apply these parameters to <strong>ALL SCENES</strong> at once.
+            </p>
+            <div class="scene-edit-row" style="margin-bottom: 12px; justify-content: flex-start; gap: 12px;">
+                <div class="control-group">
+                    <label>Dur</label>
+                    <input type="number" id="global-duration" value="2000" min="100">
+                </div>
+                <div class="control-group">
+                    <label>Delay</label>
+                    <input type="number" id="global-delay" value="500" min="0">
+                </div>
+                 <div class="control-group">
+                    <label>Ease</label>
+                    <select id="global-easing" style="width: 100px;">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+             <div class="project-buttons">
+                <button id="btn-apply-global" style="width: 100%; justify-content: center;">Apply to All Scenes</button>
+             </div>
+        </div>
     </div>
 
 </div>
@@ -1176,34 +1228,34 @@
     }
     
     // Easing presets using cubic-bezier curves
-    // Note: Avoid extreme overshoot values for camera - they cause shaking
+    // Refined for premium, smooth, and dynamic feel
     switch (easing) {
-      // Original presets - smooth and safe
-      case 'snap': return 1 - Math.pow(1 - t, 4); 
-      case 'smooth': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
+      // Standard CSS-like easings
       case 'linear': return t;
-      
-      // Standard CSS-like easings - safe for camera
       case 'ease': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
       case 'ease-in': return cubicBezier(t, 0.42, 0, 1, 1);
       case 'ease-out': return cubicBezier(t, 0, 0, 0.58, 1);
       case 'ease-in-out': return cubicBezier(t, 0.42, 0, 0.58, 1);
       
-      // Back easings (moderate overshoot - smoothing will soften)
-      case 'ease-in-back': return cubicBezier(t, 0.6, -0.2, 0.735, 0.045);
-      case 'ease-out-back': return cubicBezier(t, 0.175, 0.885, 0.32, 1.2);
-      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.4, 0.265, 1.4);
+      // Smooth / Premium (Quart/Quint based)
+      case 'smooth': return cubicBezier(t, 0.65, 0, 0.35, 1); 
+      case 'snap': return cubicBezier(t, 0.22, 1, 0.36, 1); 
       
-      // Exponential easings - dramatic but safe
-      case 'ease-in-expo': return cubicBezier(t, 0.95, 0.05, 0.795, 0.035);
-      case 'ease-out-expo': return cubicBezier(t, 0.19, 1, 0.22, 1);
+      // Back / Overshoot (Tamed for Camera usage relative to previous iteration)
+      case 'ease-in-back': return cubicBezier(t, 0.36, 0, 0.66, -0.15); // Gentle pull back
+      case 'ease-out-back': return cubicBezier(t, 0.34, 1.1, 0.64, 1); // Gentle overshoot (10%)
+      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.15, 0.265, 1.15); // Moderate push/pull
       
-      // Circular easings - smooth curves
-      case 'ease-in-circ': return cubicBezier(t, 0.6, 0.04, 0.98, 0.335);
-      case 'ease-out-circ': return cubicBezier(t, 0.075, 0.82, 0.165, 1);
+      // Exponential (Dramatic)
+      case 'ease-in-expo': return cubicBezier(t, 0.7, 0, 0.84, 0);
+      case 'ease-out-expo': return cubicBezier(t, 0.16, 1, 0.3, 1);
       
-      // Spring - visible bounce
-      case 'spring': return cubicBezier(t, 0.175, 0.885, 0.32, 1.15);
+      // Circular
+      case 'ease-in-circ': return cubicBezier(t, 0.55, 0, 1, 0.45);
+      case 'ease-out-circ': return cubicBezier(t, 0, 0.55, 0.45, 1);
+      
+      // Spring (Approximated - Tamed)
+      case 'spring': return cubicBezier(t, 0.34, 1.3, 0.64, 1); 
       
       default: return t;
     }
@@ -1364,6 +1416,26 @@
   document.getElementById('arc-enabled-checkbox').onchange = (e) => {
       isArcEnabled = e.target.checked;
       saveProject(); 
+  };
+  
+  // --- Global Animation Settings Handler ---
+  document.getElementById('btn-apply-global').onclick = () => {
+      const dur = parseInt(document.getElementById('global-duration').value) || 2000;
+      const delay = parseInt(document.getElementById('global-delay').value) || 500;
+      const easing = document.getElementById('global-easing').value || 'smooth';
+      
+      const confirmMsg = `This will update ALL ${scenes.length} scenes to:\nDuration: ${dur}ms\nDelay: ${delay}ms\nEasing: ${easing}\n\nProceed?`;
+      
+      if (confirm(confirmMsg)) {
+          scenes.forEach(scene => {
+              scene.duration = dur;
+              scene.delay = delay;
+              scene.easing = easing;
+          });
+          saveProject();
+          renderList();
+          alert("All scenes updated!");
+      }
   };
   
   // Track visibility state of paths
@@ -1605,6 +1677,14 @@
   window.onload = () => {
       // Need to set the initial icon state before fetching data 
       
+      // Populate Global Easing Options
+      const globalEasingSelect = document.getElementById('global-easing');
+      if (globalEasingSelect) {
+          globalEasingSelect.innerHTML = EASING_OPTIONS_HTML;
+          // Set default to 'smooth'
+          globalEasingSelect.value = 'smooth'; 
+      }
+
       // Start with expanded panel showing scene list
       setPluginView('scenes');
       
@@ -1779,21 +1859,7 @@
 <path d="M4.45833 9.70833C4.7805 9.70833 5.04167 9.44717 5.04167 9.125C5.04167 8.80284 4.7805 8.54167 4.45833 8.54167C4.13617 8.54167 3.875 8.80284 3.875 9.125C3.875 9.44717 4.13617 9.70833 4.45833 9.70833Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-  // ========================================
-
-// ========================================
-
-function getSceneHTML(scene, index) {
-    const pathSettingsIndex = index;
-    const isLastScene = index === scenes.length - 1;
-
-    const hasCustomPath = isLastScene || !!scenes[pathSettingsIndex].customControlPoint; 
-    
-    const pathControlsVisible = scene.pathControlsVisible || false;
-    const eyeIcon = pathControlsVisible ? iconEyeOff : iconEye;
-    
-    // Generate Options for Easing Select
-    const easingOptions = `
+  const EASING_OPTIONS_HTML = `
         <option value="custom">Custom Bezier</option>
         <optgroup label="Basic">
             <option value="linear">Linear</option>
@@ -1803,7 +1869,7 @@ function getSceneHTML(scene, index) {
             <option value="ease-in-out">Ease In-Out</option>
         </optgroup>
         <optgroup label="Dramatic">
-            <option value="snap">Snap (Quart)</option>
+            <option value="snap">Snap</option>
             <option value="smooth">Smooth</option>
             <option value="ease-in-expo">Expo In</option>
             <option value="ease-out-expo">Expo Out</option>
@@ -1818,7 +1884,23 @@ function getSceneHTML(scene, index) {
             <option value="ease-in-circ">Circ In</option>
             <option value="ease-out-circ">Circ Out</option>
         </optgroup>
-    `;
+  `;
+
+  // ========================================
+
+// ========================================
+
+function getSceneHTML(scene, index) {
+    const pathSettingsIndex = index;
+    const isLastScene = index === scenes.length - 1;
+
+    const hasCustomPath = isLastScene || !!scenes[pathSettingsIndex].customControlPoint; 
+    
+    const pathControlsVisible = scene.pathControlsVisible || false;
+    const eyeIcon = pathControlsVisible ? iconEyeOff : iconEye;
+    
+    // Generate Options for Easing Select
+    const easingOptions = EASING_OPTIONS_HTML;
 
     return `
       <div class="scene-top-row">
@@ -2324,13 +2406,17 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
       let smoothY = start.y;
       let smoothZoom = start.zoom;
       
-      // Smoothing factor (0.0-1.0): higher = more responsive/accurate
-      // 0.9 gives accurate path tracking with minimal jitter filtering
-      const SMOOTHING = 0.9;
+      // Smoothing factor (0.0-1.0): 
+      // 0.85 = Good balance of smoothness and settling time.
+      const SMOOTHING = 0.85; 
       
-      // Lower threshold for more responsive but smooth updates
-      const POSITION_THRESHOLD = 0.25;
-      const ZOOM_THRESHOLD = 0.0002;
+      // Settle threshold: stop when we are this close (pixels/zoom units)
+      const SETTLE_THRESHOLD_PX = 0.5;
+      const SETTLE_THRESHOLD_ZOOM = 0.001;
+
+      // Lower threshold for sending updates (Precision)
+      const UPDATE_THRESHOLD_PX = 0.05;
+      const UPDATE_THRESHOLD_ZOOM = 0.0001;
 
       function loop() {
         if (checkStop && !is_playing && animation_frame_id) {
@@ -2340,39 +2426,43 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
 
         const now = performance.now();
         const rawProgress = Math.min((now - startTime) / duration, 1);
+        const isTimeComplete = rawProgress >= 1;
         
-        const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
+        let currentX, currentY, currentZoom;
 
-        // Clamp eased progress to prevent overshoot artifacts
-        const clampedProgress = Math.max(0, Math.min(1, easedProgress));
-
-        const currentZoom = start.zoom + (end.zoom - start.zoom) * clampedProgress;
-        
-        let currentX, currentY;
-
-        if (isArcEnabled && control) { 
-            const t = clampedProgress;
-            const oneMinusT = 1 - t;
-            
-            // Quadratic Bezier Interpolation
-            currentX = oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.xc + t * t * end.x;
-            currentY = oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.yc + t * t * end.y;
-
+        // If time is up, the "physics target" is the exact end position
+        if (isTimeComplete) {
+             currentX = end.x;
+             currentY = end.y;
+             currentZoom = end.zoom;
         } else {
-            // Linear interpolation
-            currentX = start.x + (end.x - start.x) * clampedProgress;
-            currentY = start.y + (end.y - start.y) * clampedProgress;
+            // Otherwise calculate Bezier position
+            const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
+            // Allow overshoot (no clamp)
+            const t = easedProgress; 
+
+            currentZoom = start.zoom + (end.zoom - start.zoom) * t;
+            if (currentZoom <= 0.01) currentZoom = 0.01; 
+            
+            if (isArcEnabled && control) { 
+                const oneMinusT = 1 - t;
+                currentX = oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.xc + t * t * end.x;
+                currentY = oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.yc + t * t * end.y;
+            } else {
+                currentX = start.x + (end.x - start.x) * t;
+                currentY = start.y + (end.y - start.y) * t;
+            }
         }
 
-        // Apply exponential smoothing to dampen sudden changes
+        // Apply exponential smoothing
         smoothX += (currentX - smoothX) * SMOOTHING;
         smoothY += (currentY - smoothY) * SMOOTHING;
         smoothZoom += (currentZoom - smoothZoom) * SMOOTHING;
 
-        // Only send update if smoothed values changed significantly
-        const xChanged = lastSentX === null || Math.abs(smoothX - lastSentX) > POSITION_THRESHOLD;
-        const yChanged = lastSentY === null || Math.abs(smoothY - lastSentY) > POSITION_THRESHOLD;
-        const zoomChanged = lastSentZoom === null || Math.abs(smoothZoom - lastSentZoom) > ZOOM_THRESHOLD;
+        // Check if we should send an update
+        const xChanged = lastSentX === null || Math.abs(smoothX - lastSentX) > UPDATE_THRESHOLD_PX;
+        const yChanged = lastSentY === null || Math.abs(smoothY - lastSentY) > UPDATE_THRESHOLD_PX;
+        const zoomChanged = lastSentZoom === null || Math.abs(smoothZoom - lastSentZoom) > UPDATE_THRESHOLD_ZOOM;
         
         if (xChanged || yChanged || zoomChanged) {
             parent.postMessage({ pluginMessage: { type: 'update-viewport', x: smoothX, y: smoothY, zoom: smoothZoom } }, '*');
@@ -2381,12 +2471,24 @@ function animate(start, end, duration, easing, delay, bezierString, customContro
             lastSentZoom = smoothZoom;
         }
 
-        if (rawProgress < 1) {
+        // Convergence Check
+        // If time is up, we only stop when the smoothed values have also reached the target
+        let isSettled = false;
+        if (isTimeComplete) {
+            const distSq = (smoothX - end.x)**2 + (smoothY - end.y)**2;
+            const zoomDiff = Math.abs(smoothZoom - end.zoom);
+            
+            if (distSq < (SETTLE_THRESHOLD_PX * SETTLE_THRESHOLD_PX) && zoomDiff < SETTLE_THRESHOLD_ZOOM) {
+                isSettled = true;
+            }
+        }
+
+        if (!isSettled) {
           animation_frame_id = requestAnimationFrame(loop);
         } else {
-          // Ensure final position is exactly the end point
+          // Snap purely to ensure float precision doesn't leave us 0.0001px off
           parent.postMessage({ pluginMessage: { type: 'update-viewport', x: end.x, y: end.y, zoom: end.zoom } }, '*');
-          // Animation finished, use setTimeout to handle the delay
+          
           setTimeout(resolve, delay);
         }
       }
