@@ -188,9 +188,16 @@
   .btn-stop {
       background-color: var(--color-accent-red) !important;
       color: var(--color-text-main) !important;
+      padding: 0 10px;
+      font-size: var(--font-size-small); 
+      transition: 0.3s cubic-bezier(0.24, 0.61, 0.48, 1);
+      /* White inner glow on text */
+      text-shadow: 0px -.75px 0 rgba(0, 0, 0, .7) !important;
   }
   .btn-stop:hover {
-      background-color: #c9342c !important; 
+      background-color: #c9342c !important;
+      text-shadow: 0 -.75px 0 rgba(0, 0, 0, .7) !important;
+      box-shadow: 0 0 10px -3px #c9342c !important;
   }
 
   /* 3.4. HIDE PATHS Button */
@@ -424,6 +431,22 @@
       box-sizing: border-box;
   }
 
+  #expanded-panel.view-scenes #scene-list-view {
+      display: flex;
+  }
+
+  #expanded-panel.view-scenes #config-view {
+      display: none !important;
+  }
+
+  #expanded-panel.view-config #scene-list-view {
+      display: none !important;
+  }
+
+  #expanded-panel.view-config #config-view {
+      display: flex;
+  }
+
   /* SCENE LIST View */
   #scene-list-view {
       display: flex; 
@@ -444,9 +467,12 @@
 
   /* CONFIG View */
   #config-view {
-      display: none;
+      padding: 0 10px 20px 10px; /* Added bottom padding for scroll space */
       flex-direction: column;
       gap: 16px;
+      overflow-y: auto; /* Enable vertical scrolling */
+      flex: 1; /* Take up available space */
+      max-height: 100%; /* Ensure it respects container height */
   }
 
   h3 { 
@@ -472,6 +498,12 @@
       gap: 4px;
       flex: 1;
       padding: 0 4px 4px 4px;
+  }
+  #scene-list-view.is-empty #scene-list {
+      display: none;
+  }
+  #scene-list-view.is-empty #empty-state {
+      display: flex !important;
   }
   .scene-item { 
       background-color: rgba(30, 32, 30, 0.6); /* Semi-transparent for texture */
@@ -577,8 +609,8 @@
     gap: 4px;
     margin-left: 0;
     z-index: 10;
-    animation: popupIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: right center;
+    /* Animation removed from CSS - will be applied only on first appearance via JS */
   }
   @keyframes popupIn {
       from { opacity: 0; transform: translateY(-50%) scale(0.9); }
@@ -1035,7 +1067,8 @@
 
             </span>
         </button>
-        <button id="btn-toggle-mode" class="btn-action" title="Toggle Plugin Mode">
+        <!-- Toggle Mode Button -->
+        <button id="btn-toggle-mode" class="btn-action" title="Toggle Plugin View">
             <span id="mode-icon-span"></span>
         </button>
         <button id="btn-settings" class="btn-action" title="Settings/Scene List">
@@ -1059,40 +1092,21 @@
     </div>
 </header>
 
-<div class="hidden-icons">
-    <!-- Icon for Minify (Collapse) - Used in Horizontal Mode -->
-    <svg id="icon-minify" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g filter="url(#filter0_d_2264_5581_min)">
-        <path d="M6.79167 4.45833L10.875 0.375M6.79167 4.45833H10.2917M6.79167 4.45833V0.958333M0.375 10.875L4.45833 6.79167M4.45833 6.79167H0.958333M4.45833 6.79167V10.2917" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
-        </g>
-        <defs>
-        <filter id="filter0_d_2264_5581_min" x="0" y="0" width="11.25" height="11.75" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-        <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-        <feOffset dy="0.5"/>
-        <feComposite in2="hardAlpha" operator="out"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
-        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2264_5581_min"/>
-        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2264_5581_min" result="shape"/>
-        </filter>
-        </defs>
-    </svg>
-    
-    <!-- Icon for Expand - Used in Vertical Mode -->
-    <svg id="icon-expand" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8.75 8.75L12.25 12.25M12.25 12.25V9.33333M12.25 12.25H9.33333M8.75 5.25L12.25 1.75M12.25 1.75V4.66667M12.25 1.75H9.33333M1.75 9.33333V12.25M1.75 12.25H4.66667M1.75 12.25L5.25 8.75M1.75 4.66667V1.75M1.75 1.75H4.66667M1.75 1.75L5.25 5.25" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
 
-    
-
-</div>
 <div id="expanded-panel" class="collapsed">
     
     <div id="scene-list-view">
         <div class="setting-group">
             <div id="scene-list"></div>
             <div id="empty-state" class="empty-state" style="display: none;">
-                <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clapperboard-icon lucide-clapperboard"><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/><path d="m6.2 5.3 3.1 3.9"/><path d="m12.4 3.4 3.1 4"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></div>
+                <div class="empty-state-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clapperboard">
+                        <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/>
+                        <path d="m6.2 5.3 3.1 3.9"/>
+                        <path d="m12.4 3.4 3.1 4"/>
+                        <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
+                    </svg>
+                </div>
                 <div class="empty-state-title">You have no scenes</div>
                 <div class="empty-state-message">Pan, move, and zoom to wherever you want. Capture, customize, play, and enjoy.</div>
                 <button class="empty-state-cta" onclick="document.getElementById('btn-capture').click()">Capture Scene</button>
@@ -1140,6 +1154,19 @@
                 <input type="checkbox" id="arc-enabled-checkbox">
                 <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
             </div>
+
+            <div class="setting-group" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border);">
+                <label style="display:block; margin-bottom: 6px; font-weight: 500;">Animation Quality (Target FPS)</label>
+                <select id="fps-select" style="width: 100%;">
+                    <option value="120">120 FPS (Experimental, Very Fast PC)</option>
+                    <option value="60">60 FPS (Smoothest, Fast PC)</option>
+                    <option value="45">45 FPS (Balance)</option>
+                    <option value="30" selected>30 FPS (Standard, Stable)</option>
+                    <option value="24">24 FPS (Cinematic, Lowest Load)</option>
+                    <option value="15">15 FPS (Low Performance Mode)</option>
+                </select>
+                <p style="font-size: 11px; color: var(--color-text-faded); margin-top: 4px;">Lower FPS fixes stuttering/shaking on some machines.</p>
+            </div>
         </div>
         
         <div class="setting-group">
@@ -1176,8 +1203,34 @@
   let currentSceneIndex = 0; 
   let pluginMode = 'horizontal'; 
   let currentView = 'collapsed'; // Initial state should be 'collapsed'
-  let is_playing = false; // Flag to track if the "Play All" sequence is running
+  let is_playing = false; // Global flag
+  let hasLoadedScenes = false; // Tracks when scene data has been hydrated
+  let isPreCaptureInProgress = false;
+
+  // Icon Constants (Moved to top for scope safety)
+  const iconMinify = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g filter="url(#filter0_d_min)">
+    <path d="M6.79167 4.45833L10.875 0.375M6.79167 4.45833H10.2917M6.79167 4.45833V0.958333M0.375 10.875L4.45833 6.79167M4.45833 6.79167H0.958333M4.45833 6.79167V10.2917" stroke="currentColor" style="stroke:currentColor;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+    </g>
+    <defs>
+    <filter id="filter0_d_min" x="0" y="0" width="11.25" height="11.75" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+    <feOffset dy="0.5"/>
+    <feComposite in2="hardAlpha" operator="out"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_min"/>
+    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_min" result="shape"/>
+    </filter>
+    </defs>
+  </svg>`;
+
+  const iconExpand = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8.75 8.75L12.25 12.25M12.25 12.25V9.33333M12.25 12.25H9.33333M8.75 5.25L12.25 1.75M12.25 1.75V4.66667M12.25 1.75H9.33333M1.75 9.33333V12.25M1.75 12.25H4.66667M1.75 12.25L5.25 8.75M1.75 4.66667V1.75M1.75 1.75H4.66667M1.75 1.75L5.25 5.25" stroke="currentColor" style="stroke:currentColor;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
   let animation_frame_id = null; // Holds the requestAnimationFrame ID for cancellation
+  let isTrailModeEnabled = false; // NEW: Trail mode toggle
+  let targetFPS = 60; // Target FPS for animation (smoother by default)
 // ----------------------------------
   
   let defaultWideWidth = 335;
@@ -1186,6 +1239,8 @@
 
   let currentProjectName = 'motionDirectorDefaultProject';
   const DEFAULT_PROJECT_KEY = 'motionDirectorDefaultProject';
+  const LEGACY_DEFAULT_PROJECT_KEY = 'Default_Project';
+  let hasAttemptedLegacyDefaultLoad = false;
 
   const HORIZONTAL_MIN_HEIGHT = 40; 
   // Adjusted height to fit 6 buttons x 32px + gaps/padding
@@ -1218,47 +1273,62 @@
       return CalcBezier(y1, y2, GetTForX(t, x1, x2));
   }
   function getEasing(t, easing, bezierPoints) {
+    // Clamp input to valid range
+    // t = Math.max(0, Math.min(1, t)); // Allowed to go outside for overshoot effect if needed, but calculation usually needs 0-1.
+    // However, cubicBezier function returns values outside 0-1 if Y coordinates are outside 0-1, which IS desired for overshoot.
+    // The Input T (time) is strictly 0-1 in the loop. 
+    // IF the user passes rawProgress > 1, loop handles it.
+    
+    let result;
+    
     if (easing === 'custom' && bezierPoints && bezierPoints.length === 4) {
         const [x1, y1, x2, y2] = bezierPoints;
         const cx1 = Math.max(0, Math.min(1, parseFloat(x1)));
         const cy1 = parseFloat(y1);
         const cx2 = Math.max(0, Math.min(1, parseFloat(x2)));
         const cy2 = parseFloat(y2);
-        return cubicBezier(t, cx1, cy1, cx2, cy2);
+        result = cubicBezier(t, cx1, cy1, cx2, cy2);
+    } else {
+        // Easing presets using cubic-bezier curves
+        // Tuned for "Invisible/Seamless" professional motion.
+        switch (easing) {
+          // Standard CSS-like easings
+          case 'linear': result = t; break;
+          case 'ease': result = cubicBezier(t, 0.25, 0.1, 0.25, 1); break;
+          case 'ease-in': result = cubicBezier(t, 0.42, 0, 1, 1); break;
+          case 'ease-out': result = cubicBezier(t, 0, 0, 0.58, 1); break;
+          case 'ease-in-out': result = cubicBezier(t, 0.42, 0, 0.58, 1); break;
+          
+          // Premium / Polished
+          // 'smooth' = Standard "Motion Graphics" ease (approx 0.5, 0, 0.2, 1) - Very distinct, no sharp stops.
+          case 'smooth': result = cubicBezier(t, 0.5, 0, 0.2, 1); break;
+          
+          // 'snap' = Fast start, soft landing. Avoids the "brick wall" stop of standard Quarts.
+          case 'snap': result = cubicBezier(t, 0.12, 1, 0.35, 1); break;
+          
+          // Back / Overshoot (Tamed significantly to avoid "broken camera" feel)
+          case 'ease-in-back': result = cubicBezier(t, 0.36, 0, 0.66, -0.15); break; // Gentle pull
+          case 'ease-out-back': result = cubicBezier(t, 0.18, 1.15, 0.45, 1); break; // Soft 15% overshoot, smooth return
+          case 'ease-in-out-back': result = cubicBezier(t, 0.68, -0.1, 0.26, 1.1); break; // Very subtle push/pull
+          
+          // Exponential (Softened)
+          // Standard expo is too sharp for 60fps canvas. These are "Quint"-ish.
+          case 'ease-in-expo': result = cubicBezier(t, 0.64, 0, 0.78, 0); break;
+          case 'ease-out-expo': result = cubicBezier(t, 0.22, 1, 0.36, 1); break;
+          
+          // Circular
+          case 'ease-in-circ': result = cubicBezier(t, 0.55, 0, 1, 0.45); break;
+          case 'ease-out-circ': result = cubicBezier(t, 0, 0.55, 0.45, 1); break;
+          
+          // Spring (Approximated - Heavy dampening)
+          case 'spring': result = cubicBezier(t, 0.34, 1.25, 0.64, 1); break;
+          
+          default: result = t;
+        }
     }
     
-    // Easing presets using cubic-bezier curves
-    // Refined for premium, smooth, and dynamic feel
-    switch (easing) {
-      // Standard CSS-like easings
-      case 'linear': return t;
-      case 'ease': return cubicBezier(t, 0.25, 0.1, 0.25, 1);
-      case 'ease-in': return cubicBezier(t, 0.42, 0, 1, 1);
-      case 'ease-out': return cubicBezier(t, 0, 0, 0.58, 1);
-      case 'ease-in-out': return cubicBezier(t, 0.42, 0, 0.58, 1);
-      
-      // Smooth / Premium (Quart/Quint based)
-      case 'smooth': return cubicBezier(t, 0.65, 0, 0.35, 1); 
-      case 'snap': return cubicBezier(t, 0.22, 1, 0.36, 1); 
-      
-      // Back / Overshoot (Tamed for Camera usage relative to previous iteration)
-      case 'ease-in-back': return cubicBezier(t, 0.36, 0, 0.66, -0.15); // Gentle pull back
-      case 'ease-out-back': return cubicBezier(t, 0.34, 1.1, 0.64, 1); // Gentle overshoot (10%)
-      case 'ease-in-out-back': return cubicBezier(t, 0.68, -0.15, 0.265, 1.15); // Moderate push/pull
-      
-      // Exponential (Dramatic)
-      case 'ease-in-expo': return cubicBezier(t, 0.7, 0, 0.84, 0);
-      case 'ease-out-expo': return cubicBezier(t, 0.16, 1, 0.3, 1);
-      
-      // Circular
-      case 'ease-in-circ': return cubicBezier(t, 0.55, 0, 1, 0.45);
-      case 'ease-out-circ': return cubicBezier(t, 0, 0.55, 0.45, 1);
-      
-      // Spring (Approximated - Tamed)
-      case 'spring': return cubicBezier(t, 0.34, 1.3, 0.64, 1); 
-      
-      default: return t;
-    }
+    // REMOVED CLAMP to allow overshoot
+    return result; 
   }
 
 
@@ -1298,7 +1368,12 @@
           defaultWideWidth: defaultWideWidth,
           defaultWideHeight: defaultWideHeight,
           isArcEnabled: isArcEnabled,
-          currentView: currentView // Save the current logical view state
+          isTrailModeEnabled: isTrailModeEnabled,
+          targetFPS: targetFPS,
+          isTrailModeEnabled: isTrailModeEnabled,
+          targetFPS: targetFPS,
+          // Removed currentView here to prevent saving 'collapsed'
+          currentView: currentView === 'collapsed' ? 'scenes' : currentView
       };
       parent.postMessage({ pluginMessage: { type: 'set-project', name: currentProjectName, data: dataToSave } }, '*');
   }
@@ -1311,7 +1386,7 @@
 
   function initializeData(data, projectName) {
       currentProjectName = projectName;
-      document.getElementById('project-name-input').value = projectName === DEFAULT_PROJECT_KEY ? "Default Project" : projectName;
+      document.getElementById('project-name-input').value = (projectName === DEFAULT_PROJECT_KEY || projectName === LEGACY_DEFAULT_PROJECT_KEY) ? "Default Project" : projectName;
 
       if (data) {
           if (data.scenes && Array.isArray(data.scenes)) {
@@ -1331,13 +1406,23 @@
           defaultWideWidth = data.defaultWideWidth || 335;
           defaultWideHeight = data.defaultWideHeight || 400;
           isArcEnabled = data.isArcEnabled !== undefined ? data.isArcEnabled : true;
+          isTrailModeEnabled = data.isTrailModeEnabled !== undefined ? data.isTrailModeEnabled : false;
+          targetFPS = data.targetFPS || 30;
           
           const modeToLoad = data.pluginMode || 'horizontal'; 
           
-          document.getElementById('default-width-input').value = defaultWideWidth;
-          document.getElementById('default-height-input').value = defaultWideHeight;
-          document.getElementById('arc-enabled-checkbox').checked = isArcEnabled;
-          document.getElementById('plugin-mode-select').value = modeToLoad; 
+          const defaultWidthInput = document.getElementById('default-width-input');
+          if (defaultWidthInput) defaultWidthInput.value = defaultWideWidth;
+          const defaultHeightInput = document.getElementById('default-height-input');
+          if (defaultHeightInput) defaultHeightInput.value = defaultWideHeight;
+          const arcEnabledCheckbox = document.getElementById('arc-enabled-checkbox');
+          if (arcEnabledCheckbox) arcEnabledCheckbox.checked = isArcEnabled;
+          const trailModeCheckbox = document.getElementById('trail-mode-checkbox');
+          if (trailModeCheckbox) trailModeCheckbox.checked = isTrailModeEnabled;
+          const fpsSelect = document.getElementById('fps-select');
+          if (fpsSelect) fpsSelect.value = targetFPS;
+          const pluginModeSelect = document.getElementById('plugin-mode-select');
+          if (pluginModeSelect) pluginModeSelect.value = modeToLoad; 
           
           // Set the mode which handles the initial sizing
           setMode(modeToLoad, false); 
@@ -1349,14 +1434,18 @@
           }
           // Note: Vertical mode is always handled as 'scenes' via setMode
           
+          hasLoadedScenes = true;
           renderList();
       } else {
           scenes = [];
           defaultWideWidth = 335;
           defaultWideHeight = 400;
           isArcEnabled = true;
+          isTrailModeEnabled = false;
+          targetFPS = 30; // Default to 30 for stability
           setMode('horizontal', false); 
           setPluginView('scenes', false); // Show empty state if no data
+          hasLoadedScenes = true;
           renderList();
       }
   }
@@ -1415,7 +1504,13 @@
 
   document.getElementById('arc-enabled-checkbox').onchange = (e) => {
       isArcEnabled = e.target.checked;
+      isArcEnabled = e.target.checked;
       saveProject(); 
+  };
+  
+  document.getElementById('fps-select').onchange = (e) => {
+      targetFPS = parseInt(e.target.value);
+      saveProject();
   };
   
   // --- Global Animation Settings Handler ---
@@ -1556,34 +1651,26 @@
       
       if (mode === 'horizontal') {
           settingsButton.style.display = 'flex';
-          // Horizontal -> Show "Minimize" icon
-          modeIconSpan.innerHTML = document.getElementById('icon-minify').outerHTML;
-
-          if (currentView === 'collapsed') {
-             setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT);
-             document.getElementById('expanded-panel').style.display = 'none';
-          } else {
-             setPluginSize(defaultWideWidth, defaultWideHeight);
-             document.getElementById('expanded-panel').style.display = 'flex';
-          }
-      } else if (mode === 'vertical' || mode === 'mini') {
+          // Horizontal -> Show "Minimize" icon (indicates switch to compact vertical modes)
+          if (modeIconSpan) modeIconSpan.innerHTML = iconMinify;
+          
+          setPluginSize(defaultWideWidth, defaultWideHeight);
+          document.getElementById('expanded-panel').style.display = 'flex';
+      } else {
+          // Vertical or Mini
           document.getElementById('expanded-panel').style.display = 'none'; 
           settingsButton.style.display = 'none'; 
+          
+          // Force 'scenes' view logically so we don't get stuck in config
           currentView = 'scenes'; 
 
-          // Set width based on mode
+          // Set dimensions
           const width = (mode === 'mini') ? MINI_WIDTH : VERTICAL_WIDTH;
-          // Set height based on mode: Mini needs more transparency/space for stack (208), Medium is shorter (176)
-
           const height = (mode === 'mini') ? VERTICAL_MINI_HEIGHT : VERTICAL_MEDIUM_HEIGHT;
           setPluginSize(width, height);
           
-          // Icon Logic: Vertical -> Minimize, Mini -> Expand
-          if (mode === 'vertical') {
-              modeIconSpan.innerHTML = document.getElementById('icon-minify').outerHTML;
-          } else {
-              modeIconSpan.innerHTML = document.getElementById('icon-expand').outerHTML;
-          }
+          // Vertical/Mini -> Show "Expand" icon (indicates switch to horizontal)
+          if (modeIconSpan) modeIconSpan.innerHTML = iconExpand;
       }
       
       document.getElementById('plugin-mode-select').value = mode;
@@ -1594,45 +1681,48 @@
   }
 
   /**
-   * Toggles between the Scene List View, Configuration View, or Collapsed state
-   * and updates the plugin size and button icon. (UPDATED for icon change)
+   * Toggles between the Scene List View and Configuration View.
+   * Collapsed state is DEPRECATED and removed.
    */
   function setPluginView(viewName, shouldSave = true) {
+      // FORCE 'scenes' if 'collapsed' is passed (Legacy support/Fix)
+      if (viewName === 'collapsed') {
+          viewName = 'scenes';
+      }
+      
       currentView = viewName;
       const expandedPanel = document.getElementById('expanded-panel');
       const sceneView = document.getElementById('scene-list-view');
       const configView = document.getElementById('config-view');
       const settingsButton = document.getElementById('btn-settings');
+      const sceneList = document.getElementById('scene-list');
+      
+      // Always show panel
+      expandedPanel.classList.remove('collapsed');
+      expandedPanel.style.display = 'flex'; 
+      expandedPanel.classList.remove('view-scenes', 'view-config');
 
-      // 1. Logic for Collapsed State
-      if (viewName === 'collapsed') {
-          expandedPanel.style.display = 'none';
+      if (viewName === 'config') {
+          sceneView.style.display = 'none';
+          configView.style.display = 'flex';
+          settingsButton.style.color = 'var(--color-accent-blue)'; 
+          expandedPanel.classList.add('view-config');
+          if (configView) configView.scrollTop = 0;
+      } else { 
+          // Default to 'scenes'
+          sceneView.style.display = 'flex';
+          configView.style.display = 'none';
           settingsButton.style.color = 'var(--color-text-faded)'; 
-
-          if (pluginMode === 'horizontal') {
-              setPluginSize(defaultWideWidth, HORIZONTAL_MIN_HEIGHT); // Reset to collapsed size
-          }
-          
-      } else {
-          // 2. Logic for Expanded States ('scenes' or 'config')
-          expandedPanel.style.display = 'flex'; 
-          
-          if (viewName === 'config') {
-              sceneView.style.display = 'none';
-              configView.style.display = 'flex';
-              settingsButton.style.color = 'var(--color-accent-blue)'; 
-              
-          } else { // 'scenes' view
-              sceneView.style.display = 'flex';
-              configView.style.display = 'none';
-              settingsButton.style.color = 'var(--color-text-faded)'; 
-          }
-          
-          if (pluginMode === 'horizontal') {
-              setPluginSize(defaultWideWidth, defaultWideHeight); // Ensure expanded size
-          }
+          expandedPanel.classList.add('view-scenes');
+          if (sceneView) sceneView.scrollTop = 0;
+          if (sceneList) sceneList.scrollTop = 0;
       }
 
+      // Update Height if in horizontal mode
+      if (pluginMode === 'horizontal') {
+           setPluginSize(defaultWideWidth, defaultWideHeight);
+      }
+      
       if (shouldSave) {
           saveProject();
       }
@@ -1645,12 +1735,11 @@
   document.getElementById('btn-settings').onclick = () => {
     if (pluginMode === 'vertical') return; // Settings button is hidden in vertical mode
 
-    if (currentView === 'collapsed') {
-        setPluginView('scenes'); // Collapsed -> Scenes
-    } else if (currentView === 'scenes') {
-        setPluginView('config'); // Scenes -> Config
-    } else { // currentView === 'config'
-        setPluginView('collapsed'); // Config -> Collapsed
+    // Toggle between scenes and config
+    if (currentView === 'config') {
+        setPluginView('scenes'); 
+    } else {
+        setPluginView('config'); 
     }
   };
   
@@ -1674,9 +1763,10 @@
       setMode(e.target.value);
   };
 
-  window.onload = () => {
-      // Need to set the initial icon state before fetching data 
-      
+  function initializeUI() {
+      // Ensure the toggle button icon reflects the current mode before loading data
+      setMode(pluginMode, false);
+
       // Populate Global Easing Options
       const globalEasingSelect = document.getElementById('global-easing');
       if (globalEasingSelect) {
@@ -1686,9 +1776,9 @@
       }
 
       // Start with expanded panel showing scene list
-      setPluginView('scenes');
+      setPluginView('scenes', false);
       
-      loadProject("Default Project");
+      loadProject(DEFAULT_PROJECT_KEY);
   }
 
 
@@ -1850,14 +1940,16 @@
 </svg>
 `;
 
-  const iconDrag = `<svg width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.958333 5.625C1.2805 5.625 1.54167 5.36383 1.54167 5.04167C1.54167 4.7195 1.2805 4.45833 0.958333 4.45833C0.636167 4.45833 0.375 4.7195 0.375 5.04167C0.375 5.36383 0.636167 5.625 0.958333 5.625Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0.958333 1.54167C1.2805 1.54167 1.54167 1.2805 1.54167 0.958333C1.54167 0.636167 1.2805 0.375 0.958333 0.375C0.636167 0.375 0.375 0.636167 0.375 0.958333C0.375 1.2805 0.636167 1.54167 0.958333 1.54167Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M0.958333 9.70833C1.2805 9.70833 1.54167 9.44717 1.54167 9.125C1.54167 8.80284 1.2805 8.54167 0.958333 8.54167C0.636167 8.54167 0.375 8.80284 0.375 9.125C0.375 9.44717 0.636167 9.70833 0.958333 9.70833Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.45833 5.625C4.7805 5.625 5.04167 5.36383 5.04167 5.04167C5.04167 4.7195 4.7805 4.45833 4.45833 4.45833C4.13617 4.45833 3.875 4.7195 3.875 5.04167C3.875 5.36383 4.13617 5.625 4.45833 5.625Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.45833 1.54167C4.7805 1.54167 5.04167 1.2805 5.04167 0.958333C5.04167 0.636167 4.7805 0.375 4.45833 0.375C4.13617 0.375 3.875 0.636167 3.875 0.958333C3.875 1.2805 4.13617 1.54167 4.45833 1.54167Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M4.45833 9.70833C4.7805 9.70833 5.04167 9.44717 5.04167 9.125C5.04167 8.80284 4.7805 8.54167 4.45833 8.54167C4.13617 8.54167 3.875 8.80284 3.875 9.125C3.875 9.44717 4.13617 9.70833 4.45833 9.70833Z" stroke="white" style="stroke:white;stroke-opacity:1;" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>
+  const iconDrag = `<svg width="7" height="14" viewBox="0 0 7 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.5 1.25C1.5 1.66421 1.16421 2 0.75 2C0.335786 2 0 1.66421 0 1.25C0 0.835786 0.335786 0.5 0.75 0.5C1.16421 0.5 1.5 0.835786 1.5 1.25Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
+<path d="M6.5 1.25C6.5 1.66421 6.16421 2 5.75 2C5.33579 2 5 1.66421 5 1.25C5 0.835786 5.33579 0.5 5.75 0.5C6.16421 0.5 6.5 0.835786 6.5 1.25Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
+<path d="M1.5 6C1.5 6.41421 1.16421 6.75 0.75 6.75C0.335786 6.75 0 6.41421 0 6C0 5.58579 0.335786 5.25 0.75 5.25C1.16421 5.25 1.5 5.58579 1.5 6Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
+<path d="M6.5 6C6.5 6.41421 6.16421 6.75 5.75 6.75C5.33579 6.75 5 6.41421 5 6C5 5.58579 5.33579 5.25 5.75 5.25C6.16421 5.25 6.5 5.58579 6.5 6Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
+<path d="M1.5 10.75C1.5 11.1642 1.16421 11.5 0.75 11.5C0.335786 11.5 0 11.1642 0 10.75C0 10.3358 0.335786 10 0.75 10C1.16421 10 1.5 10.3358 1.5 10.75Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
+<path d="M6.5 10.75C6.5 11.1642 6.16421 11.5 5.75 11.5C5.33579 11.5 5 11.1642 5 10.75C5 10.3358 5.33579 10 5.75 10C6.16421 10 6.5 10.3358 6.5 10.75Z" fill="white" fill-opacity="0.7" style="fill:white;fill-opacity:0.7;"/>
 </svg>`;
+
+
 
   const EASING_OPTIONS_HTML = `
         <option value="custom">Custom Bezier</option>
@@ -1997,6 +2089,9 @@ function attachSceneListeners(li, index) {
     });
 }
 
+// Track which popups have been animated to prevent re-animation
+const animatedPopups = new Set();
+
 function renderList() {
     const list = document.getElementById('scene-list');
     
@@ -2045,13 +2140,76 @@ function renderList() {
                 { opacity: 1, transform: 'translateY(0) scale(1)' }
             ], { duration: 300, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
             
+            // Animate popup on first appearance if visible
+            const popup = li.querySelector(`#path-controls-${index}`);
+            if (popup && scene.pathControlsVisible && popup.style.display === 'flex') {
+                const popupKey = `popup-${scene.id}`;
+                if (!animatedPopups.has(popupKey)) {
+                    popup.style.opacity = '0';
+                    popup.style.transform = 'translateY(-50%) scale(0.9)';
+                    
+                    requestAnimationFrame(() => {
+                        popup.animate([
+                            { opacity: 0, transform: 'translateY(-50%) scale(0.9)' },
+                            { opacity: 1, transform: 'translateY(-50%) scale(1)' }
+                        ], { 
+                            duration: 200, 
+                            easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+                            fill: 'forwards'
+                        });
+                        animatedPopups.add(popupKey);
+                        popup.classList.add('animated');
+                    });
+                }
+            }
+            
         } else {
             // Existing: Move to correct position
             list.appendChild(li);
             
+            // Check if popup was visible before update (before innerHTML clears it)
+            const oldPopup = li.querySelector(`#path-controls-${index}`);
+            const wasPopupVisible = oldPopup && oldPopup.style.display === 'flex';
+            const popupKey = `popup-${scene.id}`;
+            const hasBeenAnimated = animatedPopups.has(popupKey);
+            
             // Update content
             li.innerHTML = getSceneHTML(scene, index);
             attachSceneListeners(li, index);
+            
+            // Handle popup animation - only animate if transitioning from hidden to visible
+            const newPopup = li.querySelector(`#path-controls-${index}`);
+            if (newPopup && scene.pathControlsVisible && newPopup.style.display === 'flex') {
+                // Only animate if transitioning from hidden to visible AND hasn't been animated before
+                if (!wasPopupVisible && !hasBeenAnimated) {
+                    // Animate on first appearance only
+                    newPopup.style.opacity = '0';
+                    newPopup.style.transform = 'translateY(-50%) scale(0.9)';
+                    
+                    requestAnimationFrame(() => {
+                        newPopup.animate([
+                            { opacity: 0, transform: 'translateY(-50%) scale(0.9)' },
+                            { opacity: 1, transform: 'translateY(-50%) scale(1)' }
+                        ], { 
+                            duration: 200, 
+                            easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+                            fill: 'forwards'
+                        });
+                        animatedPopups.add(popupKey);
+                        newPopup.classList.add('animated');
+                    });
+                } else {
+                    // Already animated or was already visible - set final state without animation
+                    newPopup.style.opacity = '1';
+                    newPopup.style.transform = 'translateY(-50%) scale(1)';
+                    if (hasBeenAnimated) {
+                        newPopup.classList.add('animated');
+                    }
+                }
+            } else if (newPopup && !scene.pathControlsVisible) {
+                // Popup is hidden - remove from animated set so it can animate again when shown
+                animatedPopups.delete(popupKey);
+            }
         }
 
         // Update active state
@@ -2062,13 +2220,14 @@ function renderList() {
     
     // 3. Handle Empty State Animation
     const emptyState = document.getElementById('empty-state');
+    const sceneListView = document.getElementById('scene-list-view');
     if (scenes.length === 0) {
-        if (emptyState.style.display === 'none') {
-            emptyState.style.display = 'flex';
-            
+        if (sceneListView) sceneListView.classList.add('is-empty');
+        if (getComputedStyle(emptyState).display !== 'flex') {
             // Cancel any hiding animations
             emptyState.getAnimations().forEach(a => a.cancel());
             emptyState.style.opacity = '1';
+            emptyState.style.display = 'flex';
 
             // Staggered Animation for Children
             Array.from(emptyState.children).forEach((child, i) => {
@@ -2084,7 +2243,8 @@ function renderList() {
             });
         }
     } else {
-        if (emptyState.style.display !== 'none') {
+        if (sceneListView) sceneListView.classList.remove('is-empty');
+        if (getComputedStyle(emptyState).display !== 'none') {
              // Cancel any existing animations to prevent conflicts
              emptyState.getAnimations().forEach(a => a.cancel());
              
@@ -2096,6 +2256,10 @@ function renderList() {
              animation.onfinish = () => {
                  emptyState.style.display = 'none';
                  emptyState.style.opacity = '1'; // Reset for next time
+                 Array.from(emptyState.children).forEach(child => {
+                     child.style.opacity = '';
+                     child.style.transform = '';
+                 });
              };
         }
     }
@@ -2184,6 +2348,7 @@ function renderList() {
 // Helper function to reset the button and state
 function resetPlayButton() {
     is_playing = false;
+    isPreCaptureInProgress = false;
     const playButton = document.getElementById('btn-play-all');
     const textSpan = playButton.querySelector('.btn-text');
     const iconPlay = playButton.querySelector('.icon-play-svg');
@@ -2199,6 +2364,7 @@ function resetPlayButton() {
     // Cancel any pending animation frame
     if (animation_frame_id) {
         cancelAnimationFrame(animation_frame_id);
+        animation_frame_id = null;
     }
 }
 
@@ -2227,6 +2393,21 @@ async function startPlayback() {
     if (iconPlay) iconPlay.classList.add('d-none');
     if (iconStop) iconStop.classList.remove('d-none');
     
+    // Pre-capture the starting view to eliminate gap on first transition
+    isPreCaptureInProgress = true;
+    let currentView = await new Promise(resolve => {
+        const tempHandler = (event) => {
+            const msg = event.data.pluginMessage;
+            if (msg && msg.type === 'scene-captured' && !msg.targetScene) {
+                window.removeEventListener('message', tempHandler);
+                isPreCaptureInProgress = false;
+                resolve(msg.view);
+            }
+        };
+        window.addEventListener('message', tempHandler);
+        parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*'); 
+    });
+    
     for (let i = 0; i < scenes.length; i++) {
         // Stop check inside the loop, handles early exit between scene transitions
         if (!is_playing) break; 
@@ -2238,29 +2419,19 @@ async function startPlayback() {
         const pathSettingsIndex = (i === 0) ? scenes.length - 1 : i - 1; 
         const pathScene = scenes[pathSettingsIndex];
         
-        // STEP 1: Capture the starting point
-        const currentView = await new Promise(resolve => {
-            // Temporarily replace the global handler to capture the immediate response
-            const tempHandler = (event) => {
-                const msg = event.data.pluginMessage;
-                if (msg && msg.type === 'scene-captured' && !msg.targetScene) {
-                    window.onmessage = messageHandler; // Restore the global handler
-                    resolve(msg.view);
-                }
-            };
-            window.onmessage = tempHandler; 
-            parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*'); 
-        });
-        
         if (currentView) {
             const customControlPoint = pathScene ? pathScene.customControlPoint : null;
             const duration = pathScene.duration;
             const easing = pathScene.easing;
-            const delay = pathScene.delay;
+            // Reduce delay for smoother transitions - delay is now handled in animate function
+            const delay = Math.max(0, pathScene.delay - 50);
             const bezier = pathScene.bezier;
 
-            // Wait for animation + delay to complete
+            // Animate to target - this will update currentView internally
             await animate(currentView, target.view, duration, easing, delay, bezier, customControlPoint, true);
+            
+            // Update currentView to the target for seamless next transition
+            currentView = target.view;
         }
         
         // Stop check after animation/delay promise resolves
@@ -2294,6 +2465,11 @@ document.getElementById('btn-play-all').onclick = () => {
     const msg = event.data.pluginMessage;
     
     if (msg.type === 'scene-captured') {
+      // Ignore the playback pre-capture response (it has no targetScene/updateIndex)
+      // so Play doesn't accidentally create a new scene.
+      if (isPreCaptureInProgress && !msg.targetScene && msg.updateIndex === undefined) {
+          return;
+      }
       if (msg.targetScene) {
         // This is a Play/Navigation event, msg contains the start view and the target details
         const startView = msg.view;
@@ -2362,7 +2538,22 @@ document.getElementById('btn-play-all').onclick = () => {
         setPluginView('scenes', true); // Ensure expanded view after adding the first scene
       }
     } else if (msg.type === 'load-data') {
+        const loadedScenes = (msg.data && Array.isArray(msg.data.scenes)) ? msg.data.scenes : null;
+        const loadedHasScenes = !!(loadedScenes && loadedScenes.length > 0);
+
+        if (!loadedHasScenes && msg.projectName === DEFAULT_PROJECT_KEY && !hasAttemptedLegacyDefaultLoad) {
+            hasAttemptedLegacyDefaultLoad = true;
+            parent.postMessage({ pluginMessage: { type: 'get-project', name: LEGACY_DEFAULT_PROJECT_KEY } }, '*');
+            return;
+        }
+
         initializeData(msg.data, msg.projectName);
+
+        if (loadedHasScenes && msg.projectName === LEGACY_DEFAULT_PROJECT_KEY) {
+            currentProjectName = DEFAULT_PROJECT_KEY;
+            document.getElementById('project-name-input').value = "Default Project";
+            saveProject();
+        }
     } else if (msg.type === 'control-point-updated') {
         if (msg.point) {
             const index = msg.sceneIndex;
@@ -2377,124 +2568,177 @@ document.getElementById('btn-play-all').onclick = () => {
         }
     }
   };
-  window.onmessage = messageHandler;
+  window.addEventListener('message', messageHandler);
 
-function animate(start, end, duration, easing, delay, bezierString, customControlPoint, checkStop = false) {
+  if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeUI);
+  } else {
+      initializeUI();
+  }
+
+// Update animate signature to accept pathIndex
+function animate(start, end, duration, easing, delay, bezierString, customControlPoint, checkStop = false, pathIndex = null) {
     return new Promise(resolve => {
+    
       const startTime = performance.now();
       
       if (duration === 0) duration = 1; 
+      
+      // Input validation - prevent NaN/Infinity values
+      const isValidNumber = (n) => typeof n === 'number' && isFinite(n) && !isNaN(n);
+      
+      const safeStart = {
+          x: isValidNumber(start?.x) ? start.x : (isValidNumber(end?.x) ? end.x : 0),
+          y: isValidNumber(start?.y) ? start.y : (isValidNumber(end?.y) ? end.y : 0),
+          zoom: (isValidNumber(start?.zoom) && start.zoom > 0) ? start.zoom : (isValidNumber(end?.zoom) && end.zoom > 0 ? end.zoom : 1)
+      };
+      
+      const safeEnd = {
+          x: isValidNumber(end?.x) ? end.x : safeStart.x,
+          y: isValidNumber(end?.y) ? end.y : safeStart.y,
+          zoom: (isValidNumber(end?.zoom) && end.zoom > 0) ? end.zoom : safeStart.zoom
+      };
+      
+      // Check if start and end are essentially the same - skip animation if so
+      const distSq = Math.pow(safeEnd.x - safeStart.x, 2) + Math.pow(safeEnd.y - safeStart.y, 2);
+      const zoomDiff = Math.abs(safeEnd.zoom - safeStart.zoom);
+      
+      // If already at target position, resolve immediately
+      if (distSq < 0.01 && zoomDiff < 0.001) {
+          setTimeout(() => resolve(), delay || 0);
+          return;
+      }
       
       const bezierPoints = parseBezierString(bezierString);
       
       let control = null;
       if (isArcEnabled) {
-          if (customControlPoint) {
+          if (customControlPoint && isValidNumber(customControlPoint.x) && isValidNumber(customControlPoint.y)) {
               control = { xc: customControlPoint.x, yc: customControlPoint.y };
           } else {
-              control = calculateArcControlPoint(start, end); 
+              const calculatedControl = calculateArcControlPoint(safeStart, safeEnd);
+              if (isValidNumber(calculatedControl.xc) && isValidNumber(calculatedControl.yc)) {
+                  control = calculatedControl;
+              }
           }
       }
 
-      // Track last sent values to avoid redundant updates
       let lastSentX = null;
       let lastSentY = null;
       let lastSentZoom = null;
       
-      // Smoothed values for dampened movement
-      let smoothX = start.x;
-      let smoothY = start.y;
-      let smoothZoom = start.zoom;
-      
-      // Smoothing factor (0.0-1.0): 
-      // 0.85 = Good balance of smoothness and settling time.
-      const SMOOTHING = 0.85; 
-      
-      // Settle threshold: stop when we are this close (pixels/zoom units)
-      const SETTLE_THRESHOLD_PX = 0.5;
-      const SETTLE_THRESHOLD_ZOOM = 0.001;
-
-      // Lower threshold for sending updates (Precision)
-      const UPDATE_THRESHOLD_PX = 0.05;
-      const UPDATE_THRESHOLD_ZOOM = 0.0001;
-
-      function loop() {
-        if (checkStop && !is_playing && animation_frame_id) {
-            cancelAnimationFrame(animation_frame_id);
-            return resolve(true);
-        }
-
-        const now = performance.now();
-        const rawProgress = Math.min((now - startTime) / duration, 1);
-        const isTimeComplete = rawProgress >= 1;
-        
-        let currentX, currentY, currentZoom;
-
-        // If time is up, the "physics target" is the exact end position
-        if (isTimeComplete) {
-             currentX = end.x;
-             currentY = end.y;
-             currentZoom = end.zoom;
-        } else {
-            // Otherwise calculate Bezier position
-            const easedProgress = getEasing(rawProgress, easing, bezierPoints); 
-            // Allow overshoot (no clamp)
-            const t = easedProgress; 
-
-            currentZoom = start.zoom + (end.zoom - start.zoom) * t;
-            if (currentZoom <= 0.01) currentZoom = 0.01; 
-            
-            if (isArcEnabled && control) { 
-                const oneMinusT = 1 - t;
-                currentX = oneMinusT * oneMinusT * start.x + 2 * oneMinusT * t * control.xc + t * t * end.x;
-                currentY = oneMinusT * oneMinusT * start.y + 2 * oneMinusT * t * control.yc + t * t * end.y;
-            } else {
-                currentX = start.x + (end.x - start.x) * t;
-                currentY = start.y + (end.y - start.y) * t;
-            }
-        }
-
-        // Apply exponential smoothing
-        smoothX += (currentX - smoothX) * SMOOTHING;
-        smoothY += (currentY - smoothY) * SMOOTHING;
-        smoothZoom += (currentZoom - smoothZoom) * SMOOTHING;
-
-        // Check if we should send an update
-        const xChanged = lastSentX === null || Math.abs(smoothX - lastSentX) > UPDATE_THRESHOLD_PX;
-        const yChanged = lastSentY === null || Math.abs(smoothY - lastSentY) > UPDATE_THRESHOLD_PX;
-        const zoomChanged = lastSentZoom === null || Math.abs(smoothZoom - lastSentZoom) > UPDATE_THRESHOLD_ZOOM;
-        
-        if (xChanged || yChanged || zoomChanged) {
-            parent.postMessage({ pluginMessage: { type: 'update-viewport', x: smoothX, y: smoothY, zoom: smoothZoom } }, '*');
-            lastSentX = smoothX;
-            lastSentY = smoothY;
-            lastSentZoom = smoothZoom;
-        }
-
-        // Convergence Check
-        // If time is up, we only stop when the smoothed values have also reached the target
-        let isSettled = false;
-        if (isTimeComplete) {
-            const distSq = (smoothX - end.x)**2 + (smoothY - end.y)**2;
-            const zoomDiff = Math.abs(smoothZoom - end.zoom);
-            
-            if (distSq < (SETTLE_THRESHOLD_PX * SETTLE_THRESHOLD_PX) && zoomDiff < SETTLE_THRESHOLD_ZOOM) {
-                isSettled = true;
-            }
-        }
-
-        if (!isSettled) {
-          animation_frame_id = requestAnimationFrame(loop);
-        } else {
-          // Snap purely to ensure float precision doesn't leave us 0.0001px off
-          parent.postMessage({ pluginMessage: { type: 'update-viewport', x: end.x, y: end.y, zoom: end.zoom } }, '*');
-          
-          setTimeout(resolve, delay);
-        }
+      if (animation_frame_id) {
+          cancelAnimationFrame(animation_frame_id);
+          animation_frame_id = null;
       }
       
-      // Start the loop
-      animation_frame_id = requestAnimationFrame(loop); 
+      // FPS Throttling
+      // Cap at ~45fps to prevent flooding Figma's main thread which causes "jumps"
+      // 1000ms / 45fps = ~22.22ms
+      const effectiveFPS = (typeof targetFPS === 'number' && targetFPS > 0) ? targetFPS : 30;
+      const fpsInterval = 1000 / effectiveFPS; 
+      let lastDrawTime = startTime;
+
+      function loop() {
+        if (checkStop && !is_playing) {
+            if (animation_frame_id) {
+                cancelAnimationFrame(animation_frame_id);
+                animation_frame_id = null;
+            }
+            return resolve(true);
+        }
+        
+        // Request next frame immediately to keep loop alive
+        animation_frame_id = requestAnimationFrame(loop);
+
+        const now = performance.now();
+        const elapsed = now - lastDrawTime;
+        
+        // If enough time hasn't passed, skip this frame (throttle)
+        if (elapsed < fpsInterval) return;
+        
+        // Use current time for next frame reference to prevent drift/catch-up behavior
+        lastDrawTime = now;
+
+        const rawProgress = Math.min(Math.max((now - startTime) / duration, 0), 1);
+        
+        // AGGRESSIVE SETTLE: If we are very close to the end, just snap and finish.
+        // This prevents the "slow crawl" micro-jitters at the end of Expo/Smooth curves.
+        if (rawProgress > 0.995) {
+             // Force Finish
+             parent.postMessage({ 
+                pluginMessage: { 
+                    type: 'update-viewport', 
+                    x: safeEnd.x, 
+                    y: safeEnd.y, 
+                    zoom: safeEnd.zoom 
+                } 
+            }, '*');
+            
+            if (delay > 0) {
+              setTimeout(resolve, delay);
+           } else {
+              resolve();
+           }
+           if (animation_frame_id) {
+               cancelAnimationFrame(animation_frame_id);
+               animation_frame_id = null;
+           }
+           return;
+        }
+
+        const t = getEasing(rawProgress, easing, bezierPoints);
+
+        // 2. Interpolate Position & Zoom
+        let currentX, currentY, currentZoom;
+
+        // Zoom Interpolation
+        currentZoom = safeStart.zoom + (safeEnd.zoom - safeStart.zoom) * t;
+        currentZoom = Math.max(0.01, Math.min(currentZoom, 100)); // Safety Clamp
+
+        // Position Interpolation
+        if (isArcEnabled && control) { 
+            const oneMinusT = 1 - t;
+            currentX = oneMinusT * oneMinusT * safeStart.x + 2 * oneMinusT * t * control.xc + t * t * safeEnd.x;
+            currentY = oneMinusT * oneMinusT * safeStart.y + 2 * oneMinusT * t * control.yc + t * t * safeEnd.y;
+        } else {
+            currentX = safeStart.x + (safeEnd.x - safeStart.x) * t;
+            currentY = safeStart.y + (safeEnd.y - safeStart.y) * t;
+        }
+        
+        // ROUNDING REMOVED: High-precision updates are required for slow motion (4000ms+) 
+        // Rounding caused "stair-stepping" stutter at low velocities (start/end of curves).
+        
+        // 3. Send Update
+        // Threshold set to effectively zero to ensure every nuanced movement is sent.
+        // Modern browsers/Figma handle 60fps float updates fine.
+        const MIN_CHANGE_PX = 0.05; 
+        const MIN_CHANGE_ZOOM = 0.0005;
+
+        const xChanged = lastSentX === null || Math.abs(currentX - lastSentX) >= MIN_CHANGE_PX;
+        const yChanged = lastSentY === null || Math.abs(currentY - lastSentY) >= MIN_CHANGE_PX;
+        const zoomChanged = lastSentZoom === null || Math.abs(currentZoom - lastSentZoom) >= MIN_CHANGE_ZOOM;
+        
+        if (xChanged || yChanged || zoomChanged) {
+            parent.postMessage({ 
+                pluginMessage: { 
+                    type: 'update-viewport', 
+                    x: currentX, 
+                    y: currentY, 
+                    zoom: currentZoom 
+                } 
+            }, '*');
+            
+            lastSentX = currentX;
+            lastSentY = currentY;
+            lastSentZoom = currentZoom;
+        }
+
+        // loop call moved to top for better timing accuracy
+      }
+      
+      // Start
+      loop(); 
     });
 }
 </script>

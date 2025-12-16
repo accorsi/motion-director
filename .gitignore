@@ -5,3 +5,7 @@ node_modules
 
 out/
 dist/
+
+.DS_Store
+package-lock.json
+PaperMono-Regular.woff2

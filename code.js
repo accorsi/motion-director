@@ -211,4 +211,4 @@ figma.ui.onmessage = async (msg) => {
 
 
 // Initialize plugin size and load default project on launch
-figma.showUI(__html__, { width: 354, height: 40 });
+figma.showUI(__html__, { width: 354, height: 60 });
