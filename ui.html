@@ -4,12 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap');
-  @font-face {
-    font-family: 'Paper Mono';
-    font-style: normal;
-    font-weight: 400;
-    src: url('PaperMono-Regular.woff2') format('woff2');
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;&display=swap');
   }
 </style>
 <style>
@@ -33,7 +28,7 @@
     --color-accent-green-faded: #0aef7190;
     --color-border: #00000000;
 
-    --font-main: 'Paper Mono', 'Geist Mono', 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', Menlo, Consolas, monospace; 
+    --font-main: 'Geist Mono',  'SF Mono',  monospace; 
     --font-size-base: 10px; 
     --font-size-small: 9px;
     --font-size-medium: 12px;
@@ -72,7 +67,7 @@
       color: var(--color-text-main); 
       overflow: hidden; 
       transition: 0.65s cubic-bezier(0.24, 0.61, 0.48, 1);
-      font-weight: 400;
+      font-weight: 300;
       height: 100%;
       overflow: visible;
   }
@@ -104,7 +99,7 @@
   .btn-action { 
       border: none; 
       border-radius: var(--radius-medium); 
-      font-weight: 400; 
+      font-weight: 300; 
       cursor: pointer; 
       user-select: none;
       transition: 0.15s; 
@@ -475,9 +470,9 @@
 
   /* CONFIG View */
   #config-view {
-      padding: 0 10px 20px 10px; /* Added bottom padding for scroll space */
+      padding: 0 0 20px 0; /* Added bottom padding for scroll space */
       flex-direction: column;
-      gap: 16px;
+      gap: 4px;
       overflow-y: auto; /* Enable vertical scrolling */
       flex: 1; /* Take up available space */
       max-height: 100%; /* Ensure it respects container height */
@@ -487,7 +482,7 @@
       font-size: var(--font-size-base); 
       margin: 0 0 10px 0; 
       color: var(--color-text-faded); 
-      font-weight: 400; 
+      font-weight: 300; 
       letter-spacing: 0.05em; 
       text-transform: uppercase;
   }
@@ -565,7 +560,7 @@
       background: none; 
       border: none; 
       color: var(--color-text-main); 
-      font-weight: 400; 
+      font-weight: 300; 
       font-size: var(--font-size-base); 
       padding: 3px 0;
       min-width: 50px;
@@ -644,10 +639,9 @@
       text-transform: uppercase; 
       margin-right: 6px; 
       letter-spacing: -0.01em; 
-      font-weight: 400;
+      font-weight: 300;
       text-shadow: var(--shadow-inner-dark);
   }
-  .control-group { display: flex; align-items: center; }
   
   /* Input/Select Consistency */
   .control-group input[type="number"],
@@ -665,7 +659,7 @@
       appearance: none; 
       -moz-appearance: textfield;
       font-family: var(--font-main);
-      font-weight: 400;
+      font-weight: 300;
       box-shadow: 
         inset 0 -.75px 0 0 rgba(255,255,255,0.08),
         inset 0 .75px 0 0 rgba(0,0,0,0.7),
@@ -735,7 +729,7 @@
       appearance: none; 
       -moz-appearance: textfield;
       font-family: var(--font-main);
-      font-weight: 400;
+      font-weight: 300;
       box-shadow: 
         inset 0 -.75px 0 0 rgba(255,255,255,0.08),
         inset 0 .75px 0 0 rgba(0,0,0,0.7),
@@ -757,7 +751,7 @@
       color: var(--color-text-faded);
       padding: 4px 6px;
       font-size: var(--font-size-tiny);
-      font-weight: 400;
+      font-weight: 300;
       cursor: pointer;
       border-radius: var(--radius-small);
       transition: 0.3s ease-in-out;
@@ -780,7 +774,7 @@
   .project-manager input,
   .project-buttons button {
       font-size: var(--font-size-small); 
-      font-weight: 400;
+      font-weight: 300;
   }
   .project-manager input {
       padding: 6px;
@@ -878,7 +872,7 @@
 
   .empty-state-title {
       font-size: var(--font-size-medium);
-      font-weight: 400;
+      font-weight: 300;
       color: var(--color-text-main);
       margin-bottom: var(--spacing-xs);
       text-transform: uppercase;
@@ -892,7 +886,7 @@
       margin-bottom: var(--spacing-base);
       max-width: 270px;
       letter-spacing: 0.05em;
-      font-weight: 400;
+      font-weight: 300;
       text-shadow: 0 .5px 0 rgba(0, 0, 0, 0.9);
       line-height: 1.5;
 
@@ -906,7 +900,7 @@
       border-radius: var(--radius-medium);
       font-family: var(--font-main);
       font-size: var(--font-size-small);
-      font-weight: 600;
+      font-weight: 300;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       cursor: pointer;
@@ -958,7 +952,7 @@
   .loading-message {
       color: var(--color-text-main);
       font-size: var(--font-size-small);
-      font-weight: 600;
+      font-weight: 300;
       text-transform: uppercase;
       letter-spacing: 0.05em;
   }
@@ -1124,7 +1118,6 @@
     
     <div id="config-view">
         <div class="setting-group">
-            <h3>Project Manager</h3>
             <div class="project-manager">
                 <input type="text" id="project-name-input" value="Default Project" placeholder="Enter Project Name">
                 <div class="project-buttons">
@@ -1163,8 +1156,8 @@
                 <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
             </div>
 
-            <div class="setting-group" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border);">
-                <label style="display:block; margin-bottom: 6px; font-weight: 500;">Animation Quality (Target FPS)</label>
+            <div class="control-group setting-group" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border);">
+                <label style="display:block; margin-bottom: 6px; font-weight: 300;">Animation Quality (Target FPS)</label>
                 <select id="fps-select" style="width: 100%;">
                     <option value="120">120 FPS (Experimental, Very Fast PC)</option>
                     <option value="60">60 FPS (Smoothest, Fast PC)</option>
@@ -1173,11 +1166,10 @@
                     <option value="24">24 FPS (Cinematic, Lowest Load)</option>
                     <option value="15">15 FPS (Low Performance Mode)</option>
                 </select>
-                <p style="font-size: 11px; color: var(--color-text-faded); margin-top: 4px;">Lower FPS fixes stuttering/shaking on some machines.</p>
+                <p style="font-size: var(--font-size-tiny); color: var(--color-text-faded); margin-top: 4px;">Lower FPS fixes stuttering/shaking on some machines.</p>
             </div>
-        </div>
-        
-        <div class="setting-group">
+
+            <div class="setting-group">
             <h3>Global Animation Settings</h3>
             <p style="font-size: var(--font-size-tiny); color: var(--color-text-faded); margin: 0 0 12px 0; line-height: 1.4;">
                 Apply these parameters to <strong>ALL SCENES</strong> at once.
@@ -1201,6 +1193,7 @@
              <div class="project-buttons">
                 <button id="btn-apply-global" style="width: 100%; justify-content: center;">Apply to All Scenes</button>
              </div>
+        </div>
         </div>
     </div>
 
