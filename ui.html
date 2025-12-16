@@ -3,7 +3,15 @@
 <head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap');
+  @font-face {
+    font-family: 'Paper Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('PaperMono-Regular.woff2') format('woff2');
+  }
+</style>
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
   :root {
@@ -25,7 +33,7 @@
     --color-accent-green-faded: #0aef7190;
     --color-border: #00000000;
 
-    --font-main: 'Geist Mono', monospace; 
+    --font-main: 'Paper Mono', 'Geist Mono', 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', Menlo, Consolas, monospace; 
     --font-size-base: 10px; 
     --font-size-small: 9px;
     --font-size-medium: 12px;
