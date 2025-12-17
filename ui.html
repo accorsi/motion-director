@@ -1151,7 +1151,7 @@
                 </div>
             </div>
 
-            <div class="checkbox-group">
+            <div class="control-group checkbox-group">
                 <input type="checkbox" id="arc-enabled-checkbox">
                 <label for="arc-enabled-checkbox">Enable Arc Path (Curved Camera Move)</label>
             </div>
@@ -1389,8 +1389,7 @@
       currentProjectName = projectName;
       document.getElementById('project-name-input').value = (projectName === DEFAULT_PROJECT_KEY || projectName === LEGACY_DEFAULT_PROJECT_KEY) ? "Default Project" : projectName;
 
-      if (data) {
-          if (data.scenes && Array.isArray(data.scenes)) {
+      if (data && data.scenes && data.scenes.length > 0) {
               scenes = data.scenes;
               scenes.forEach((s, i) => {
                   if (!s.name || s.name.startsWith("Scene ")) {
@@ -1403,7 +1402,6 @@
                       s.id = Date.now() + Math.random(); // Ensure ID exists
                   }
               });
-          }
           defaultWideWidth = data.defaultWideWidth || 335;
           defaultWideHeight = data.defaultWideHeight || 400;
           isArcEnabled = data.isArcEnabled !== undefined ? data.isArcEnabled : true;
