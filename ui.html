@@ -1472,7 +1472,10 @@
       scenes = [];
       currentSceneIndex = 0; 
       renderList();
-      saveProject();
+      
+      // Delete the project entirely instead of saving empty scenes
+      parent.postMessage({ pluginMessage: { type: 'delete-project', name: currentProjectName } }, '*');
+      
       setPluginView('collapsed', true); // Collapse after clearing scenes
     }
   };

@@ -168,6 +168,10 @@ figma.ui.onmessage = async (msg) => {
     if (msg.type === 'set-project') {
         setStoredData(msg.name, msg.data);
     }
+    
+    if (msg.type === 'delete-project') {
+        figma.root.setPluginData(msg.name, '');
+    }
 
     if (msg.type === 'get-project') {
         const data = getStoredData(msg.name);
