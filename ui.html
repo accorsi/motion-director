@@ -5,7 +5,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;&display=swap');
-  }
 </style>
 <style>
   /* --- 1. COLOR PALETTE & FONT --- */
@@ -1109,8 +1108,8 @@
                         <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
                     </svg>
                 </div>
-                <div class="empty-state-title">You have no scenes</div>
-                <div class="empty-state-message">Pan, move, and zoom to wherever you want. Capture, customize, play, and enjoy.</div>
+                <div class="empty-state-title">You don't have any scenes</div>
+                <div class="empty-state-message">Move, pan, and zoom to wherever you want and start capturing them.</div>
                 <button class="empty-state-cta" onclick="document.getElementById('btn-capture').click()">Capture Scene</button>
             </div>
         </div>
@@ -1389,6 +1388,7 @@
       currentProjectName = projectName;
       document.getElementById('project-name-input').value = (projectName === DEFAULT_PROJECT_KEY || projectName === LEGACY_DEFAULT_PROJECT_KEY) ? "Default Project" : projectName;
 
+      // Check if data exists and has scenes
       if (data && data.scenes && data.scenes.length > 0) {
               scenes = data.scenes;
               scenes.forEach((s, i) => {
@@ -1436,6 +1436,7 @@
           hasLoadedScenes = true;
           renderList();
       } else {
+          // No data or empty scenes - initialize fresh state
           scenes = [];
           defaultWideWidth = 335;
           defaultWideHeight = 400;
@@ -1473,8 +1474,8 @@
       currentSceneIndex = 0; 
       renderList();
       
-      // Delete the project entirely instead of saving empty scenes
-      parent.postMessage({ pluginMessage: { type: 'delete-project', name: currentProjectName } }, '*');
+      // Save an empty project to prevent legacy fallback
+      saveProject();
       
       setPluginView('collapsed', true); // Collapse after clearing scenes
     }
@@ -1603,7 +1604,7 @@
     // Path settings are defined on the scene BEFORE the target scene in the sequence.
     const pathSettingsIndex = (index === 0) ? scenes.length - 1 : index - 1; 
     
-    parent.postMessage({ pluginMessage: { type: 'capture-scene', targetScene: targetScene, pathSettingsIndex: pathSettingsIndex } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'capture-scene', targetScene: targetScene, pathSettingsIndex: pathSettingsIndex, ignoreCustomPath: true } }, '*');
     
     currentSceneIndex = index; // Set current index to the scene we just animated TO
     renderList(); // Refresh the list to apply the active class
@@ -1766,6 +1767,9 @@
   };
 
   function initializeUI() {
+      // Reset the legacy load flag when the plugin starts
+      hasAttemptedLegacyDefaultLoad = false;
+      
       // Ensure the toggle button icon reflects the current mode before loading data
       setMode(pluginMode, false);
 
@@ -2328,7 +2332,8 @@ function renderList() {
     // 3. Set the payload and send message to capture current view (start point)
     targetViewPayload = {
         targetScene: scenes[nextIndex],
-        pathSettingsIndex: pathSettingsIndex
+        pathSettingsIndex: pathSettingsIndex,
+        ignoreCustomPath: true
     };
     
     parent.postMessage({ pluginMessage: { type: 'capture-scene', ...targetViewPayload } }, '*');
@@ -2395,46 +2400,56 @@ async function startPlayback() {
     if (iconPlay) iconPlay.classList.add('d-none');
     if (iconStop) iconStop.classList.remove('d-none');
     
-    // Pre-capture the starting view to eliminate gap on first transition
-    isPreCaptureInProgress = true;
-    let currentView = await new Promise(resolve => {
-        const tempHandler = (event) => {
-            const msg = event.data.pluginMessage;
-            if (msg && msg.type === 'scene-captured' && !msg.targetScene) {
-                window.removeEventListener('message', tempHandler);
-                isPreCaptureInProgress = false;
-                resolve(msg.view);
-            }
-        };
-        window.addEventListener('message', tempHandler);
-        parent.postMessage({ pluginMessage: { type: 'capture-scene' } }, '*'); 
-    });
+    // Jump directly to Scene 1 (no animation) to preserve exact position/zoom
+    const firstScene = scenes[0];
+    parent.postMessage({ 
+        pluginMessage: { 
+            type: 'update-viewport', 
+            x: firstScene.view.x, 
+            y: firstScene.view.y, 
+            zoom: firstScene.view.zoom 
+        } 
+    }, '*');
     
-    for (let i = 0; i < scenes.length; i++) {
+    currentSceneIndex = 0;
+    renderList(); // Highlight Scene 1 as active
+    
+    // Apply Scene 1's delay before starting animation loop
+    const firstSceneDelay = Math.max(0, firstScene.delay);
+    if (firstSceneDelay > 0) {
+        await new Promise(resolve => setTimeout(resolve, firstSceneDelay));
+    }
+    
+    // Stop check after first scene delay
+    if (!is_playing) {
+        resetPlayButton();
+        return;
+    }
+    
+    // Start from Scene 1's view, animate to Scene 2 and onwards
+    let currentView = firstScene.view;
+    
+    for (let i = 1; i < scenes.length; i++) {
         // Stop check inside the loop, handles early exit between scene transitions
         if (!is_playing) break; 
         
         const target = scenes[i];
-        // The path settings are taken from the scene we just animated FROM. 
-        // When going to scene i, the path settings used are from the previous scene (i-1).
-        // For the first scene (i=0), the path settings should be from the last scene in the list (loop).
-        const pathSettingsIndex = (i === 0) ? scenes.length - 1 : i - 1; 
+        // The path settings are taken from the scene we just animated FROM (i-1)
+        const pathSettingsIndex = i - 1; 
         const pathScene = scenes[pathSettingsIndex];
         
-        if (currentView) {
-            const customControlPoint = pathScene ? pathScene.customControlPoint : null;
-            const duration = pathScene.duration;
-            const easing = pathScene.easing;
-            // Reduce delay for smoother transitions - delay is now handled in animate function
-            const delay = Math.max(0, pathScene.delay - 50);
-            const bezier = pathScene.bezier;
+        const customControlPoint = pathScene ? pathScene.customControlPoint : null;
+        const duration = pathScene.duration;
+        const easing = pathScene.easing;
+        // Use the TARGET scene's delay (how long to pause after arriving at this scene)
+        const delay = Math.max(0, target.delay - 50);
+        const bezier = pathScene.bezier;
 
-            // Animate to target - this will update currentView internally
-            await animate(currentView, target.view, duration, easing, delay, bezier, customControlPoint, true);
-            
-            // Update currentView to the target for seamless next transition
-            currentView = target.view;
-        }
+        // Animate to target
+        await animate(currentView, target.view, duration, easing, delay, bezier, customControlPoint, true);
+        
+        // Update currentView to the target for seamless next transition
+        currentView = target.view;
         
         // Stop check after animation/delay promise resolves
         if (!is_playing) break; 
@@ -2483,21 +2498,16 @@ document.getElementById('btn-play-all').onclick = () => {
         const customControlPoint = pathScene ? pathScene.customControlPoint : null;
         const duration = pathScene.duration;
         const easing = pathScene.easing;
-        const delay = pathScene.delay;
+        // Use target scene's delay (how long to pause after arriving)
+        const delay = targetView.delay;
         const bezier = pathScene.bezier;
         
-        let activeControlPoint = customControlPoint;
+        // Ignore custom path if requested (e.g. navigation) to ensure clean entry
+        let activeControlPoint = (msg.ignoreCustomPath) ? null : customControlPoint;
 
-        // Ensure default control point respects segment direction
-        if (!activeControlPoint && isArcEnabled && pathScene) {
-             const segmentStartIndex = pathSettingsIndex;
-             const segmentEndIndex = (pathSettingsIndex + 1) % scenes.length;
-             
-             // We need to find the scenes corresponding to these indices to get their views
-             const segStart = scenes[segmentStartIndex].view;
-             const segEnd = scenes[segmentEndIndex].view;
-             
-             const defaultControl = calculateArcControlPoint(segStart, segEnd);
+        // Calculate default arc control point using actual animation endpoints
+        if (!activeControlPoint && isArcEnabled) {
+             const defaultControl = calculateArcControlPoint(startView, targetView.view);
              activeControlPoint = { x: defaultControl.xc, y: defaultControl.yc };
         }
         
@@ -2543,7 +2553,9 @@ document.getElementById('btn-play-all').onclick = () => {
         const loadedScenes = (msg.data && Array.isArray(msg.data.scenes)) ? msg.data.scenes : null;
         const loadedHasScenes = !!(loadedScenes && loadedScenes.length > 0);
 
-        if (!loadedHasScenes && msg.projectName === DEFAULT_PROJECT_KEY && !hasAttemptedLegacyDefaultLoad) {
+        // Only attempt legacy load if we haven't already AND the data is null (not empty)
+        // This prevents loading legacy data when we've intentionally cleared scenes
+        if (!loadedScenes && msg.projectName === DEFAULT_PROJECT_KEY && !hasAttemptedLegacyDefaultLoad) {
             hasAttemptedLegacyDefaultLoad = true;
             parent.postMessage({ pluginMessage: { type: 'get-project', name: LEGACY_DEFAULT_PROJECT_KEY } }, '*');
             return;

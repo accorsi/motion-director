@@ -11,7 +11,7 @@ const PATH_LINE_NAME = "MotionDirector_Path_Line";
 
 function getStoredData(key) {
     const data = figma.root.getPluginData(key);
-    return data ? JSON.parse(data) : null;
+    return data === '' ? null : (data ? JSON.parse(data) : null);
 }
 
 function setStoredData(key, data) {
